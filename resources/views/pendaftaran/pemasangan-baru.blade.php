@@ -596,12 +596,27 @@
                                         </span>
                                     </div>
                                 </div>
-                                <input type="text" name="id_perusahaan" id="inputIdPerusahaan" list="listExistingCompanyId" required maxlength="100" placeholder="Ketik / Pilih ID Perusahaan" value="{{ old('id_perusahaan') }}" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 px-3.5 text-sm rounded-xl outline-none transition-all placeholder-slate-400">
+                                <div class="relative flex items-center">
+                                    <input type="text" name="id_perusahaan" id="inputIdPerusahaan" list="listExistingCompanyId" required maxlength="100" placeholder="isp-001-{{ date('Y') }} / Pilih ID-Nama" value="{{ old('id_perusahaan', $autoIdPerusahaan ?? '') }}" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 pl-3.5 pr-10 text-sm rounded-xl outline-none transition-all placeholder-slate-400 font-mono">
+                                    <button type="button" id="btnRefreshAutoId" onclick="refreshAutoIdPerusahaan()" title="Generate ID Baru" class="absolute right-2.5 text-slate-400 hover:text-blue-600 transition-colors p-1">
+                                        <i class="fa-solid fa-arrows-rotate text-xs"></i>
+                                    </button>
+                                </div>
                                 <datalist id="listExistingCompanyId">
                                     @foreach($existingCompanies ?? [] as $comp)
-                                        <option value="{{ $comp->id_perusahaan }}">{{ $comp->nama_perusahaan ?? $comp->nama_pelanggan }}</option>
+                                        @php
+                                            $cName = $comp->nama_perusahaan ?? $comp->nama_pelanggan ?? '';
+                                            $displayFormat = $comp->id_perusahaan . ($cName ? ' - ' . $cName : '');
+                                        @endphp
+                                        <option value="{{ $displayFormat }}">{{ $displayFormat }}</option>
+                                        @if($cName)
+                                            <option value="{{ $comp->id_perusahaan }}">{{ $cName }}</option>
+                                        @endif
                                     @endforeach
                                 </datalist>
+                                <p class="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
+                                    <i class="fa-solid fa-circle-info text-blue-500"></i> Format baru: <code class="text-blue-600 font-bold">isp-nomor-tahun</code> (atau pilih ID-Nama yang ada)
+                                </p>
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-700 mb-1.5">Nama Perusahaan <span class="text-rose-500 font-bold">*</span></label>
@@ -2380,6 +2395,10 @@
             document.getElementById('modalRegistrasi').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
             if (typeof updateModalOffset === 'function') updateModalOffset();
+            const inputId = document.getElementById('inputIdPerusahaan');
+            if (inputId && !inputId.value.trim() && typeof window.refreshAutoIdPerusahaan === 'function') {
+                window.refreshAutoIdPerusahaan();
+            }
         }
         
         function closeModal() {
@@ -2720,11 +2739,41 @@
                 }
             };
 
+            // ============================================
+            // HELPER REFRESH AUTO-ID PERUSAHAAN (isp-nomor-tahun)
+            // ============================================
+            window.refreshAutoIdPerusahaan = function() {
+                const tglInput = document.querySelector('#formRegistrasi [name="tanggal_registrasi"]');
+                const year = tglInput && tglInput.value ? tglInput.value.substring(0, 4) : new Date().getFullYear();
+                
+                const btnRefresh = document.getElementById('btnRefreshAutoId');
+                if (btnRefresh) btnRefresh.querySelector('i')?.classList.add('animate-spin');
+                
+                fetch('/api/generate-id-perusahaan?year=' + encodeURIComponent(year))
+                    .then(r => r.json())
+                    .then(res => {
+                        if (res.success && res.id_perusahaan) {
+                            if (inputId) inputId.value = res.id_perusahaan;
+                            if (alertBadge) alertBadge.classList.add('hidden');
+                            if (btnReopen) btnReopen.classList.add('hidden');
+                            window.pendingCompanyData = null;
+                        }
+                    })
+                    .catch(e => console.error('Error generating ID:', e))
+                    .finally(() => {
+                        if (btnRefresh) btnRefresh.querySelector('i')?.classList.remove('animate-spin');
+                    });
+            };
+
             window.applyAutoFillCompany = function() {
                 const d = window.pendingCompanyData;
                 if (!d) {
                     window.closeConfirmAutoFillModal();
                     return;
+                }
+
+                if (inputId && d.id_perusahaan) {
+                    inputId.value = d.id_perusahaan;
                 }
 
                 // 1. Section 1: Informasi Pelanggan
@@ -2800,14 +2849,23 @@
                 let searchTimeout = null;
 
                 function checkAutoFillCompany() {
-                    const val = inputId.value.trim();
-                    if (!val || val === lastFetchedVal) return;
+                    let val = inputId.value.trim();
+                    if (!val) return;
 
-                    fetch('/api/perusahaan-detail?id_perusahaan=' + encodeURIComponent(val))
+                    // If user selected "isp-001-2026 - PT Nama", extract clean ID
+                    let cleanQuery = val;
+                    if (val.includes(' - ')) {
+                        cleanQuery = val.split(' - ')[0].trim();
+                    }
+
+                    if (cleanQuery === lastFetchedVal) return;
+
+                    fetch('/api/perusahaan-detail?id_perusahaan=' + encodeURIComponent(cleanQuery))
                         .then(res => res.json())
                         .then(res => {
                             if (res.found && res.data) {
-                                lastFetchedVal = val;
+                                lastFetchedVal = cleanQuery;
+                                inputId.value = res.data.id_perusahaan || cleanQuery;
                                 window.pendingCompanyData = res.data;
 
                                 // Update text pada Modal Konfirmasi
@@ -2816,7 +2874,7 @@
                                 const cPhone = document.getElementById('confirmCompanyPhone');
                                 const cEmail = document.getElementById('confirmCompanyEmail');
 
-                                if (cId) cId.textContent = res.data.id_perusahaan || val;
+                                if (cId) cId.textContent = res.data.id_perusahaan || cleanQuery;
                                 if (cName) cName.textContent = res.data.nama_perusahaan || res.data.nama_pelanggan || '-';
                                 if (cPhone) cPhone.textContent = res.data.no_telp_perusahaan || '-';
                                 if (cEmail) cEmail.textContent = res.data.email_perusahaan || '-';
@@ -2840,7 +2898,8 @@
                 inputId.addEventListener('blur', checkAutoFillCompany);
                 inputId.addEventListener('input', function() {
                     clearTimeout(searchTimeout);
-                    if (this.value.length >= 2) {
+                    const curVal = this.value.trim();
+                    if (curVal.includes(' - ') || curVal.length >= 3) {
                         searchTimeout = setTimeout(checkAutoFillCompany, 300);
                     } else {
                         lastFetchedVal = '';
@@ -2849,6 +2908,53 @@
                         if (btnReopen) btnReopen.classList.add('hidden');
                     }
                 });
+
+                // Sinkronisasi tahun jika user mengubah tanggal registrasi
+                const tglInput = document.querySelector('#formRegistrasi [name="tanggal_registrasi"]');
+                if (tglInput) {
+                    tglInput.addEventListener('change', function() {
+                        const curId = inputId.value.trim();
+                        const match = curId.match(/^isp-(\d+)-(\d{4})$/i);
+                        if (match && this.value) {
+                            const newYear = this.value.substring(0, 4);
+                            if (newYear && newYear !== match[2]) {
+                                window.refreshAutoIdPerusahaan();
+                            }
+                        }
+                    });
+                }
+
+                // Listener saat user mengetik nama perusahaan yang sudah ada
+                const inputName = document.querySelector('#formRegistrasi [name="nama_perusahaan"]');
+                if (inputName) {
+                    inputName.addEventListener('change', function() {
+                        const nameVal = this.value.trim();
+                        if (nameVal.length >= 3 && (!window.pendingCompanyData || window.pendingCompanyData.nama_perusahaan !== nameVal)) {
+                            fetch('/api/perusahaan-detail?id_perusahaan=' + encodeURIComponent(nameVal))
+                                .then(r => r.json())
+                                .then(res => {
+                                    if (res.found && res.data) {
+                                        window.pendingCompanyData = res.data;
+                                        const cId = document.getElementById('confirmCompanyId');
+                                        const cName = document.getElementById('confirmCompanyName');
+                                        const cPhone = document.getElementById('confirmCompanyPhone');
+                                        const cEmail = document.getElementById('confirmCompanyEmail');
+
+                                        if (cId) cId.textContent = res.data.id_perusahaan || '-';
+                                        if (cName) cName.textContent = res.data.nama_perusahaan || '-';
+                                        if (cPhone) cPhone.textContent = res.data.no_telp_perusahaan || '-';
+                                        if (cEmail) cEmail.textContent = res.data.email_perusahaan || '-';
+
+                                        if (alertBadge) alertBadge.classList.add('hidden');
+                                        if (btnReopen) btnReopen.classList.remove('hidden');
+
+                                        window.openConfirmAutoFillModal();
+                                    }
+                                })
+                                .catch(e => console.error('Error fetching by company name:', e));
+                        }
+                    });
+                }
             }
         });
 

@@ -49,6 +49,7 @@ Route::middleware(\App\Http\Middleware\EnsureAuthenticated::class)->group(functi
     Route::get('/api/layanan-bangunan', [PendaftaranController::class, 'getLayananByBangunan'])->name('api.layanan-bangunan');
     Route::get('/api/barang-satuan', [PendaftaranController::class, 'getBarangSatuan'])->name('api.barang-satuan');
     Route::get('/api/perusahaan-detail', [PendaftaranController::class, 'getPerusahaanDetail'])->name('api.perusahaan-detail');
+    Route::get('/api/generate-id-perusahaan', [PendaftaranController::class, 'generateIdPerusahaanApi'])->name('api.generate-id-perusahaan');
 
     // Permintaan
     Route::get('/permintaan/up-downgrade', [PermintaanController::class, 'upDowngrade'])->name('permintaan.up-downgrade');

@@ -201,8 +201,10 @@ class PendaftaranController extends Controller
             ->sortBy('id_perusahaan')
             ->values();
 
+        $autoIdPerusahaan = self::generateIdPerusahaan();
+
         return view('pendaftaran.pemasangan-baru', compact(
-            'bangunan', 'kategori', 'groupLayanan', 'sales', 'provinsi', 'rows', 'statusList', 'wilayahList', 'isAdmin', 'isNoc', 'isFinance', 'teamAktivasiList', 'popList', 'mediaAksesList', 'barangList', 'installedItems', 'paketList', 'existingCompanies'
+            'bangunan', 'kategori', 'groupLayanan', 'sales', 'provinsi', 'rows', 'statusList', 'wilayahList', 'isAdmin', 'isNoc', 'isFinance', 'teamAktivasiList', 'popList', 'mediaAksesList', 'barangList', 'installedItems', 'paketList', 'existingCompanies', 'autoIdPerusahaan'
         ));
     }
 
@@ -419,9 +421,15 @@ class PendaftaranController extends Controller
             }
 
             // ID / Identifier Pelanggan Perusahaan
-            $idPerusahaan = !empty($validated['id_perusahaan']) 
-                ? $validated['id_perusahaan'] 
-                : ('CORP-' . date('YmdHis') . rand(100, 999));
+            $rawIdPerusahaan = trim($validated['id_perusahaan'] ?? '');
+            if (strpos($rawIdPerusahaan, ' - ') !== false) {
+                $parts = explode(' - ', $rawIdPerusahaan, 2);
+                $rawIdPerusahaan = trim($parts[0]);
+            }
+
+            $idPerusahaan = !empty($rawIdPerusahaan) 
+                ? $rawIdPerusahaan 
+                : self::generateIdPerusahaan(isset($validated['tanggal_registrasi']) ? date('Y', strtotime($validated['tanggal_registrasi'])) : null);
 
             // Simpan / update ke m_pelanggan
             $pelangganData = [
@@ -2534,31 +2542,113 @@ class PendaftaranController extends Controller
     }
 
     // ============================================
+    // HELPER & API GENERATE ID PERUSAHAAN (isp-nomorurutregistrasi-tahun)
+    // ============================================
+    public static function generateIdPerusahaan($year = null)
+    {
+        $year = $year ?: date('Y');
+
+        $pelangganIds = DB::table('m_pelanggan')
+            ->whereNotNull('id_perusahaan')
+            ->where(function ($q) use ($year) {
+                $q->where('id_perusahaan', 'LIKE', "isp-%-{$year}")
+                  ->orWhere('id_perusahaan', 'LIKE', "ISP-%-{$year}");
+            })
+            ->pluck('id_perusahaan');
+
+        $trxIds = DB::table('trx_batchjob_register')
+            ->whereNotNull('id_perusahaan')
+            ->where(function ($q) use ($year) {
+                $q->where('id_perusahaan', 'LIKE', "isp-%-{$year}")
+                  ->orWhere('id_perusahaan', 'LIKE', "ISP-%-{$year}");
+            })
+            ->pluck('id_perusahaan');
+
+        $allIds = $pelangganIds->concat($trxIds)->unique();
+
+        $maxSeq = 0;
+        foreach ($allIds as $idStr) {
+            if (preg_match('/^isp-(\d+)-' . $year . '$/i', trim($idStr), $matches)) {
+                $seq = (int) $matches[1];
+                if ($seq > $maxSeq) {
+                    $maxSeq = $seq;
+                }
+            }
+        }
+
+        $nextSeq = $maxSeq + 1;
+        $seqFormatted = sprintf('%03d', $nextSeq);
+        $newId = "isp-{$seqFormatted}-{$year}";
+
+        while (
+            DB::table('m_pelanggan')->where('id_perusahaan', $newId)->exists() ||
+            DB::table('trx_batchjob_register')->where('id_perusahaan', $newId)->exists()
+        ) {
+            $nextSeq++;
+            $seqFormatted = sprintf('%03d', $nextSeq);
+            $newId = "isp-{$seqFormatted}-{$year}";
+        }
+
+        return $newId;
+    }
+
+    public function generateIdPerusahaanApi(Request $request)
+    {
+        $year = $request->query('year') ?? date('Y');
+        $id = self::generateIdPerusahaan($year);
+        return response()->json([
+            'success' => true,
+            'id_perusahaan' => $id,
+        ]);
+    }
+
+    // ============================================
     // API GET DETAIL PERUSAHAAN BY ID PERUSAHAAN (AUTO-FILL)
     // ============================================
     public function getPerusahaanDetail(Request $request)
     {
-        $id = trim($request->query('id_perusahaan') ?? $request->query('q') ?? '');
-        if (empty($id)) {
+        $rawQuery = trim($request->query('id_perusahaan') ?? $request->query('q') ?? '');
+        if (empty($rawQuery)) {
             return response()->json(['found' => false]);
+        }
+
+        $idOnly = $rawQuery;
+        $nameOnly = $rawQuery;
+        if (strpos($rawQuery, ' - ') !== false) {
+            $parts = explode(' - ', $rawQuery, 2);
+            $idOnly = trim($parts[0]);
+            $nameOnly = trim($parts[1] ?? '');
         }
 
         // 1. Cari di m_pelanggan
         $p = DB::table('m_pelanggan')
-            ->where('id_perusahaan', $id)
+            ->where('id_perusahaan', $idOnly)
+            ->orWhere('id_perusahaan', $rawQuery)
+            ->orWhere('nama_perusahaan', $rawQuery)
+            ->orWhere('nama_perusahaan', $nameOnly)
             ->first();
 
         // 2. Cari di trx_batchjob_register yang paling baru
         $trx = DB::table('trx_batchjob_register')
-            ->where('id_perusahaan', $id)
+            ->where(function ($q) use ($idOnly, $rawQuery, $nameOnly) {
+                $q->where('id_perusahaan', $idOnly)
+                  ->orWhere('id_perusahaan', $rawQuery)
+                  ->orWhere('nama_pelanggan', $rawQuery)
+                  ->orWhere('nama_pelanggan', $nameOnly);
+            })
             ->orderByDesc('date_create')
             ->first();
 
         // 3. Fallback view_batchjob
         if (!$p && !$trx) {
             $trx = DB::table('view_batchjob')
-                ->where('id_perusahaan', $id)
-                ->orWhere('nik_penduduk', $id)
+                ->where(function ($q) use ($idOnly, $rawQuery, $nameOnly) {
+                    $q->where('id_perusahaan', $idOnly)
+                      ->orWhere('id_perusahaan', $rawQuery)
+                      ->orWhere('nama_pelanggan', $rawQuery)
+                      ->orWhere('nama_pelanggan', $nameOnly)
+                      ->orWhere('nik_penduduk', $idOnly);
+                })
                 ->orderByDesc('date_create')
                 ->first();
         }
@@ -2610,11 +2700,13 @@ class PendaftaranController extends Controller
         $lonLatPasang = $trx->lon_lat ?? $p->lon_lat ?? $lonLatCorp;
         $sharelockPasang = $trx->loc_maps ?? $trx->sharelock ?? $p->sharelock ?? $sharelockCorp;
 
+        $resolvedIdPerusahaan = $p->id_perusahaan ?? $trx->id_perusahaan ?? $idOnly;
+
         return response()->json([
             'found' => true,
             'data'  => [
                 // Section 1: Informasi Pelanggan
-                'id_perusahaan'             => $p->id_perusahaan ?? $trx->id_perusahaan ?? $id,
+                'id_perusahaan'             => $resolvedIdPerusahaan,
                 'nama_perusahaan'           => $p->nama_perusahaan ?? $trx->nama_pelanggan ?? $p->nama_penduduk ?? '',
                 'no_telp_perusahaan'       => $p->no_telp_perusahaan ?? $p->nomor_hp ?? '',
                 'email_perusahaan'         => $p->email_perusahaan ?? $p->email ?? '',
