@@ -21,12 +21,14 @@
     <style>
         * { box-sizing: border-box; }
         html {
-            zoom: 90%;
-            -moz-transform: scale(0.9);
-            -moz-transform-origin: 0 0;
+            font-size: 90%;
+            height: 100%;
         }
         body { 
             font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+            min-height: 100%;
+            margin: 0;
+            padding: 0;
         }
 
         /* Hide datalist dropdown indicator arrow ONLY for inputs with list attribute */
