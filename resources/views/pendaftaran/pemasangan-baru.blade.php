@@ -2915,12 +2915,73 @@
                     });
             };
 
+            window.activeAutofillCompanyName = null;
+
+            // ============================================
+            // HELPER KOSONGKAN DATA AUTOFILL JIKA NAMA BERUBAH / BUKAN SAMA PERSIS
+            // ============================================
+            window.clearAutoFilledCompanyData = function() {
+                // 1. Clear Section 1 (kecuali nama_perusahaan)
+                const fieldsSec1 = [
+                    'no_telp_perusahaan', 'email_perusahaan', 
+                    'nama_pic_teknis', 'no_telp_pic_teknis', 'email_pic_teknis', 
+                    'nama_pic_keuangan', 'no_telp_pic_keuangan', 'email_pic_keuangan', 
+                    'jenis_perusahaan'
+                ];
+                fieldsSec1.forEach(name => {
+                    const el = document.querySelector(`#formRegistrasi [name="${name}"]`);
+                    if (el) el.value = '';
+                });
+
+                // 2. Clear Section 2 (Alamat & Wilayah Perusahaan)
+                const fieldsSec2 = [
+                    'rt_ktp', 'rw_ktp', 'nomor_bangunan_perusahaan', 'alamat_ktp',
+                    'lon_lat_perusahaan', 'sharelock_perusahaan', 'jenis_bangunan_perusahaan'
+                ];
+                fieldsSec2.forEach(name => {
+                    const el = document.querySelector(`#formRegistrasi [name="${name}"]`);
+                    if (el) el.value = '';
+                });
+
+                const noBangunanCorp = document.getElementById('noBangunanPerusahaan');
+                if (noBangunanCorp) noBangunanCorp.value = '';
+                const lonLatPerusahaan = document.getElementById('lonLatPerusahaan');
+                if (lonLatPerusahaan) lonLatPerusahaan.value = '';
+                const sharelockPerusahaan = document.getElementById('sharelockPerusahaan');
+                if (sharelockPerusahaan) sharelockPerusahaan.value = '';
+                const jenisBangunanCorp = document.getElementById('jenisBangunanPerusahaan');
+                if (jenisBangunanCorp) jenisBangunanCorp.value = '';
+
+                // Reset dropdown wilayah KTP
+                const provKtp = document.getElementById('provinsiKtp');
+                if (provKtp) provKtp.selectedIndex = 0;
+                const kotaKtp = document.getElementById('kotaKtp');
+                if (kotaKtp) kotaKtp.innerHTML = '<option value="">Pilih Kota/Kabupaten</option>';
+                const kecKtp = document.getElementById('kecKtp');
+                if (kecKtp) kecKtp.innerHTML = '<option value="">Pilih Kecamatan</option>';
+                const kelKtp = document.getElementById('kelKtp');
+                if (kelKtp) kelKtp.innerHTML = '<option value="">Pilih Kelurahan</option>';
+
+                // 3. Reset state & generate ID baru
+                window.pendingCompanyData = null;
+                window.activeAutofillCompanyName = null;
+                if (alertBadge) alertBadge.classList.add('hidden');
+                if (btnReopen) btnReopen.classList.add('hidden');
+
+                if (typeof window.refreshAutoIdPerusahaan === 'function') {
+                    window.refreshAutoIdPerusahaan();
+                }
+            };
+
             window.applyAutoFillCompany = function(dataToApply) {
                 const d = dataToApply || window.pendingCompanyData;
                 if (!d) {
                     window.closeConfirmAutoFillModal();
                     return;
                 }
+
+                // Catat nama perusahaan yang sedang ter-autofill
+                window.activeAutofillCompanyName = (d.nama_perusahaan || '').trim().toLowerCase();
 
                 // Set ID Perusahaan
                 if (inputId && d.id_perusahaan) {
@@ -3094,7 +3155,6 @@
 
                 function handleNamaPerusahaanChange() {
                     let val = inputNama.value.trim();
-                    if (!val) return;
 
                     // Bersihkan jika ada format "Nama (ID: isp-xxx)"
                     if (val.includes(' (ID: ')) {
@@ -3102,18 +3162,44 @@
                         inputNama.value = val;
                     }
 
-                    if (val === lastSearchedName) return;
+                    const curLower = val.toLowerCase();
+
+                    // Jika user mengubah nama dan sekarang tidak sama persis dengan perusahaan yang sebelumnya di-autofill
+                    if (window.activeAutofillCompanyName && curLower !== window.activeAutofillCompanyName) {
+                        window.clearAutoFilledCompanyData();
+                    }
+
+                    if (!val) {
+                        if (window.activeAutofillCompanyName) {
+                            window.clearAutoFilledCompanyData();
+                        }
+                        lastSearchedName = '';
+                        return;
+                    }
+
+                    if (val === lastSearchedName && window.pendingCompanyData) return;
                     lastSearchedName = val;
 
                     fetch('/api/perusahaan-detail?id_perusahaan=' + encodeURIComponent(val))
                         .then(res => res.json())
                         .then(res => {
+                            const exactTyped = inputNama.value.trim().toLowerCase();
                             if (res.found && res.data) {
-                                // Nama perusahaan sudah ada -> otomatis pakai ID yang sudah terdaftar & isi Form 1 & 2
-                                window.pendingCompanyData = res.data;
-                                window.applyAutoFillCompany(res.data);
+                                const foundName = (res.data.nama_perusahaan || res.data.nama_pelanggan || '').trim().toLowerCase();
+                                const foundId = (res.data.id_perusahaan || '').trim().toLowerCase();
+
+                                // HANYA isi otomatis jika nama SAMA PERSIS tidak kurang tidak lebih
+                                if (exactTyped === foundName || exactTyped === foundId) {
+                                    window.pendingCompanyData = res.data;
+                                    window.applyAutoFillCompany(res.data);
+                                    return;
+                                }
+                            }
+
+                            // Jika tidak sama persis / perusahaan baru
+                            if (window.activeAutofillCompanyName) {
+                                window.clearAutoFilledCompanyData();
                             } else {
-                                // Nama perusahaan belum ada (baru) -> generate ID perusahaan otomatis jika belum ada
                                 window.pendingCompanyData = null;
                                 if (alertBadge) alertBadge.classList.add('hidden');
                                 if (btnReopen) btnReopen.classList.add('hidden');
@@ -3138,8 +3224,12 @@
 
                     clearTimeout(nameSearchTimeout);
                     const cur = this.value.trim();
-                    if (cur.length >= 3) {
-                        nameSearchTimeout = setTimeout(handleNamaPerusahaanChange, 400);
+                    if (cur.length >= 2) {
+                        nameSearchTimeout = setTimeout(handleNamaPerusahaanChange, 350);
+                    } else if (!cur) {
+                        if (window.activeAutofillCompanyName) {
+                            window.clearAutoFilledCompanyData();
+                        }
                     }
                 });
 
