@@ -615,12 +615,22 @@
                                     @endforeach
                                 </datalist>
                                 <p class="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
-                                    <i class="fa-solid fa-circle-info text-blue-500"></i> Format baru: <code class="text-blue-600 font-bold">isp-nomor-tahun</code> (atau pilih ID-Nama yang ada)
+                                    <i class="fa-solid fa-circle-info text-blue-500"></i> Otomatis terisi / generate saat mengisi Nama Perusahaan
                                 </p>
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-700 mb-1.5">Nama Perusahaan <span class="text-rose-500 font-bold">*</span></label>
-                                <input type="text" name="nama_perusahaan" required maxlength="255" placeholder="Nama perusahaan / instansi" value="{{ old('nama_perusahaan') }}" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 px-3.5 text-sm rounded-xl outline-none transition-all placeholder-slate-400">
+                                <input type="text" name="nama_perusahaan" id="inputNamaPerusahaan" list="listExistingCompanyNames" required maxlength="255" placeholder="Ketik / Pilih Nama Perusahaan" value="{{ old('nama_perusahaan') }}" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 px-3.5 text-sm rounded-xl outline-none transition-all placeholder-slate-400">
+                                <datalist id="listExistingCompanyNames">
+                                    @foreach($existingCompanies ?? [] as $comp)
+                                        @php
+                                            $cName = $comp->nama_perusahaan ?? $comp->nama_pelanggan ?? '';
+                                        @endphp
+                                        @if($cName)
+                                            <option value="{{ $cName }}">{{ $cName }} (ID: {{ $comp->id_perusahaan }})</option>
+                                        @endif
+                                    @endforeach
+                                </datalist>
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-700 mb-1.5">No Telp. Perusahaan <span class="text-rose-500 font-bold">*</span></label>
@@ -2742,7 +2752,7 @@
             // ============================================
             // HELPER REFRESH AUTO-ID PERUSAHAAN (isp-nomor-tahun)
             // ============================================
-            window.refreshAutoIdPerusahaan = function() {
+            window.refreshAutoIdPerusahaan = function(callback) {
                 const tglInput = document.querySelector('#formRegistrasi [name="tanggal_registrasi"]');
                 const year = tglInput && tglInput.value ? tglInput.value.substring(0, 4) : new Date().getFullYear();
                 
@@ -2757,6 +2767,7 @@
                             if (alertBadge) alertBadge.classList.add('hidden');
                             if (btnReopen) btnReopen.classList.add('hidden');
                             window.pendingCompanyData = null;
+                            if (typeof callback === 'function') callback(res.id_perusahaan);
                         }
                     })
                     .catch(e => console.error('Error generating ID:', e))
@@ -2765,13 +2776,14 @@
                     });
             };
 
-            window.applyAutoFillCompany = function() {
-                const d = window.pendingCompanyData;
+            window.applyAutoFillCompany = function(dataToApply) {
+                const d = dataToApply || window.pendingCompanyData;
                 if (!d) {
                     window.closeConfirmAutoFillModal();
                     return;
                 }
 
+                // Set ID Perusahaan
                 if (inputId && d.id_perusahaan) {
                     inputId.value = d.id_perusahaan;
                 }
@@ -2791,7 +2803,7 @@
                 };
 
                 for (const [name, value] of Object.entries(fieldsSec1)) {
-                    if (value !== undefined && value !== null) {
+                    if (value !== undefined && value !== null && value !== '') {
                         const el = document.querySelector(`#formRegistrasi [name="${name}"]`);
                         if (el) el.value = value;
                     }
@@ -2806,30 +2818,30 @@
                 };
 
                 for (const [name, value] of Object.entries(fieldsSec2)) {
-                    if (value !== undefined && value !== null) {
+                    if (value !== undefined && value !== null && value !== '') {
                         const el = document.querySelector(`#formRegistrasi [name="${name}"]`);
                         if (el) el.value = value;
                     }
                 }
 
                 const noBangunanCorp = document.getElementById('noBangunanPerusahaan') || document.querySelector('#formRegistrasi [name="nomor_bangunan_perusahaan"]');
-                if (noBangunanCorp && d.nomor_bangunan_perusahaan !== undefined && d.nomor_bangunan_perusahaan !== null) {
+                if (noBangunanCorp && d.nomor_bangunan_perusahaan) {
                     noBangunanCorp.value = d.nomor_bangunan_perusahaan;
                 }
 
                 const lonLatPerusahaan = document.getElementById('lonLatPerusahaan') || document.querySelector('#formRegistrasi [name="lon_lat_perusahaan"]');
-                if (lonLatPerusahaan && d.lon_lat_perusahaan !== undefined && d.lon_lat_perusahaan !== null) {
+                if (lonLatPerusahaan && d.lon_lat_perusahaan) {
                     lonLatPerusahaan.value = d.lon_lat_perusahaan;
                 }
                 
                 const sharelockPerusahaan = document.getElementById('sharelockPerusahaan') || document.querySelector('#formRegistrasi [name="sharelock_perusahaan"]');
-                if (sharelockPerusahaan && d.sharelock_perusahaan !== undefined && d.sharelock_perusahaan !== null) {
+                if (sharelockPerusahaan && d.sharelock_perusahaan) {
                     sharelockPerusahaan.value = d.sharelock_perusahaan;
                 }
 
                 const jenisBangunanCorp = document.getElementById('jenisBangunanPerusahaan') || document.querySelector('#formRegistrasi [name="jenis_bangunan_perusahaan"]');
-                if (jenisBangunanCorp && d.jenis_bangunan) {
-                    jenisBangunanCorp.value = d.jenis_bangunan;
+                if (jenisBangunanCorp && (d.jenis_bangunan || d.jenis_bangunan_perusahaan)) {
+                    jenisBangunanCorp.value = d.jenis_bangunan || d.jenis_bangunan_perusahaan;
                 }
 
                 // Cascade Alamat Perusahaan (Section 2)
@@ -2839,10 +2851,67 @@
 
                 // UI update: Sembunyikan button pemicu & Tampilkan notifikasi badge
                 if (btnReopen) btnReopen.classList.add('hidden');
-                if (alertBadge) alertBadge.classList.remove('hidden');
+                if (alertBadge) {
+                    alertBadge.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i> Form 1-2 Otomatis Terisi (${d.id_perusahaan})`;
+                    alertBadge.classList.remove('hidden');
+                }
 
                 window.closeConfirmAutoFillModal();
             };
+
+            const inputNama = document.getElementById('inputNamaPerusahaan') || document.querySelector('#formRegistrasi [name="nama_perusahaan"]');
+
+            // Handler ketika nama perusahaan ditulis / dipilih
+            if (inputNama) {
+                let nameSearchTimeout = null;
+                let lastSearchedName = '';
+
+                function handleNamaPerusahaanChange() {
+                    let val = inputNama.value.trim();
+                    if (!val) return;
+
+                    // Bersihkan jika ada format "Nama (ID: isp-xxx)"
+                    if (val.includes(' (ID: ')) {
+                        val = val.split(' (ID: ')[0].trim();
+                        inputNama.value = val;
+                    }
+
+                    if (val === lastSearchedName) return;
+                    lastSearchedName = val;
+
+                    fetch('/api/perusahaan-detail?id_perusahaan=' + encodeURIComponent(val))
+                        .then(res => res.json())
+                        .then(res => {
+                            if (res.found && res.data) {
+                                // Nama perusahaan sudah ada -> otomatis pakai ID yang sudah terdaftar & isi Form 1 & 2
+                                window.pendingCompanyData = res.data;
+                                window.applyAutoFillCompany(res.data);
+                            } else {
+                                // Nama perusahaan belum ada (baru) -> generate ID perusahaan otomatis jika belum ada
+                                window.pendingCompanyData = null;
+                                if (alertBadge) alertBadge.classList.add('hidden');
+                                if (btnReopen) btnReopen.classList.add('hidden');
+
+                                const curId = inputId ? inputId.value.trim() : '';
+                                const isDefaultAutoId = /^isp-\d+-\d{4}$/i.test(curId);
+                                if (!curId || !isDefaultAutoId) {
+                                    window.refreshAutoIdPerusahaan();
+                                }
+                            }
+                        })
+                        .catch(err => console.error('Error lookup nama perusahaan:', err));
+                }
+
+                inputNama.addEventListener('change', handleNamaPerusahaanChange);
+                inputNama.addEventListener('blur', handleNamaPerusahaanChange);
+                inputNama.addEventListener('input', function() {
+                    clearTimeout(nameSearchTimeout);
+                    const cur = this.value.trim();
+                    if (cur.length >= 3) {
+                        nameSearchTimeout = setTimeout(handleNamaPerusahaanChange, 400);
+                    }
+                });
+            }
 
             if (inputId) {
                 let lastFetchedVal = '';
@@ -2867,24 +2936,7 @@
                                 lastFetchedVal = cleanQuery;
                                 inputId.value = res.data.id_perusahaan || cleanQuery;
                                 window.pendingCompanyData = res.data;
-
-                                // Update text pada Modal Konfirmasi
-                                const cId = document.getElementById('confirmCompanyId');
-                                const cName = document.getElementById('confirmCompanyName');
-                                const cPhone = document.getElementById('confirmCompanyPhone');
-                                const cEmail = document.getElementById('confirmCompanyEmail');
-
-                                if (cId) cId.textContent = res.data.id_perusahaan || cleanQuery;
-                                if (cName) cName.textContent = res.data.nama_perusahaan || res.data.nama_pelanggan || '-';
-                                if (cPhone) cPhone.textContent = res.data.no_telp_perusahaan || '-';
-                                if (cEmail) cEmail.textContent = res.data.email_perusahaan || '-';
-
-                                // Sembunyikan badge terisi dulu (sampai dikonfirmasi)
-                                if (alertBadge) alertBadge.classList.add('hidden');
-                                if (btnReopen) btnReopen.classList.remove('hidden');
-
-                                // Buka modal konfirmasi untuk user
-                                window.openConfirmAutoFillModal();
+                                window.applyAutoFillCompany(res.data);
                             } else {
                                 window.pendingCompanyData = null;
                                 if (alertBadge) alertBadge.classList.add('hidden');
@@ -2920,38 +2972,6 @@
                             if (newYear && newYear !== match[2]) {
                                 window.refreshAutoIdPerusahaan();
                             }
-                        }
-                    });
-                }
-
-                // Listener saat user mengetik nama perusahaan yang sudah ada
-                const inputName = document.querySelector('#formRegistrasi [name="nama_perusahaan"]');
-                if (inputName) {
-                    inputName.addEventListener('change', function() {
-                        const nameVal = this.value.trim();
-                        if (nameVal.length >= 3 && (!window.pendingCompanyData || window.pendingCompanyData.nama_perusahaan !== nameVal)) {
-                            fetch('/api/perusahaan-detail?id_perusahaan=' + encodeURIComponent(nameVal))
-                                .then(r => r.json())
-                                .then(res => {
-                                    if (res.found && res.data) {
-                                        window.pendingCompanyData = res.data;
-                                        const cId = document.getElementById('confirmCompanyId');
-                                        const cName = document.getElementById('confirmCompanyName');
-                                        const cPhone = document.getElementById('confirmCompanyPhone');
-                                        const cEmail = document.getElementById('confirmCompanyEmail');
-
-                                        if (cId) cId.textContent = res.data.id_perusahaan || '-';
-                                        if (cName) cName.textContent = res.data.nama_perusahaan || '-';
-                                        if (cPhone) cPhone.textContent = res.data.no_telp_perusahaan || '-';
-                                        if (cEmail) cEmail.textContent = res.data.email_perusahaan || '-';
-
-                                        if (alertBadge) alertBadge.classList.add('hidden');
-                                        if (btnReopen) btnReopen.classList.remove('hidden');
-
-                                        window.openConfirmAutoFillModal();
-                                    }
-                                })
-                                .catch(e => console.error('Error fetching by company name:', e));
                         }
                     });
                 }

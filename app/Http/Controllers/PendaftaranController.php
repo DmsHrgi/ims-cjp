@@ -2620,21 +2620,33 @@ class PendaftaranController extends Controller
             $nameOnly = trim($parts[1] ?? '');
         }
 
+        $idOnlyLower = strtolower($idOnly);
+        $rawQueryLower = strtolower($rawQuery);
+        $nameOnlyLower = strtolower($nameOnly);
+
         // 1. Cari di m_pelanggan
         $p = DB::table('m_pelanggan')
-            ->where('id_perusahaan', $idOnly)
-            ->orWhere('id_perusahaan', $rawQuery)
-            ->orWhere('nama_perusahaan', $rawQuery)
-            ->orWhere('nama_perusahaan', $nameOnly)
+            ->where(function ($q) use ($idOnly, $rawQuery, $nameOnly, $idOnlyLower, $rawQueryLower, $nameOnlyLower) {
+                $q->where('id_perusahaan', $idOnly)
+                  ->orWhere('id_perusahaan', $rawQuery)
+                  ->orWhere('nama_perusahaan', $rawQuery)
+                  ->orWhere('nama_perusahaan', $nameOnly)
+                  ->orWhereRaw('LOWER(nama_perusahaan) = ?', [$rawQueryLower])
+                  ->orWhereRaw('LOWER(nama_perusahaan) = ?', [$nameOnlyLower])
+                  ->orWhereRaw('LOWER(id_perusahaan) = ?', [$idOnlyLower]);
+            })
             ->first();
 
         // 2. Cari di trx_batchjob_register yang paling baru
         $trx = DB::table('trx_batchjob_register')
-            ->where(function ($q) use ($idOnly, $rawQuery, $nameOnly) {
+            ->where(function ($q) use ($idOnly, $rawQuery, $nameOnly, $idOnlyLower, $rawQueryLower, $nameOnlyLower) {
                 $q->where('id_perusahaan', $idOnly)
                   ->orWhere('id_perusahaan', $rawQuery)
                   ->orWhere('nama_pelanggan', $rawQuery)
-                  ->orWhere('nama_pelanggan', $nameOnly);
+                  ->orWhere('nama_pelanggan', $nameOnly)
+                  ->orWhereRaw('LOWER(nama_pelanggan) = ?', [$rawQueryLower])
+                  ->orWhereRaw('LOWER(nama_pelanggan) = ?', [$nameOnlyLower])
+                  ->orWhereRaw('LOWER(id_perusahaan) = ?', [$idOnlyLower]);
             })
             ->orderByDesc('date_create')
             ->first();
@@ -2642,12 +2654,15 @@ class PendaftaranController extends Controller
         // 3. Fallback view_batchjob
         if (!$p && !$trx) {
             $trx = DB::table('view_batchjob')
-                ->where(function ($q) use ($idOnly, $rawQuery, $nameOnly) {
+                ->where(function ($q) use ($idOnly, $rawQuery, $nameOnly, $idOnlyLower, $rawQueryLower, $nameOnlyLower) {
                     $q->where('id_perusahaan', $idOnly)
                       ->orWhere('id_perusahaan', $rawQuery)
                       ->orWhere('nama_pelanggan', $rawQuery)
                       ->orWhere('nama_pelanggan', $nameOnly)
-                      ->orWhere('nik_penduduk', $idOnly);
+                      ->orWhere('nik_penduduk', $idOnly)
+                      ->orWhereRaw('LOWER(nama_pelanggan) = ?', [$rawQueryLower])
+                      ->orWhereRaw('LOWER(nama_pelanggan) = ?', [$nameOnlyLower])
+                      ->orWhereRaw('LOWER(id_perusahaan) = ?', [$idOnlyLower]);
                 })
                 ->orderByDesc('date_create')
                 ->first();
