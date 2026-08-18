@@ -536,9 +536,15 @@
                             <p class="text-xs text-slate-500">Lengkapi formulir pendaftaran layanan pelanggan di bawah ini</p>
                         </div>
                     </div>
-                    <button type="button" onclick="closeModal()" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-400 hover:text-slate-700 flex items-center justify-center transition-colors">
-                        <i class="fa-solid fa-xmark text-lg"></i>
-                    </button>
+                    <div class="flex items-center gap-2.5">
+                        <button type="button" onclick="resetFormRegistrasi()" class="px-3.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-xs font-bold transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer" title="Kosongkan seluruh isian formulir">
+                            <i class="fa-solid fa-rotate-left text-xs text-rose-500"></i>
+                            <span>Reset Form</span>
+                        </button>
+                        <button type="button" onclick="closeModal()" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-400 hover:text-slate-700 flex items-center justify-center transition-colors">
+                            <i class="fa-solid fa-xmark text-lg"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Quick Section Navigation Bar (Sub-header) -->
@@ -985,8 +991,12 @@
 
                     <!-- Modal Footer (Fixed Bottom Inside Form) -->
                     <div class="shrink-0 flex items-center justify-between px-6 py-4 bg-white/95 backdrop-blur-md border-t border-slate-200/80 rounded-b-2xl">
-                        <div class="text-xs text-slate-400 hidden sm:block">
-                            <span class="text-rose-500 font-bold">*</span> Menandakan kolom wajib diisi
+                        <div class="flex items-center gap-3">
+                            <button type="button" onclick="resetFormRegistrasi()" class="px-4 py-2 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold transition-all duration-200 flex items-center gap-1.5 shadow-2xs cursor-pointer">
+                                <i class="fa-solid fa-rotate-left"></i>
+                                <span>Reset Form</span>
+                            </button>
+                            <span class="text-xs text-slate-400 hidden sm:inline"><span class="text-rose-500 font-bold">*</span> Menandakan kolom wajib diisi</span>
                         </div>
                         <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
                             <button type="button" onclick="closeModal()" class="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-800 text-sm font-semibold transition-all duration-200">
@@ -2744,6 +2754,95 @@
                 window.closeConfirmAutoFillModal();
                 if (btnReopen && window.pendingCompanyData) {
                     btnReopen.classList.remove('hidden');
+                }
+            };
+
+            // ============================================
+            // RESET SELURUH FORM PENDAFTARAN
+            // ============================================
+            window.resetFormRegistrasi = function() {
+                const form = document.getElementById('formRegistrasi');
+                if (!form) return;
+
+                // 1. Reset nilai input dan textarea
+                const inputs = form.querySelectorAll('input:not([type="hidden"]):not([name="_token"]):not([name="_method"]), textarea');
+                inputs.forEach(el => {
+                    if (el.type === 'checkbox' || el.type === 'radio') {
+                        el.checked = false;
+                    } else if (el.name !== 'tanggal_registrasi') {
+                        el.value = '';
+                    }
+                });
+
+                // 2. Reset semua select dropdown ke opsi pertama
+                const selects = form.querySelectorAll('select');
+                selects.forEach(sel => {
+                    sel.selectedIndex = 0;
+                });
+
+                // Reset cascading wilayah KTP
+                const kotaKtp = document.getElementById('kotaKtp');
+                if (kotaKtp) kotaKtp.innerHTML = '<option value="">Pilih Kota/Kabupaten</option>';
+                const kecKtp = document.getElementById('kecKtp');
+                if (kecKtp) kecKtp.innerHTML = '<option value="">Pilih Kecamatan</option>';
+                const kelKtp = document.getElementById('kelKtp');
+                if (kelKtp) kelKtp.innerHTML = '<option value="">Pilih Kelurahan</option>';
+
+                // Reset cascading wilayah Pemasangan
+                const kotaPasang = document.getElementById('kotaPasang');
+                if (kotaPasang) kotaPasang.innerHTML = '<option value="">Pilih Kota/Kabupaten</option>';
+                const kecPasang = document.getElementById('kecPasang');
+                if (kecPasang) kecPasang.innerHTML = '<option value="">Pilih Kecamatan</option>';
+                const kelPasang = document.getElementById('kelPasang');
+                if (kelPasang) kelPasang.innerHTML = '<option value="">Pilih Kelurahan</option>';
+
+                // 3. Reset image previews & file inputs
+                const previewPo = document.getElementById('previewPo');
+                if (previewPo) {
+                    previewPo.src = '';
+                    previewPo.classList.add('hidden');
+                }
+                const previewBangunan = document.getElementById('previewBangunan');
+                if (previewBangunan) {
+                    previewBangunan.src = '';
+                    previewBangunan.classList.add('hidden');
+                }
+                const poText = document.getElementById('poText');
+                if (poText) poText.textContent = 'Drag and drop a file here or click';
+                const fotoText = document.getElementById('fotoText');
+                if (fotoText) fotoText.textContent = 'Drag and drop a file here or click';
+
+                // 4. Reset Corporate Checkbox & PIC synchronization
+                const checkboxCorporate = document.getElementById('checkboxCorporate');
+                if (checkboxCorporate) {
+                    checkboxCorporate.checked = false;
+                    checkboxCorporate.dispatchEvent(new Event('change'));
+                }
+
+                // 5. Reset Tanggal Registrasi ke Hari Ini
+                const tglInput = form.querySelector('[name="tanggal_registrasi"]');
+                if (tglInput) {
+                    const today = new Date();
+                    const yyyy = today.getFullYear();
+                    const mm = String(today.getMonth() + 1).padStart(2, '0');
+                    const dd = String(today.getDate()).padStart(2, '0');
+                    tglInput.value = `${yyyy}-${mm}-${dd}`;
+                }
+
+                // 6. Reset state data auto-fill
+                window.pendingCompanyData = null;
+                if (alertBadge) alertBadge.classList.add('hidden');
+                if (btnReopen) btnReopen.classList.add('hidden');
+
+                // 7. Generate fresh new ID Perusahaan
+                if (typeof window.refreshAutoIdPerusahaan === 'function') {
+                    window.refreshAutoIdPerusahaan();
+                }
+
+                // Scroll kembali ke Section 1 paling atas
+                const scrollContainer = form.querySelector('.overflow-y-auto');
+                if (scrollContainer) {
+                    scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
                 }
             };
 

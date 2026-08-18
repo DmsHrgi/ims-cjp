@@ -20,7 +20,14 @@
 
     <style>
         * { box-sizing: border-box; }
-        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+        html {
+            zoom: 90%;
+            -moz-transform: scale(0.9);
+            -moz-transform-origin: 0 0;
+        }
+        body { 
+            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+        }
 
         /* Hide datalist dropdown indicator arrow ONLY for inputs with list attribute */
         input[list]::-webkit-calendar-picker-indicator,
