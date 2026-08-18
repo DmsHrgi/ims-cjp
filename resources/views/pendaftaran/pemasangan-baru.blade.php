@@ -991,12 +991,8 @@
 
                     <!-- Modal Footer (Fixed Bottom Inside Form) -->
                     <div class="shrink-0 flex items-center justify-between px-6 py-4 bg-white/95 backdrop-blur-md border-t border-slate-200/80 rounded-b-2xl">
-                        <div class="flex items-center gap-3">
-                            <button type="button" onclick="resetFormRegistrasi()" class="px-4 py-2 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold transition-all duration-200 flex items-center gap-1.5 shadow-2xs cursor-pointer">
-                                <i class="fa-solid fa-rotate-left"></i>
-                                <span>Reset Form</span>
-                            </button>
-                            <span class="text-xs text-slate-400 hidden sm:inline"><span class="text-rose-500 font-bold">*</span> Menandakan kolom wajib diisi</span>
+                        <div class="text-xs text-slate-400 hidden sm:block">
+                            <span class="text-rose-500 font-bold">*</span> Menandakan kolom wajib diisi
                         </div>
                         <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
                             <button type="button" onclick="closeModal()" class="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-800 text-sm font-semibold transition-all duration-200">
