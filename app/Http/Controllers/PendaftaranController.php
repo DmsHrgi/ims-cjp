@@ -494,23 +494,39 @@ class PendaftaranController extends Controller
                 ->orderBy('status_reg')
                 ->value('status_reg') ?? '11';
 
-            // Generate nomor internet otomatis: format [Tahun YYYY][Bulan MM][Tgl Registrasi 2-digit DD][No Antrian Registrasi (reset antrian perbulan)]
+            // Generate nomor internet / nomor pelanggan otomatis:
+            // Format [Tahun 2-digit YY][Bulan MM][Tgl Registrasi 2-digit DD][No Antrian Registrasi (reset antrian perbulan)]
+            // Contoh 2026-08-18 -> 26 + 08 + 18 + 001 = 260818001
             $tglRegInput = $request->input('tanggal_registrasi');
             $tglObj = $tglRegInput ? \Carbon\Carbon::parse($tglRegInput) : now();
-            $yearStr = $tglObj->format('Y');  // e.g. 2026
-            $monthStr = $tglObj->format('m'); // e.g. 08
-            $dayStr = $tglObj->format('d');   // e.g. 14 (2 digit)
+            $year2Digits = $tglObj->format('y'); // e.g. 26 (2 digit tahun)
+            $year4Digits = $tglObj->format('Y'); // e.g. 2026
+            $monthStr = $tglObj->format('m');    // e.g. 08
+            $dayStr = $tglObj->format('d');      // e.g. 18
 
-            $prefixMonth = $yearStr . $monthStr; // e.g. 202608
+            $prefixMonth2 = $year2Digits . $monthStr; // e.g. 2608
+            $prefixMonth4 = $year4Digits . $monthStr; // e.g. 202608
 
             $existingNos = DB::table('trx_batchjob_register')
-                ->where('nomor_internet', 'LIKE', $prefixMonth . '%')
+                ->where(function($q) use ($prefixMonth2, $prefixMonth4) {
+                    $q->where('nomor_internet', 'LIKE', $prefixMonth2 . '%')
+                      ->orWhere('nomor_internet', 'LIKE', $prefixMonth4 . '%');
+                })
                 ->pluck('nomor_internet');
 
             $maxSeq = 0;
             foreach ($existingNos as $noStr) {
-                // format: YYYY(4) + MM(2) + DD(2) = 8 digit date prefix + Sequence
-                if (str_starts_with($noStr, $prefixMonth) && strlen($noStr) >= 9) {
+                // Check format 2-digit: yy(2) + mm(2) + dd(2) = 6 digit date prefix + Sequence (e.g. 260818001 -> 9 digits)
+                if (str_starts_with($noStr, $prefixMonth2) && strlen($noStr) >= 7) {
+                    $seqPart = substr($noStr, 6);
+                    if (is_numeric($seqPart)) {
+                        $seq = (int) $seqPart;
+                        if ($seq > $maxSeq) {
+                            $maxSeq = $seq;
+                        }
+                    }
+                } elseif (str_starts_with($noStr, $prefixMonth4) && strlen($noStr) >= 9) {
+                    // Check legacy 4-digit: YYYY(4) + MM(2) + DD(2) = 8 digit date prefix + Sequence
                     $seqPart = substr($noStr, 8);
                     if (is_numeric($seqPart)) {
                         $seq = (int) $seqPart;
@@ -523,13 +539,13 @@ class PendaftaranController extends Controller
 
             $nextSeq = $maxSeq + 1;
             $seqFormatted = sprintf('%03d', $nextSeq);
-            $nomorInternet = $yearStr . $monthStr . $dayStr . $seqFormatted;
+            $nomorInternet = $year2Digits . $monthStr . $dayStr . $seqFormatted;
 
             // Pastikan nomor unik dan tidak duplikat
             while (DB::table('trx_batchjob_register')->where('nomor_internet', $nomorInternet)->exists()) {
                 $nextSeq++;
                 $seqFormatted = sprintf('%03d', $nextSeq);
-                $nomorInternet = $yearStr . $monthStr . $dayStr . $seqFormatted;
+                $nomorInternet = $year2Digits . $monthStr . $dayStr . $seqFormatted;
             }
 
             // Handle parsing harga paket manual
@@ -2548,32 +2564,28 @@ class PendaftaranController extends Controller
     }
 
     // ============================================
-    // HELPER & API GENERATE ID PERUSAHAAN (isp-nomorurutregistrasi-tahun2digit)
+    // HELPER & API GENERATE ID PERUSAHAAN (isp-nomorurutregistrasi-tahun)
     // ============================================
     public static function generateIdPerusahaan($year = null)
     {
-        $yearInput = $year ?: date('Y');
-        // Ambil 2 digit terakhir dari tahun (contoh 2026 -> 26)
-        $year2Digits = substr((string)$yearInput, -2);
-        $year4Digits = strlen((string)$yearInput) === 4 ? (string)$yearInput : (strlen((string)$yearInput) === 2 ? '20' . $yearInput : date('Y'));
+        $year = $year ?: date('Y');
+        if (strlen((string)$year) === 2) {
+            $year = '20' . $year;
+        }
 
         $pelangganIds = DB::table('m_pelanggan')
             ->whereNotNull('id_perusahaan')
-            ->where(function ($q) use ($year2Digits, $year4Digits) {
-                $q->where('id_perusahaan', 'LIKE', "isp-%-{$year2Digits}")
-                  ->orWhere('id_perusahaan', 'LIKE', "ISP-%-{$year2Digits}")
-                  ->orWhere('id_perusahaan', 'LIKE', "isp-%-{$year4Digits}")
-                  ->orWhere('id_perusahaan', 'LIKE', "ISP-%-{$year4Digits}");
+            ->where(function ($q) use ($year) {
+                $q->where('id_perusahaan', 'LIKE', "isp-%-{$year}")
+                  ->orWhere('id_perusahaan', 'LIKE', "ISP-%-{$year}");
             })
             ->pluck('id_perusahaan');
 
         $trxIds = DB::table('trx_batchjob_register')
             ->whereNotNull('id_perusahaan')
-            ->where(function ($q) use ($year2Digits, $year4Digits) {
-                $q->where('id_perusahaan', 'LIKE', "isp-%-{$year2Digits}")
-                  ->orWhere('id_perusahaan', 'LIKE', "ISP-%-{$year2Digits}")
-                  ->orWhere('id_perusahaan', 'LIKE', "isp-%-{$year4Digits}")
-                  ->orWhere('id_perusahaan', 'LIKE', "ISP-%-{$year4Digits}");
+            ->where(function ($q) use ($year) {
+                $q->where('id_perusahaan', 'LIKE', "isp-%-{$year}")
+                  ->orWhere('id_perusahaan', 'LIKE', "ISP-%-{$year}");
             })
             ->pluck('id_perusahaan');
 
@@ -2581,7 +2593,7 @@ class PendaftaranController extends Controller
 
         $maxSeq = 0;
         foreach ($allIds as $idStr) {
-            if (preg_match('/^isp-(\d+)-(' . $year2Digits . '|' . $year4Digits . ')$/i', trim($idStr), $matches)) {
+            if (preg_match('/^isp-(\d+)-' . $year . '$/i', trim($idStr), $matches)) {
                 $seq = (int) $matches[1];
                 if ($seq > $maxSeq) {
                     $maxSeq = $seq;
@@ -2591,7 +2603,7 @@ class PendaftaranController extends Controller
 
         $nextSeq = $maxSeq + 1;
         $seqFormatted = sprintf('%03d', $nextSeq);
-        $newId = "isp-{$seqFormatted}-{$year2Digits}";
+        $newId = "isp-{$seqFormatted}-{$year}";
 
         while (
             DB::table('m_pelanggan')->where('id_perusahaan', $newId)->exists() ||
@@ -2599,7 +2611,7 @@ class PendaftaranController extends Controller
         ) {
             $nextSeq++;
             $seqFormatted = sprintf('%03d', $nextSeq);
-            $newId = "isp-{$seqFormatted}-{$year2Digits}";
+            $newId = "isp-{$seqFormatted}-{$year}";
         }
 
         return $newId;
