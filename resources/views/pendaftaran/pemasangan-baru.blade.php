@@ -669,7 +669,7 @@
                                     </div>
                                 </div>
                                 <div class="relative flex items-center">
-                                    <input type="text" name="id_perusahaan" id="inputIdPerusahaan" readonly required maxlength="100" placeholder="isp-001-{{ date('Y') }}" value="{{ old('id_perusahaan', $autoIdPerusahaan ?? '') }}" class="w-full bg-slate-50 border border-slate-200 text-slate-700 font-mono py-2.5 pl-3.5 pr-10 text-sm rounded-xl outline-none select-all" title="ID Perusahaan otomatis di-generate atau disesuaikan dengan nama perusahaan">
+                                    <input type="text" name="id_perusahaan" id="inputIdPerusahaan" readonly required maxlength="100" placeholder="isp-001-{{ date('y') }}" value="{{ old('id_perusahaan', $autoIdPerusahaan ?? '') }}" class="w-full bg-slate-50 border border-slate-200 text-slate-700 font-mono py-2.5 pl-3.5 pr-10 text-sm rounded-xl outline-none select-all" title="ID Perusahaan otomatis di-generate atau disesuaikan dengan nama perusahaan">
                                     <button type="button" id="btnRefreshAutoId" onclick="refreshAutoIdPerusahaan()" title="Generate Ulang ID Baru" class="absolute right-2 text-slate-400 hover:text-blue-600 transition-colors p-1.5">
                                         <i class="fa-solid fa-arrows-rotate text-xs"></i>
                                     </button>
@@ -2893,7 +2893,7 @@
             // ============================================
             window.refreshAutoIdPerusahaan = function(callback) {
                 const tglInput = document.querySelector('#formRegistrasi [name="tanggal_registrasi"]');
-                const year = tglInput && tglInput.value ? tglInput.value.substring(0, 4) : new Date().getFullYear();
+                const year = tglInput && tglInput.value ? tglInput.value.substring(2, 4) : new Date().getFullYear().toString().slice(-2);
                 
                 const btnRefresh = document.getElementById('btnRefreshAutoId');
                 if (btnRefresh) btnRefresh.querySelector('i')?.classList.add('animate-spin');
@@ -3205,7 +3205,7 @@
                                 if (btnReopen) btnReopen.classList.add('hidden');
 
                                 const curId = inputId ? inputId.value.trim() : '';
-                                const isDefaultAutoId = /^isp-\d+-\d{4}$/i.test(curId);
+                                const isDefaultAutoId = /^isp-\d+-\d{2}$/i.test(curId);
                                 if (!curId || !isDefaultAutoId) {
                                     window.refreshAutoIdPerusahaan();
                                 }
@@ -3247,7 +3247,7 @@
                     let val = inputId.value.trim();
                     if (!val) return;
 
-                    // If user selected "isp-001-2026 - PT Nama", extract clean ID
+                    // If user selected "isp-001-26 - PT Nama", extract clean ID
                     let cleanQuery = val;
                     if (val.includes(' - ')) {
                         cleanQuery = val.split(' - ')[0].trim();
@@ -3292,9 +3292,9 @@
                 if (tglInput) {
                     tglInput.addEventListener('change', function() {
                         const curId = inputId.value.trim();
-                        const match = curId.match(/^isp-(\d+)-(\d{4})$/i);
+                        const match = curId.match(/^isp-(\d+)-(\d{2})$/i);
                         if (match && this.value) {
-                            const newYear = this.value.substring(0, 4);
+                            const newYear = this.value.substring(2, 4);
                             if (newYear && newYear !== match[2]) {
                                 window.refreshAutoIdPerusahaan();
                             }

@@ -2548,25 +2548,32 @@ class PendaftaranController extends Controller
     }
 
     // ============================================
-    // HELPER & API GENERATE ID PERUSAHAAN (isp-nomorurutregistrasi-tahun)
+    // HELPER & API GENERATE ID PERUSAHAAN (isp-nomorurutregistrasi-tahun2digit)
     // ============================================
     public static function generateIdPerusahaan($year = null)
     {
-        $year = $year ?: date('Y');
+        $yearInput = $year ?: date('Y');
+        // Ambil 2 digit terakhir dari tahun (contoh 2026 -> 26)
+        $year2Digits = substr((string)$yearInput, -2);
+        $year4Digits = strlen((string)$yearInput) === 4 ? (string)$yearInput : (strlen((string)$yearInput) === 2 ? '20' . $yearInput : date('Y'));
 
         $pelangganIds = DB::table('m_pelanggan')
             ->whereNotNull('id_perusahaan')
-            ->where(function ($q) use ($year) {
-                $q->where('id_perusahaan', 'LIKE', "isp-%-{$year}")
-                  ->orWhere('id_perusahaan', 'LIKE', "ISP-%-{$year}");
+            ->where(function ($q) use ($year2Digits, $year4Digits) {
+                $q->where('id_perusahaan', 'LIKE', "isp-%-{$year2Digits}")
+                  ->orWhere('id_perusahaan', 'LIKE', "ISP-%-{$year2Digits}")
+                  ->orWhere('id_perusahaan', 'LIKE', "isp-%-{$year4Digits}")
+                  ->orWhere('id_perusahaan', 'LIKE', "ISP-%-{$year4Digits}");
             })
             ->pluck('id_perusahaan');
 
         $trxIds = DB::table('trx_batchjob_register')
             ->whereNotNull('id_perusahaan')
-            ->where(function ($q) use ($year) {
-                $q->where('id_perusahaan', 'LIKE', "isp-%-{$year}")
-                  ->orWhere('id_perusahaan', 'LIKE', "ISP-%-{$year}");
+            ->where(function ($q) use ($year2Digits, $year4Digits) {
+                $q->where('id_perusahaan', 'LIKE', "isp-%-{$year2Digits}")
+                  ->orWhere('id_perusahaan', 'LIKE', "ISP-%-{$year2Digits}")
+                  ->orWhere('id_perusahaan', 'LIKE', "isp-%-{$year4Digits}")
+                  ->orWhere('id_perusahaan', 'LIKE', "ISP-%-{$year4Digits}");
             })
             ->pluck('id_perusahaan');
 
@@ -2574,7 +2581,7 @@ class PendaftaranController extends Controller
 
         $maxSeq = 0;
         foreach ($allIds as $idStr) {
-            if (preg_match('/^isp-(\d+)-' . $year . '$/i', trim($idStr), $matches)) {
+            if (preg_match('/^isp-(\d+)-(' . $year2Digits . '|' . $year4Digits . ')$/i', trim($idStr), $matches)) {
                 $seq = (int) $matches[1];
                 if ($seq > $maxSeq) {
                     $maxSeq = $seq;
@@ -2584,7 +2591,7 @@ class PendaftaranController extends Controller
 
         $nextSeq = $maxSeq + 1;
         $seqFormatted = sprintf('%03d', $nextSeq);
-        $newId = "isp-{$seqFormatted}-{$year}";
+        $newId = "isp-{$seqFormatted}-{$year2Digits}";
 
         while (
             DB::table('m_pelanggan')->where('id_perusahaan', $newId)->exists() ||
@@ -2592,7 +2599,7 @@ class PendaftaranController extends Controller
         ) {
             $nextSeq++;
             $seqFormatted = sprintf('%03d', $nextSeq);
-            $newId = "isp-{$seqFormatted}-{$year}";
+            $newId = "isp-{$seqFormatted}-{$year2Digits}";
         }
 
         return $newId;
