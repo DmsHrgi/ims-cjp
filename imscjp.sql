@@ -28,11 +28,11 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `bot_chat` (
-  `nomor_hp` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `nomor_internet` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `last_text` text CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `nomor_hp` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nomor_internet` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `last_text` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `date_start` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -41,11 +41,11 @@ CREATE TABLE `bot_chat` (
 --
 
 CREATE TABLE `bot_chat_medianet` (
-  `nomor_hp` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `nomor_internet` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `status` varchar(2) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `nomor_hp` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nomor_internet` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `date_start` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -54,10 +54,10 @@ CREATE TABLE `bot_chat_medianet` (
 --
 
 CREATE TABLE `bot_question` (
-  `id` varchar(5) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `question` text CHARACTER SET latin1 COLLATE latin1_swedish_ci,
-  `answer` text CHARACTER SET latin1 COLLATE latin1_swedish_ci
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+  `id` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `question` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `answer` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -91,13 +91,13 @@ CREATE TABLE `cache_locks` (
 
 CREATE TABLE `country_iso_code` (
   `Criteria_ID` int NOT NULL,
-  `Name` text CHARACTER SET latin1 COLLATE latin1_swedish_ci,
-  `Canonical_Name` text CHARACTER SET latin1 COLLATE latin1_swedish_ci,
-  `Parent_ID` text CHARACTER SET latin1 COLLATE latin1_swedish_ci,
-  `Country_Code` text CHARACTER SET latin1 COLLATE latin1_swedish_ci,
-  `Target_Type` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `Status` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+  `Name` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `Canonical_Name` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `Parent_ID` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `Country_Code` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `Target_Type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -106,10 +106,10 @@ CREATE TABLE `country_iso_code` (
 --
 
 CREATE TABLE `dummy_karyawan` (
-  `kode_karyawan` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `nama_karyawan` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `kat_karyawan` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `kode_karyawan` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama_karyawan` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `kat_karyawan` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -118,12 +118,12 @@ CREATE TABLE `dummy_karyawan` (
 --
 
 CREATE TABLE `error_mail` (
-  `kode_eror` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `email` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `kat_eror` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `eror` text CHARACTER SET latin1 COLLATE latin1_swedish_ci,
+  `kode_eror` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kat_eror` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `eror` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_create` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -206,17 +206,17 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 --
 
 CREATE TABLE `m_bandwith` (
-  `kode_bandwith` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `kode_kategori_bandwith` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `nominal_bandwith` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `harga_bandwith` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `disable` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `kode_bandwith` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kode_kategori_bandwith` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nominal_bandwith` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `harga_bandwith` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `disable` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_update` datetime DEFAULT NULL,
-  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `m_bandwith`
@@ -237,21 +237,21 @@ INSERT INTO `m_bandwith` (`kode_bandwith`, `kode_kategori_bandwith`, `nominal_ba
 --
 
 CREATE TABLE `m_bandwith_kategori` (
-  `kode_kategori_bandwith` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `nama_kategori_bandwith` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `alias_nama_kategori` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `biaya_reg` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `kode_kategori_bandwith` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama_kategori_bandwith` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `alias_nama_kategori` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `biaya_reg` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `ppn_reg` int DEFAULT NULL,
-  `ppn_reg_nom` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `ppn_reg_nom` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `ppn_bill` int DEFAULT NULL,
-  `ppn_bill_nom` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `ppn_bill_nom` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `disable` int DEFAULT NULL,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_update` datetime DEFAULT NULL,
   `user_update` datetime DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `m_bandwith_kategori`
@@ -274,9 +274,9 @@ INSERT INTO `m_bandwith_kategori` (`kode_kategori_bandwith`, `nama_kategori_band
 --
 
 CREATE TABLE `m_bangunan_layanan` (
-  `kode_bangunan` varchar(10) COLLATE utf8mb4_general_ci NOT NULL,
-  `kode_kategori_bandwith` varchar(20) COLLATE utf8mb4_general_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `kode_bangunan` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kode_kategori_bandwith` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `m_bangunan_layanan`
@@ -305,10 +305,10 @@ INSERT INTO `m_bangunan_layanan` (`kode_bangunan`, `kode_kategori_bandwith`) VAL
 --
 
 CREATE TABLE `m_bank` (
-  `no_rekening` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `nama_bank` text CHARACTER SET latin1 COLLATE latin1_swedish_ci,
+  `no_rekening` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama_bank` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_create` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `m_bank`
@@ -325,19 +325,19 @@ INSERT INTO `m_bank` (`no_rekening`, `nama_bank`, `date_create`) VALUES
 --
 
 CREATE TABLE `m_barang` (
-  `kode_barang` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `kode_jns_barang` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `nama_barang` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `tipe_barang` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `hitung_kelebihan` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `biaya_kelebihan` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `img` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `kode_barang` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kode_jns_barang` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nama_barang` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `tipe_barang` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `hitung_kelebihan` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `biaya_kelebihan` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `img` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_update` datetime DEFAULT NULL,
-  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `m_barang`
@@ -365,12 +365,12 @@ INSERT INTO `m_barang` (`kode_barang`, `kode_jns_barang`, `nama_barang`, `tipe_b
 --
 
 CREATE TABLE `m_gpon` (
-  `kode_gpon` varchar(10) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `kode_olt` varchar(10) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `name_gpon` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `capacity_gpon` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `note_gpon` text CHARACTER SET latin1 COLLATE latin1_swedish_ci
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+  `kode_gpon` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kode_olt` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name_gpon` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `capacity_gpon` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `note_gpon` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -379,11 +379,11 @@ CREATE TABLE `m_gpon` (
 --
 
 CREATE TABLE `m_head` (
-  `kode_h` varchar(10) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `name_h` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `capacity_h` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `note_h` text CHARACTER SET latin1 COLLATE latin1_swedish_ci
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+  `kode_h` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name_h` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `capacity_h` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `note_h` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -392,8 +392,8 @@ CREATE TABLE `m_head` (
 --
 
 CREATE TABLE `m_indikasi` (
-  `indikasi` varchar(200) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+  `indikasi` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -402,11 +402,11 @@ CREATE TABLE `m_indikasi` (
 --
 
 CREATE TABLE `m_item_billing` (
-  `kode_item` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `nama_item` text CHARACTER SET latin1 COLLATE latin1_swedish_ci,
+  `kode_item` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama_item` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -415,12 +415,12 @@ CREATE TABLE `m_item_billing` (
 --
 
 CREATE TABLE `m_jns_bangunan` (
-  `kode_bangunan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `jenis_bangunan` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `kode_bangunan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `jenis_bangunan` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `m_jns_bangunan`
@@ -442,16 +442,16 @@ INSERT INTO `m_jns_bangunan` (`kode_bangunan`, `jenis_bangunan`, `date_create`, 
 --
 
 CREATE TABLE `m_jns_barang` (
-  `kode_jns_barang` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `nama_jns_barang` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `satuan` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `get_back` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `kode_jns_barang` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama_jns_barang` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `satuan` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `get_back` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_update` datetime DEFAULT NULL,
-  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `m_jns_barang`
@@ -474,12 +474,12 @@ INSERT INTO `m_jns_barang` (`kode_jns_barang`, `nama_jns_barang`, `satuan`, `get
 --
 
 CREATE TABLE `m_kat_team` (
-  `kat_team` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `desc_kat_team` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `kat_team` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `desc_kat_team` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `m_kat_team`
@@ -501,15 +501,15 @@ INSERT INTO `m_kat_team` (`kat_team`, `desc_kat_team`, `date_create`, `user_crea
 --
 
 CREATE TABLE `m_layanan_bangunan` (
-  `kode_layanan_bangunan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `kode_bangunan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `kode_kategori_bandwith` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `kode_layanan_bangunan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kode_bangunan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kode_kategori_bandwith` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_update` datetime DEFAULT NULL,
-  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -518,15 +518,15 @@ CREATE TABLE `m_layanan_bangunan` (
 --
 
 CREATE TABLE `m_media_akses` (
-  `kode_media_akses` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `nama_media_akses` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `desc_media_akses` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `kode_media_akses` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama_media_akses` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `desc_media_akses` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_update` datetime DEFAULT NULL,
-  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `m_media_akses`
@@ -543,11 +543,11 @@ INSERT INTO `m_media_akses` (`kode_media_akses`, `nama_media_akses`, `desc_media
 --
 
 CREATE TABLE `m_midtrans` (
-  `merchant_type` varchar(200) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `type` varchar(1) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `fee` varchar(10) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `payout` varchar(10) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `merchant_type` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `type` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `fee` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `payout` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -556,9 +556,9 @@ CREATE TABLE `m_midtrans` (
 --
 
 CREATE TABLE `m_mitra` (
-  `mitra` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `nama_mitra` text CHARACTER SET latin1 COLLATE latin1_swedish_ci
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+  `mitra` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama_mitra` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -567,12 +567,12 @@ CREATE TABLE `m_mitra` (
 --
 
 CREATE TABLE `m_odp` (
-  `kode_odp` varchar(10) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `kode_pon` varchar(10) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `name_odp` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `capacity_odp` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `note_odp` text CHARACTER SET latin1 COLLATE latin1_swedish_ci
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+  `kode_odp` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kode_pon` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name_odp` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `capacity_odp` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `note_odp` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -581,12 +581,12 @@ CREATE TABLE `m_odp` (
 --
 
 CREATE TABLE `m_olt` (
-  `kode_olt` varchar(10) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `kode_w` varchar(10) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `name_olt` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `capacity_olt` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `note_olt` text CHARACTER SET latin1 COLLATE latin1_swedish_ci
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+  `kode_olt` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kode_w` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name_olt` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `capacity_olt` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `note_olt` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -595,12 +595,12 @@ CREATE TABLE `m_olt` (
 --
 
 CREATE TABLE `m_payment_type` (
-  `payment_type` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `desc_payment_type` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `payment_type` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `desc_payment_type` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `m_payment_type`
@@ -618,39 +618,39 @@ INSERT INTO `m_payment_type` (`payment_type`, `desc_payment_type`, `date_create`
 --
 
 CREATE TABLE `m_pelanggan` (
-  `nama_perusahaan` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `no_telp_perusahaan` varchar(30) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `email_perusahaan` varchar(150) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `id_perusahaan` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `nama_pic_teknis` varchar(200) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `no_telp_pic_teknis` varchar(30) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `email_pic_teknis` varchar(150) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `nama_pic_keuangan` varchar(200) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `no_telp_pic_keuangan` varchar(30) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `email_pic_keuangan` varchar(150) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `jenis_perusahaan` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `nama_perusahaan` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `no_telp_perusahaan` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email_perusahaan` varchar(150) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id_perusahaan` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama_pic_teknis` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `no_telp_pic_teknis` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email_pic_teknis` varchar(150) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nama_pic_keuangan` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `no_telp_pic_keuangan` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email_pic_keuangan` varchar(150) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `jenis_perusahaan` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `tanggal_registrasi` date DEFAULT NULL,
-  `nama_penduduk` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `nama_penduduk` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `jenis_kelamin` int DEFAULT NULL,
   `tanggal_lahir` date DEFAULT NULL,
-  `pic` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `nomor_hp` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `nomor_hp_2` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `kode_wilayah_kelurahan_ktp` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `rt_ktp` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `rw_ktp` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `alamat_ktp` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `pic` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nomor_hp` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nomor_hp_2` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kode_wilayah_kelurahan_ktp` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `rt_ktp` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `rw_ktp` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `alamat_ktp` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_create` datetime DEFAULT NULL,
   `date_update` datetime DEFAULT NULL,
-  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `jenis_bangunan` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `nomor_bangunan_perusahaan` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `lon_lat_perusahaan` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `sharelock_perusahaan` varchar(500) COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `jenis_bangunan` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nomor_bangunan_perusahaan` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `lon_lat_perusahaan` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `sharelock_perusahaan` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -659,23 +659,23 @@ CREATE TABLE `m_pelanggan` (
 --
 
 CREATE TABLE `m_pelanggan_old` (
-  `nik_penduduk` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `nama_penduduk` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `nik_penduduk` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama_penduduk` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `jenis_kelamin` int DEFAULT NULL,
   `tanggal_lahir` date DEFAULT NULL,
-  `pic` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `nomor_hp` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `kode_wilayah_kelurahan_ktp` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `rt_ktp` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `rw_ktp` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `alamat_ktp` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `pic` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nomor_hp` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kode_wilayah_kelurahan_ktp` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `rt_ktp` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `rw_ktp` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `alamat_ktp` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_create` datetime DEFAULT NULL,
   `date_update` datetime DEFAULT NULL,
-  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -684,16 +684,16 @@ CREATE TABLE `m_pelanggan_old` (
 --
 
 CREATE TABLE `m_periode` (
-  `kode_periode` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `kode_bulan` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `nama_periode` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `desc_periode` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `kode_periode` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kode_bulan` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nama_periode` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `desc_periode` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_update` datetime DEFAULT NULL,
-  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -703,10 +703,10 @@ CREATE TABLE `m_periode` (
 
 CREATE TABLE `m_periode_billing` (
   `periode_billing` int NOT NULL,
-  `desc_periode_billing` text CHARACTER SET latin1 COLLATE latin1_swedish_ci,
+  `desc_periode_billing` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -715,12 +715,12 @@ CREATE TABLE `m_periode_billing` (
 --
 
 CREATE TABLE `m_pon` (
-  `kode_pon` varchar(10) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `kode_gpon` varchar(10) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `name_pon` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `capacity_pon` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `note_pon` text CHARACTER SET latin1 COLLATE latin1_swedish_ci
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+  `kode_pon` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kode_gpon` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name_pon` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `capacity_pon` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `note_pon` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -729,15 +729,15 @@ CREATE TABLE `m_pon` (
 --
 
 CREATE TABLE `m_pop` (
-  `kode_pop` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `nama_pop` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `desc_pop` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `kode_pop` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama_pop` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `desc_pop` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_update` datetime DEFAULT NULL,
-  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `m_pop`
@@ -757,14 +757,14 @@ INSERT INTO `m_pop` (`kode_pop`, `nama_pop`, `desc_pop`, `date_create`, `user_cr
 --
 
 CREATE TABLE `m_redaksi` (
-  `kode_redaksi` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `redaksi` text CHARACTER SET latin1 COLLATE latin1_swedish_ci,
-  `kat_redaksi` varchar(2) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `jns_redaksi` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
+  `kode_redaksi` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `redaksi` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `kat_redaksi` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `jns_redaksi` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `hide` varchar(2) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -773,13 +773,13 @@ CREATE TABLE `m_redaksi` (
 --
 
 CREATE TABLE `m_status_bill_lay` (
-  `status_bill_lay` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `desc_bill_lay` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `color` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `status_bill_lay` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `desc_bill_lay` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `color` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `m_status_bill_lay`
@@ -800,12 +800,12 @@ INSERT INTO `m_status_bill_lay` (`status_bill_lay`, `desc_bill_lay`, `color`, `d
 --
 
 CREATE TABLE `m_status_bill_reg` (
-  `status_bill_reg` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `desc_bill_reg` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `status_bill_reg` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `desc_bill_reg` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `m_status_bill_reg`
@@ -825,9 +825,9 @@ INSERT INTO `m_status_bill_reg` (`status_bill_reg`, `desc_bill_reg`, `date_creat
 --
 
 CREATE TABLE `m_status_hide` (
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `desc_hide` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `desc_hide` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `m_status_hide`
@@ -846,12 +846,12 @@ INSERT INTO `m_status_hide` (`hide`, `desc_hide`) VALUES
 --
 
 CREATE TABLE `m_status_instalasi_barang` (
-  `status_instalasi_barang` varchar(4) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `desc_status_instalasi_barang` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `status_instalasi_barang` varchar(4) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `desc_status_instalasi_barang` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `m_status_instalasi_barang`
@@ -873,10 +873,10 @@ INSERT INTO `m_status_instalasi_barang` (`status_instalasi_barang`, `desc_status
 --
 
 CREATE TABLE `m_status_midtrans` (
-  `code_midtrans` varchar(5) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `status_midtrans` text CHARACTER SET latin1 COLLATE latin1_swedish_ci,
-  `description` text CHARACTER SET latin1 COLLATE latin1_swedish_ci
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+  `code_midtrans` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status_midtrans` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -885,10 +885,10 @@ CREATE TABLE `m_status_midtrans` (
 --
 
 CREATE TABLE `m_status_notif_wa` (
-  `status_wa` varchar(2) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `desc_status_wa` text CHARACTER SET latin1 COLLATE latin1_swedish_ci,
+  `status_wa` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `desc_status_wa` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_create` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -897,12 +897,12 @@ CREATE TABLE `m_status_notif_wa` (
 --
 
 CREATE TABLE `m_status_perangkat` (
-  `status_perangkat` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `desc_status_perangkat` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `status_perangkat` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `desc_status_perangkat` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -911,12 +911,12 @@ CREATE TABLE `m_status_perangkat` (
 --
 
 CREATE TABLE `m_status_registrasi` (
-  `status_reg` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `desc_registrasi` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `status_reg` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `desc_registrasi` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `m_status_registrasi`
@@ -942,12 +942,12 @@ INSERT INTO `m_status_registrasi` (`status_reg`, `desc_registrasi`, `date_create
 --
 
 CREATE TABLE `m_status_suspend` (
-  `status_suspend` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `desc_status_suspend` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `status_suspend` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `desc_status_suspend` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_create` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `m_status_suspend`
@@ -966,13 +966,13 @@ INSERT INTO `m_status_suspend` (`status_suspend`, `desc_status_suspend`, `date_c
 --
 
 CREATE TABLE `m_status_terminasi` (
-  `status_terminasi` varchar(4) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `desc_terminasi` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `color` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `status_terminasi` varchar(4) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `desc_terminasi` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `color` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_create` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `m_status_terminasi`
@@ -995,13 +995,13 @@ INSERT INTO `m_status_terminasi` (`status_terminasi`, `desc_terminasi`, `color`,
 --
 
 CREATE TABLE `m_status_ubahlayanan` (
-  `status_ubah_layanan` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `desc_ubah_layanan` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `color` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `status_ubah_layanan` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `desc_ubah_layanan` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `color` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_create` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `m_status_ubahlayanan`
@@ -1020,12 +1020,12 @@ INSERT INTO `m_status_ubahlayanan` (`status_ubah_layanan`, `desc_ubah_layanan`, 
 --
 
 CREATE TABLE `m_time_job` (
-  `kode_job` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `time_job` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `kode_job` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `time_job` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -1034,14 +1034,14 @@ CREATE TABLE `m_time_job` (
 --
 
 CREATE TABLE `m_wago_api` (
-  `kode_api` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `device_id` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `token` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `name_api` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `url_api` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `kode_api` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `device_id` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `token` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `name_api` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `url_api` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -1050,20 +1050,20 @@ CREATE TABLE `m_wago_api` (
 --
 
 CREATE TABLE `m_wilayah` (
-  `kode_wilayah` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `kode_wilayah_kelurahan` varchar(13) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `kode_kelurahan` char(4) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `nama_kelurahan` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `kode_wilayah_kecamatan` varchar(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `kode_kecamatan` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `nama_kecamatan` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `kode_wilayah_kota` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `kode_kota` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `nama_kota` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `kode_wilayah_provinsi` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `kode_provinsi` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `nama_provinsi` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `kode_wilayah` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kode_wilayah_kelurahan` varchar(13) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kode_kelurahan` char(4) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama_kelurahan` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kode_wilayah_kecamatan` varchar(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kode_kecamatan` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama_kecamatan` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kode_wilayah_kota` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kode_kota` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama_kota` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kode_wilayah_provinsi` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kode_provinsi` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama_provinsi` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `m_wilayah`
@@ -84992,12 +84992,12 @@ INSERT INTO `m_wilayah` (`kode_wilayah`, `kode_wilayah_kelurahan`, `kode_kelurah
 --
 
 CREATE TABLE `m_wilayah_perangkat` (
-  `kode_w` varchar(10) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `kode_h` varchar(10) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `name_w` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `capacity_w` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `note_w` text CHARACTER SET latin1 COLLATE latin1_swedish_ci
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+  `kode_w` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kode_h` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name_w` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `capacity_w` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `note_w` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -85006,9 +85006,9 @@ CREATE TABLE `m_wilayah_perangkat` (
 --
 
 CREATE TABLE `nomor_hp` (
-  `nomor_internet` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `nomor_hp` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+  `nomor_internet` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nomor_hp` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -85017,16 +85017,16 @@ CREATE TABLE `nomor_hp` (
 --
 
 CREATE TABLE `notif_wa` (
-  `kode_wa` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `nomor_internet` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `nomor_hp` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `message` text CHARACTER SET latin1 COLLATE latin1_swedish_ci,
-  `status_wa` varchar(2) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `kat_post` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `respond_post` text CHARACTER SET latin1 COLLATE latin1_swedish_ci,
+  `kode_wa` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nomor_internet` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nomor_hp` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `status_wa` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kat_post` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `respond_post` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_create` datetime DEFAULT NULL,
   `date_update` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -85062,10 +85062,10 @@ CREATE TABLE `sessions` (
 --
 
 CREATE TABLE `tb_m_agama` (
-  `id_agama` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `id_agama` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `kode_agama` int NOT NULL,
-  `nama_agama` varchar(200) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+  `nama_agama` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -85074,12 +85074,12 @@ CREATE TABLE `tb_m_agama` (
 --
 
 CREATE TABLE `tb_m_divisi` (
-  `kode_divisi` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `nama_divisi` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `desc_divisi` text CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `kode_divisi` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama_divisi` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `desc_divisi` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `date_create` datetime NOT NULL,
-  `user_create` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `tb_m_divisi`
@@ -85097,10 +85097,10 @@ INSERT INTO `tb_m_divisi` (`kode_divisi`, `nama_divisi`, `desc_divisi`, `date_cr
 --
 
 CREATE TABLE `tb_m_golongan_darah` (
-  `id_golongan_darah` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `id_golongan_darah` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `kode_golongan_darah` int NOT NULL,
-  `nama_golongan_darah` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+  `nama_golongan_darah` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -85109,15 +85109,15 @@ CREATE TABLE `tb_m_golongan_darah` (
 --
 
 CREATE TABLE `tb_m_jabatan` (
-  `kode_jabatan` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `nama_jabatan` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `kode_divisi` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `desc_jabatan` text CHARACTER SET latin1 COLLATE latin1_swedish_ci,
+  `kode_jabatan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama_jabatan` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kode_divisi` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `desc_jabatan` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_update` datetime DEFAULT NULL,
-  `user_update` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `tb_m_jabatan`
@@ -85136,54 +85136,54 @@ INSERT INTO `tb_m_jabatan` (`kode_jabatan`, `nama_jabatan`, `kode_divisi`, `desc
 --
 
 CREATE TABLE `tb_m_karyawan` (
-  `kode_karyawan` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `nik` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `nip` varchar(10) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `nama_karyawan` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
+  `kode_karyawan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nik` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nip` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nama_karyawan` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `cuti` int NOT NULL,
-  `kode_jabatan` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `jenis_kelamin` varchar(2) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `hp_karyawan` varchar(15) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `kode_agama` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `email_karyawan` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `email_msn` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `tempat_lahir` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
+  `kode_jabatan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `jenis_kelamin` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hp_karyawan` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kode_agama` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email_karyawan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email_msn` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `tempat_lahir` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `tanggal_lahir` date DEFAULT NULL,
-  `tempat_pendidikan_terakhir` text CHARACTER SET latin1 COLLATE latin1_swedish_ci,
-  `kode_pendidikan` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `jmlh_tanggungan` varchar(5) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `desc_tanggungan` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `kode_golongan_darah` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `kode_wilayah_kelurahan` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `ktp` text CHARACTER SET latin1 COLLATE latin1_swedish_ci,
-  `foto` text CHARACTER SET latin1 COLLATE latin1_swedish_ci,
-  `cv` text CHARACTER SET latin1 COLLATE latin1_swedish_ci,
-  `ijazah_pendidikan_terakhir` text CHARACTER SET latin1 COLLATE latin1_swedish_ci,
-  `alamat_asal` text CHARACTER SET latin1 COLLATE latin1_swedish_ci,
-  `domisili` text CHARACTER SET latin1 COLLATE latin1_swedish_ci,
-  `kode_status_kawin` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `npwp` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `bpjs` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `bank_rek` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `no_rek` text CHARACTER SET latin1 COLLATE latin1_swedish_ci,
+  `tempat_pendidikan_terakhir` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `kode_pendidikan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `jmlh_tanggungan` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `desc_tanggungan` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kode_golongan_darah` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kode_wilayah_kelurahan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ktp` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `foto` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `cv` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `ijazah_pendidikan_terakhir` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `alamat_asal` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `domisili` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `kode_status_kawin` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `npwp` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `bpjs` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `bank_rek` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `no_rek` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `tanggal_masuk` date DEFAULT NULL,
   `tanggal_keluar` date DEFAULT NULL,
-  `status_aktif` varchar(2) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `uid` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `status_aktif` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `uid` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `user_update` datetime DEFAULT NULL,
   `date_update` datetime DEFAULT NULL,
-  `tinggi` varchar(5) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `berat` varchar(5) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `tinggi` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `berat` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status_kontrak` int NOT NULL,
   `tanggal_kontrak_akhir` date DEFAULT NULL,
-  `kendaraan` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `sim` varchar(10) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `status_rumah` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `kantor` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `kota_kerja` varchar(6) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+  `kendaraan` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `sim` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status_rumah` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kantor` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kota_kerja` varchar(6) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `tb_m_karyawan`
@@ -85243,15 +85243,15 @@ INSERT INTO `tb_m_karyawan` (`kode_karyawan`, `nik`, `nip`, `nama_karyawan`, `cu
 --
 
 CREATE TABLE `tb_m_level_pengguna` (
-  `kode_level` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `kode_level` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `level` int NOT NULL,
-  `nama_level` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `desc_level` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
+  `nama_level` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `desc_level` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `user_update` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `date_update` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `tb_m_level_pengguna`
@@ -85277,10 +85277,10 @@ INSERT INTO `tb_m_level_pengguna` (`kode_level`, `level`, `nama_level`, `desc_le
 --
 
 CREATE TABLE `tb_m_menu` (
-  `kode_menu` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `kode_divisi` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `menu` text CHARACTER SET latin1 COLLATE latin1_swedish_ci
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+  `kode_menu` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kode_divisi` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `menu` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -85289,10 +85289,10 @@ CREATE TABLE `tb_m_menu` (
 --
 
 CREATE TABLE `tb_m_pendidikan` (
-  `id_pendidikan` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `id_pendidikan` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `kode_pendidikan` int NOT NULL,
-  `nama_pendidikan` varchar(200) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+  `nama_pendidikan` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -85301,10 +85301,10 @@ CREATE TABLE `tb_m_pendidikan` (
 --
 
 CREATE TABLE `tb_m_status_kawin` (
-  `id_status_kawin` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `id_status_kawin` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `kode_status_kawin` int NOT NULL,
-  `nama_status_kawin` varchar(200) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+  `nama_status_kawin` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -85313,20 +85313,20 @@ CREATE TABLE `tb_m_status_kawin` (
 --
 
 CREATE TABLE `tb_pengguna` (
-  `kode_pengguna` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `kode_karyawan` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `kode_level` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `username` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `password` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `status_aktif` varchar(2) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
+  `kode_pengguna` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kode_karyawan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kode_level` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `username` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `password` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status_aktif` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `as_sales` int DEFAULT NULL,
-  `last_ip` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `las_login` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
+  `last_ip` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `las_login` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_update` datetime NOT NULL,
-  `user_update` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `tb_pengguna`
@@ -85378,9 +85378,9 @@ INSERT INTO `tb_pengguna` (`kode_pengguna`, `kode_karyawan`, `kode_level`, `user
 
 CREATE TABLE `test_renotif` (
   `date_craete` datetime DEFAULT NULL,
-  `type` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `id` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+  `type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -85389,59 +85389,59 @@ CREATE TABLE `test_renotif` (
 --
 
 CREATE TABLE `trx_batchjob_register` (
-  `nomor_internet` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `id_perusahaan` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `nama_pelanggan` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `rt_pasang` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `rw_pasang` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `nomor_bangunan` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `alamat_pasang` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `kode_wilayah_kelurahan_pasang` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `jenis_bangunan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `lon_lat` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `loc_maps` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `note_request` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `kode_bandwith` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `kode_pop` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `ont_us` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `ont_ps` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `status_reg` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `media_akses` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `ppn` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `ppn_nom` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `potongan` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `potongan_note` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `last_month_billing` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `last_year_billing` varchar(4) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `nomor_internet` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id_perusahaan` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nama_pelanggan` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `rt_pasang` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `rw_pasang` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nomor_bangunan` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `alamat_pasang` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `kode_wilayah_kelurahan_pasang` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `jenis_bangunan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `lon_lat` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `loc_maps` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `note_request` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kode_bandwith` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kode_pop` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ont_us` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ont_ps` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status_reg` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `media_akses` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ppn` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ppn_nom` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `potongan` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `potongan_note` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `last_month_billing` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `last_year_billing` varchar(4) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `periode_billing` int DEFAULT NULL,
-  `jns_notif` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `is_termin` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `is_suspend` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `count_suspend` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `is_denda` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `islock` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `prorate` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `jns_notif` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_termin` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_suspend` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `count_suspend` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_denda` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `islock` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `prorate` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_update` datetime DEFAULT NULL,
-  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `mitra` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `group_layanan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `nama_sales` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `olt` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `index_olt` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `foto_po` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `foto_bangunan` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `scan_dokumen` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `detail_alamat_perusahaan` text COLLATE utf8mb4_general_ci,
-  `nomor_bangunan_perusahaan` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `rt_perusahaan` varchar(5) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `rw_perusahaan` varchar(5) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `kode_wilayah_kelurahan_perusahaan` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `lon_lat_perusahaan` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `sharelock_perusahaan` varchar(500) COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `mitra` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `group_layanan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nama_sales` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `olt` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `index_olt` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `foto_po` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `foto_bangunan` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `scan_dokumen` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `detail_alamat_perusahaan` text COLLATE utf8mb4_unicode_ci,
+  `nomor_bangunan_perusahaan` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `rt_perusahaan` varchar(5) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `rw_perusahaan` varchar(5) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kode_wilayah_kelurahan_perusahaan` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `lon_lat_perusahaan` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `sharelock_perusahaan` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -85450,17 +85450,17 @@ CREATE TABLE `trx_batchjob_register` (
 --
 
 CREATE TABLE `trx_batchjob_register_log` (
-  `kode_batchjob_register_log` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `nomor_internet` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `status_reg` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `kode_batchjob_register_log` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nomor_internet` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status_reg` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_schedule` date DEFAULT NULL,
-  `time_schedule` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `note_schedule` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `kat_log` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `time_schedule` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `note_schedule` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `kat_log` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -85469,44 +85469,44 @@ CREATE TABLE `trx_batchjob_register_log` (
 --
 
 CREATE TABLE `trx_batchjob_register_old` (
-  `nomor_internet` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `nik_penduduk` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `nama_pelanggan` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `rt_pasang` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `rw_pasang` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `nomor_bangunan` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `alamat_pasang` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `kode_wilayah_kelurahan_pasang` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `jenis_bangunan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `lon_lat` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `loc_maps` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `note_request` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `kode_bandwith` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `kode_pop` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `ont_us` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `ont_ps` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `status_reg` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `media_akses` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `ppn` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `ppn_nom` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `potongan` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `potongan_note` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `last_month_billing` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `last_year_billing` varchar(4) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `nomor_internet` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nik_penduduk` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nama_pelanggan` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `rt_pasang` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `rw_pasang` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nomor_bangunan` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `alamat_pasang` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `kode_wilayah_kelurahan_pasang` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `jenis_bangunan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `lon_lat` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `loc_maps` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `note_request` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kode_bandwith` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kode_pop` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ont_us` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ont_ps` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status_reg` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `media_akses` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ppn` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ppn_nom` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `potongan` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `potongan_note` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `last_month_billing` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `last_year_billing` varchar(4) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `periode_billing` int DEFAULT NULL,
-  `jns_notif` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `is_termin` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `is_suspend` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `count_suspend` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `is_denda` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `islock` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `prorate` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `jns_notif` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_termin` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_suspend` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `count_suspend` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_denda` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `islock` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `prorate` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_update` datetime DEFAULT NULL,
-  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -85515,48 +85515,48 @@ CREATE TABLE `trx_batchjob_register_old` (
 --
 
 CREATE TABLE `trx_billing_layanan` (
-  `kode_billing_layanan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `nomor_internet` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `kode_bandwith` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `nominal_bandwith` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `bulan_tagihan` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `tahun_tagihan` varchar(4) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `periode_tagihan` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `potongan` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `desc_potongan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `ppn` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `tax` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `voucher` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `total_layanan` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `notif_mail` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `notif_wa` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `status_bill_lay` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `denda` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `invoice_file` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `payment_type` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `no_rekening` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `payment_post` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `kode_billing_layanan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nomor_internet` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kode_bandwith` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nominal_bandwith` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `bulan_tagihan` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `tahun_tagihan` varchar(4) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `periode_tagihan` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `potongan` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `desc_potongan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ppn` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `tax` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `voucher` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `total_layanan` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `notif_mail` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `notif_wa` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status_bill_lay` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `denda` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `invoice_file` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `payment_type` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `no_rekening` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `payment_post` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `payment_respond_post` json DEFAULT NULL,
   `payment_publish` datetime DEFAULT NULL,
   `payment_respond_process` json DEFAULT NULL,
   `payment_process` datetime DEFAULT NULL,
   `payment_respond_paid` json DEFAULT NULL,
   `payment_paid` datetime DEFAULT NULL,
-  `amount_paid` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `note_adjusment` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `cashback` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `amount_paid` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `note_adjusment` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `cashback` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `payment_respond_cancel` json DEFAULT NULL,
   `payment_cancel` datetime DEFAULT NULL,
   `expiry` datetime DEFAULT NULL,
-  `merchant_type` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `merchant_type` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_update` datetime DEFAULT NULL,
-  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `islock` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `re_publish` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `islock` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `re_publish` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -85565,16 +85565,16 @@ CREATE TABLE `trx_billing_layanan` (
 --
 
 CREATE TABLE `trx_billing_layanan_detail` (
-  `kode_billing_lay_detail` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `kode_billing_layanan` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `kode_item` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `komponen` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `kode_billing_lay_detail` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kode_billing_layanan` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kode_item` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `komponen` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `qty` int DEFAULT NULL,
-  `biaya` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `biaya` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -85583,14 +85583,14 @@ CREATE TABLE `trx_billing_layanan_detail` (
 --
 
 CREATE TABLE `trx_billing_layanan_log` (
-  `kode_billing_lay_log` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `kode_billing_layanan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `status_bill_lay` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `note_billing_lay` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `kode_billing_lay_log` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kode_billing_layanan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status_bill_lay` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `note_billing_lay` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -85599,41 +85599,41 @@ CREATE TABLE `trx_billing_layanan_log` (
 --
 
 CREATE TABLE `trx_billing_registrasi` (
-  `kode_billing_registrasi` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `nomor_internet` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `kode_bandwith` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `nominal_bandwith` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `potongan` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `desc_potongan` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `ppn` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `tax` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `voucher` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `total_reg` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `notif_mail` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `notif_wa` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `status_bill_reg` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `payment_type` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `no_rekening` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `payment_post` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `kode_billing_registrasi` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nomor_internet` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kode_bandwith` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nominal_bandwith` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `potongan` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `desc_potongan` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `ppn` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `tax` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `voucher` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `total_reg` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `notif_mail` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `notif_wa` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status_bill_reg` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `payment_type` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `no_rekening` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `payment_post` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `payment_respond_post` json DEFAULT NULL,
   `payment_publish` datetime DEFAULT NULL,
   `payment_respond_process` json DEFAULT NULL,
   `payment_process` datetime DEFAULT NULL,
   `payment_respond_paid` json DEFAULT NULL,
   `payment_paid` datetime DEFAULT NULL,
-  `amount_paid` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `cashback` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `amount_paid` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `cashback` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `payment_respond_cancel` json DEFAULT NULL,
   `payment_cancel` datetime DEFAULT NULL,
   `expiry` datetime DEFAULT NULL,
-  `merchant_type` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `merchant_type` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_update` datetime DEFAULT NULL,
-  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `islock` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `islock` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -85642,16 +85642,16 @@ CREATE TABLE `trx_billing_registrasi` (
 --
 
 CREATE TABLE `trx_billing_registrasi_detail` (
-  `kode_billing_detail` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `kode_billing_registrasi` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `kode_barang` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `komponen` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `kode_billing_detail` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kode_billing_registrasi` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kode_barang` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `komponen` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `qty` int DEFAULT NULL,
-  `biaya` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `biaya` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -85660,14 +85660,14 @@ CREATE TABLE `trx_billing_registrasi_detail` (
 --
 
 CREATE TABLE `trx_billing_registrasi_log` (
-  `kode_billing_regis_log` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `kode_billing_registrasi` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `status_bill_reg` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `note_billing_reg` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `kode_billing_regis_log` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kode_billing_registrasi` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status_bill_reg` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `note_billing_reg` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -85676,22 +85676,22 @@ CREATE TABLE `trx_billing_registrasi_log` (
 --
 
 CREATE TABLE `trx_coverage_area` (
-  `id_message` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `group_wa` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `pushname` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `nomor_hp` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `longitude` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `latitude` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `status` varchar(2) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `hide` varchar(2) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `jarak` varchar(5) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `note` text CHARACTER SET latin1 COLLATE latin1_swedish_ci,
-  `is_group` varchar(2) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
+  `id_message` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `group_wa` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `pushname` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nomor_hp` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `longitude` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `latitude` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `jarak` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `is_group` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_create` datetime DEFAULT NULL,
   `date_update` datetime DEFAULT NULL,
-  `user_update` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
+  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -85700,43 +85700,43 @@ CREATE TABLE `trx_coverage_area` (
 --
 
 CREATE TABLE `trx_instalasi` (
-  `kode_instalasi` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `nomor_internet` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `batal_pasang_note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `kode_instalasi` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nomor_internet` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `batal_pasang_note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `verifikasi_date` date DEFAULT NULL,
-  `verifikasi_note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `verifikasi_note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `survey_date_start` date DEFAULT NULL,
-  `survey_time` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `survey_team` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `survey_note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `survey_time` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `survey_team` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `survey_note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `survey_date_finish` date DEFAULT NULL,
-  `survey_note_finish` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `doc_survey` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `survey_note_finish` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `doc_survey` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `instalasi_date_start` date DEFAULT NULL,
-  `instalasi_time` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `instalasi_team` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `instalasi_note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `instalasi_time` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `instalasi_team` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `instalasi_note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `instalasi_date_finish` date DEFAULT NULL,
-  `instalasi_note_finish` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `doc_instalasi` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `instalasi_note_finish` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `doc_instalasi` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `aktivasi_date_start` date DEFAULT NULL,
-  `aktivasi_time` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `aktivasi_team` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `aktivasi_note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `aktivasi_time` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `aktivasi_team` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `aktivasi_note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `aktivasi_date_finish` date DEFAULT NULL,
-  `aktivasi_note_finish` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `doc_aktivasi` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `doc_terminasi` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `doc_berlangganan` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `foto_rumah` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `foto_ktp` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `foto_peta` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `aktivasi_note_finish` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `doc_aktivasi` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `doc_terminasi` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `doc_berlangganan` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `foto_rumah` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `foto_ktp` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `foto_peta` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_update` datetime DEFAULT NULL,
-  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -85745,18 +85745,18 @@ CREATE TABLE `trx_instalasi` (
 --
 
 CREATE TABLE `trx_instalasi_barang` (
-  `kode_inst_barang` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `nomor_internet` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `kode_barang` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `kode_inst_barang` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nomor_internet` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kode_barang` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `jumlah_barang` int DEFAULT NULL,
-  `status_instalasi_barang` varchar(4) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `note_instalasi_barang` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `status_instalasi_barang` varchar(4) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `note_instalasi_barang` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_update` datetime DEFAULT NULL,
-  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -85765,17 +85765,17 @@ CREATE TABLE `trx_instalasi_barang` (
 --
 
 CREATE TABLE `trx_instalasi_team` (
-  `kode_instalasi_team` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `nomor_internet` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `kat_team` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `kode_karyawan` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `nama_karyawan` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `kode_instalasi_team` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nomor_internet` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kat_team` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kode_karyawan` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nama_karyawan` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_update` datetime DEFAULT NULL,
-  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `trx_instalasi_team`
@@ -85808,19 +85808,19 @@ INSERT INTO `trx_instalasi_team` (`kode_instalasi_team`, `nomor_internet`, `kat_
 --
 
 CREATE TABLE `trx_suspend` (
-  `kode_suspend` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `nomor_internet` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `kode_suspend` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nomor_internet` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `suspend_start` date DEFAULT NULL,
   `suspend_end` date DEFAULT NULL,
-  `status_suspend` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `desc_suspend` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `desc_suspend_cancel` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `status_suspend` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `desc_suspend` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `desc_suspend_cancel` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `user_create` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_update` datetime DEFAULT NULL,
-  `user_update` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_update` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -85829,13 +85829,13 @@ CREATE TABLE `trx_suspend` (
 --
 
 CREATE TABLE `trx_suspend_log` (
-  `kode_suspend_log` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `kode_suspend` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `status_suspend` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `kode_suspend_log` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kode_suspend` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status_suspend` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_create` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `trx_suspend_log`
@@ -85856,28 +85856,28 @@ INSERT INTO `trx_suspend_log` (`kode_suspend_log`, `kode_suspend`, `status_suspe
 --
 
 CREATE TABLE `trx_terminasi` (
-  `kode_trx_terminasi` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `nomor_internet` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `note_termin` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `kode_trx_terminasi` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nomor_internet` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `note_termin` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_collect_start` date DEFAULT NULL,
-  `time_collect_start` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `note_collect_start` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `team_collect` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `time_collect_start` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `note_collect_start` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `team_collect` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_collect_finish` date DEFAULT NULL,
-  `note_collect_finish` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `collect_perangkat` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `collect_payment` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `note_collect_finish` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `collect_perangkat` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `collect_payment` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_closing` date DEFAULT NULL,
-  `note_termin_closing` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `note_termin_cancel` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `status_terminasi` varchar(4) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `doc_terminasi` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `note_termin_closing` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `note_termin_cancel` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `status_terminasi` varchar(4) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `doc_terminasi` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_create` datetime DEFAULT NULL,
   `date_update` datetime DEFAULT NULL,
-  `user_create` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `user_update` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_create` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_update` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -85886,16 +85886,16 @@ CREATE TABLE `trx_terminasi` (
 --
 
 CREATE TABLE `trx_terminasi_log` (
-  `kode_log_terminasi` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `kode_trx_terminasi` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `kode_log_terminasi` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kode_trx_terminasi` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_schedule` date DEFAULT NULL,
-  `time_schedule` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `note_schedule` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `status_terminasi` varchar(4) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `time_schedule` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `note_schedule` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `status_terminasi` varchar(4) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_create` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `trx_terminasi_log`
@@ -85915,23 +85915,23 @@ INSERT INTO `trx_terminasi_log` (`kode_log_terminasi`, `kode_trx_terminasi`, `da
 --
 
 CREATE TABLE `trx_tiket_gangguan` (
-  `tiket` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `nomor_internet` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `keluhan` text CHARACTER SET latin1 COLLATE latin1_swedish_ci,
-  `indikasi` text CHARACTER SET latin1 COLLATE latin1_swedish_ci,
-  `status` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `kat_tiket` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `penanganan` text CHARACTER SET latin1 COLLATE latin1_swedish_ci,
-  `nomor_hp` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `is_group` varchar(2) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `group_wa` text CHARACTER SET latin1 COLLATE latin1_swedish_ci,
-  `note` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
+  `tiket` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nomor_internet` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `keluhan` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `indikasi` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `status` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kat_tiket` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `penanganan` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `nomor_hp` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_group` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `group_wa` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `note` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_create` datetime DEFAULT NULL,
   `date_update` datetime DEFAULT NULL,
-  `user_create` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `user_update` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `hide` varchar(2) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+  `user_create` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_update` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -85940,27 +85940,27 @@ CREATE TABLE `trx_tiket_gangguan` (
 --
 
 CREATE TABLE `trx_ubah_layanan` (
-  `kode_trx_ubah_layanan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `nomor_internet` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `kode_bandwith_lama` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `kode_bandwith_baru` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `status_ubah_layanan` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '11:req;12:acc;13:cancel;',
+  `kode_trx_ubah_layanan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nomor_internet` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kode_bandwith_lama` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kode_bandwith_baru` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status_ubah_layanan` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '11:req;12:acc;13:cancel;',
   `date_request` date DEFAULT NULL,
-  `note_request` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `note_request` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_schedule` date DEFAULT NULL,
   `date_closing` date DEFAULT NULL,
-  `note_closing` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `note_schedule` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `note_closing` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `note_schedule` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_cancel` date DEFAULT NULL,
-  `note_cancel` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `doc_ubahlayanan` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `foto_ss` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `note_cancel` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `doc_ubahlayanan` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `foto_ss` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_create` datetime NOT NULL,
-  `user_create` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `user_create` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `date_update` datetime DEFAULT NULL,
-  `user_update` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_update` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -85969,14 +85969,14 @@ CREATE TABLE `trx_ubah_layanan` (
 --
 
 CREATE TABLE `trx_ubah_layanan_log` (
-  `kode_ubah_layanan_log` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `kode_trx_ubah_layanan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `status_ubah_layanan` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `note_ubah_layanan` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `kode_ubah_layanan_log` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kode_trx_ubah_layanan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status_ubah_layanan` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `note_ubah_layanan` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_create` datetime DEFAULT NULL,
-  `user_create` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+  `user_create` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hide` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `trx_ubah_layanan_log`
@@ -87359,7 +87359,7 @@ CREATE VIEW `view_batchjob`  AS SELECT `br`.`nomor_internet` AS `nomor_internet`
 --
 DROP TABLE IF EXISTS `view_billing_layanan`;
 
-CREATE VIEW `view_billing_layanan`  AS SELECT `bl`.`kode_billing_layanan` AS `kode_billing_layanan`, `bl`.`nomor_internet` AS `nomor_internet`, `bl`.`kode_bandwith` AS `kode_bandwith`, `bl`.`nominal_bandwith` AS `nominal_bandwith`, `bl`.`bulan_tagihan` AS `bulan_tagihan`, `bl`.`tahun_tagihan` AS `tahun_tagihan`, `bl`.`periode_tagihan` AS `periode_tagihan`, `bl`.`potongan` AS `potongan`, `bl`.`desc_potongan` AS `desc_potongan`, `bl`.`ppn` AS `ppn`, `bl`.`tax` AS `tax`, `bl`.`voucher` AS `voucher`, `bl`.`total_layanan` AS `total_layanan`, `bl`.`notif_mail` AS `notif_mail`, `bl`.`notif_wa` AS `notif_wa`, `bl`.`status_bill_lay` AS `status_bill_lay`, `bl`.`denda` AS `denda`, `bl`.`invoice_file` AS `invoice_file`, `bl`.`payment_type` AS `payment_type`, `bl`.`no_rekening` AS `no_rekening`, `bl`.`payment_post` AS `payment_post`, `bl`.`payment_respond_post` AS `payment_respond_post`, `bl`.`payment_publish` AS `payment_publish`, `bl`.`payment_respond_process` AS `payment_respond_process`, `bl`.`payment_process` AS `payment_process`, `bl`.`payment_respond_paid` AS `payment_respond_paid`, `bl`.`payment_paid` AS `payment_paid`, `bl`.`amount_paid` AS `amount_paid`, `bl`.`note_adjusment` AS `note_adjusment`, `bl`.`cashback` AS `cashback`, `bl`.`payment_respond_cancel` AS `payment_respond_cancel`, `bl`.`payment_cancel` AS `payment_cancel`, `bl`.`expiry` AS `expiry`, `bl`.`merchant_type` AS `merchant_type`, `bl`.`date_create` AS `date_create`, `bl`.`user_create` AS `user_create`, `bl`.`date_update` AS `date_update`, `bl`.`user_update` AS `user_update`, `bl`.`hide` AS `hide`, `bl`.`islock` AS `islock`, `bl`.`re_publish` AS `re_publish`, `pt`.`desc_payment_type` AS `desc_payment_type`, `mb`.`nama_bank` AS `nama_bank`, `sbl`.`desc_bill_lay` AS `desc_bill_lay`, `sh`.`desc_hide` AS `desc_hide`, `vb`.`nama_pelanggan` AS `nama_pelanggan`, `vb`.`nik_penduduk` AS `nik_penduduk`, `vb`.`nama_penduduk` AS `nama_penduduk`, `vb`.`nomor_hp` AS `nomor_hp`, `vb`.`email` AS `email`, `vb`.`jenis_kelamin` AS `jenis_kelamin`, `vb`.`pic` AS `pic`, `vb`.`periode_billing` AS `periode_billing`, `vb`.`alamat_ktp` AS `alamat_ktp`, `vb`.`alamat_k` AS `alamat_k`, `vb`.`alamat_pasang` AS `alamat_pasang`, `vb`.`alamat_p` AS `alamat_p`, `vb`.`status_reg` AS `status_reg`, `vb`.`nama_kota_pasang` AS `nama_kota_pasang`, `vb`.`desc_registrasi` AS `desc_registrasi`, `vb`.`aktivasi_date_finish` AS `aktivasi_date_finish`, `vb`.`kode_wilayah_kelurahan_pasang` AS `kode_wilayah_kelurahan_pasang`, `vb`.`harga_bandwith` AS `harga_bandwith`, `vb`.`is_denda` AS `is_denda`, `vb`.`is_termin` AS `is_termin`, `vb`.`is_suspend` AS `is_suspend`, `vb`.`count_suspend` AS `count_suspend`, `vb`.`nama_kategori_bandwith` AS `nama_kategori_bandwith`, `m`.`fee` AS `merchant_fee`, `m`.`type` AS `type` FROM ((((((`trx_billing_layanan` `bl` left join `view_batchjob` `vb` on((`bl`.`nomor_internet` = `vb`.`nomor_internet`))) left join `m_status_bill_lay` `sbl` on((`bl`.`status_bill_lay` = `sbl`.`status_bill_lay`))) left join `m_status_hide` `sh` on((`bl`.`hide` = `sh`.`hide`))) left join `m_payment_type` `pt` on((`bl`.`payment_type` = `pt`.`payment_type`))) left join `m_bank` `mb` on((`mb`.`no_rekening` = `bl`.`no_rekening`))) left join `m_midtrans` `m` on(((convert(`m`.`merchant_type` using utf8mb4) collate utf8mb4_general_ci) = `bl`.`merchant_type`))) ;
+CREATE VIEW `view_billing_layanan`  AS SELECT `bl`.`kode_billing_layanan` AS `kode_billing_layanan`, `bl`.`nomor_internet` AS `nomor_internet`, `bl`.`kode_bandwith` AS `kode_bandwith`, `bl`.`nominal_bandwith` AS `nominal_bandwith`, `bl`.`bulan_tagihan` AS `bulan_tagihan`, `bl`.`tahun_tagihan` AS `tahun_tagihan`, `bl`.`periode_tagihan` AS `periode_tagihan`, `bl`.`potongan` AS `potongan`, `bl`.`desc_potongan` AS `desc_potongan`, `bl`.`ppn` AS `ppn`, `bl`.`tax` AS `tax`, `bl`.`voucher` AS `voucher`, `bl`.`total_layanan` AS `total_layanan`, `bl`.`notif_mail` AS `notif_mail`, `bl`.`notif_wa` AS `notif_wa`, `bl`.`status_bill_lay` AS `status_bill_lay`, `bl`.`denda` AS `denda`, `bl`.`invoice_file` AS `invoice_file`, `bl`.`payment_type` AS `payment_type`, `bl`.`no_rekening` AS `no_rekening`, `bl`.`payment_post` AS `payment_post`, `bl`.`payment_respond_post` AS `payment_respond_post`, `bl`.`payment_publish` AS `payment_publish`, `bl`.`payment_respond_process` AS `payment_respond_process`, `bl`.`payment_process` AS `payment_process`, `bl`.`payment_respond_paid` AS `payment_respond_paid`, `bl`.`payment_paid` AS `payment_paid`, `bl`.`amount_paid` AS `amount_paid`, `bl`.`note_adjusment` AS `note_adjusment`, `bl`.`cashback` AS `cashback`, `bl`.`payment_respond_cancel` AS `payment_respond_cancel`, `bl`.`payment_cancel` AS `payment_cancel`, `bl`.`expiry` AS `expiry`, `bl`.`merchant_type` AS `merchant_type`, `bl`.`date_create` AS `date_create`, `bl`.`user_create` AS `user_create`, `bl`.`date_update` AS `date_update`, `bl`.`user_update` AS `user_update`, `bl`.`hide` AS `hide`, `bl`.`islock` AS `islock`, `bl`.`re_publish` AS `re_publish`, `pt`.`desc_payment_type` AS `desc_payment_type`, `mb`.`nama_bank` AS `nama_bank`, `sbl`.`desc_bill_lay` AS `desc_bill_lay`, `sh`.`desc_hide` AS `desc_hide`, `vb`.`nama_pelanggan` AS `nama_pelanggan`, `vb`.`nik_penduduk` AS `nik_penduduk`, `vb`.`nama_penduduk` AS `nama_penduduk`, `vb`.`nomor_hp` AS `nomor_hp`, `vb`.`email` AS `email`, `vb`.`jenis_kelamin` AS `jenis_kelamin`, `vb`.`pic` AS `pic`, `vb`.`periode_billing` AS `periode_billing`, `vb`.`alamat_ktp` AS `alamat_ktp`, `vb`.`alamat_k` AS `alamat_k`, `vb`.`alamat_pasang` AS `alamat_pasang`, `vb`.`alamat_p` AS `alamat_p`, `vb`.`status_reg` AS `status_reg`, `vb`.`nama_kota_pasang` AS `nama_kota_pasang`, `vb`.`desc_registrasi` AS `desc_registrasi`, `vb`.`aktivasi_date_finish` AS `aktivasi_date_finish`, `vb`.`kode_wilayah_kelurahan_pasang` AS `kode_wilayah_kelurahan_pasang`, `vb`.`harga_bandwith` AS `harga_bandwith`, `vb`.`is_denda` AS `is_denda`, `vb`.`is_termin` AS `is_termin`, `vb`.`is_suspend` AS `is_suspend`, `vb`.`count_suspend` AS `count_suspend`, `vb`.`nama_kategori_bandwith` AS `nama_kategori_bandwith`, `m`.`fee` AS `merchant_fee`, `m`.`type` AS `type` FROM ((((((`trx_billing_layanan` `bl` left join `view_batchjob` `vb` on((`bl`.`nomor_internet` = `vb`.`nomor_internet`))) left join `m_status_bill_lay` `sbl` on((`bl`.`status_bill_lay` = `sbl`.`status_bill_lay`))) left join `m_status_hide` `sh` on((`bl`.`hide` = `sh`.`hide`))) left join `m_payment_type` `pt` on((`bl`.`payment_type` = `pt`.`payment_type`))) left join `m_bank` `mb` on((`mb`.`no_rekening` = `bl`.`no_rekening`))) left join `m_midtrans` `m` on(((convert(`m`.`merchant_type` using utf8mb4) collate utf8mb4_unicode_ci) = `bl`.`merchant_type`))) ;
 
 -- --------------------------------------------------------
 
@@ -87386,7 +87386,7 @@ CREATE VIEW `view_divisi_jabatan`  AS SELECT `d`.`kode_divisi` AS `kode_divisi`,
 --
 DROP TABLE IF EXISTS `view_karyawan`;
 
-CREATE VIEW `view_karyawan`  AS SELECT `k`.`kode_karyawan` AS `kode_karyawan`, `k`.`kantor` AS `kantor`, `k`.`nik` AS `nik`, `k`.`nip` AS `nip`, `k`.`nama_karyawan` AS `nama_karyawan`, `k`.`kode_jabatan` AS `kode_jabatan`, `jb`.`nama_jabatan` AS `nama_jabatan`, `jb`.`kode_divisi` AS `kode_divisi`, `jb`.`nama_divisi` AS `nama_divisi`, `jb`.`desc_jabatan` AS `desc_jabatan`, `k`.`jenis_kelamin` AS `jenis_kelamin`, `k`.`hp_karyawan` AS `hp_karyawan`, `k`.`kode_agama` AS `kode_agama`, `ag`.`nama_agama` AS `nama_agama`, `k`.`email_karyawan` AS `email_karyawan`, `k`.`email_msn` AS `email_msn`, `k`.`tempat_lahir` AS `tempat_lahir`, `k`.`tanggal_lahir` AS `tanggal_lahir`, `k`.`tempat_pendidikan_terakhir` AS `tempat_pendidikan_terakhir`, `k`.`kode_pendidikan` AS `kode_pendidikan`, `pd`.`nama_pendidikan` AS `nama_pendidikan`, `k`.`jmlh_tanggungan` AS `jmlh_tanggungan`, `k`.`desc_tanggungan` AS `desc_tanggungan`, `k`.`kode_golongan_darah` AS `kode_golongan_darah`, `gl`.`nama_golongan_darah` AS `nama_golongan_darah`, `k`.`kode_wilayah_kelurahan` AS `kode_wilayah_kelurahan`, `kl`.`nama_kelurahan` AS `nama_kelurahan`, `kl`.`kode_wilayah_kecamatan` AS `kode_wilayah_kecamatan`, `kl`.`nama_kecamatan` AS `nama_kecamatan`, `kl`.`kode_wilayah_kota` AS `kode_wilayah_kota`, `k`.`kota_kerja` AS `kota_kerja`, `kl`.`nama_kota` AS `nama_kota`, `kl`.`kode_provinsi` AS `kode_provinsi`, `kl`.`nama_provinsi` AS `nama_provinsi`, `k`.`ktp` AS `ktp`, `k`.`cv` AS `cv`, `k`.`foto` AS `foto`, `k`.`ijazah_pendidikan_terakhir` AS `ijazah_pendidikan_terakhir`, `k`.`alamat_asal` AS `alamat_asal`, `k`.`domisili` AS `domisili`, `k`.`kode_status_kawin` AS `kode_status_kawin`, `sk`.`nama_status_kawin` AS `nama_status_kawin`, `k`.`npwp` AS `npwp`, `k`.`bpjs` AS `bpjs`, `k`.`bank_rek` AS `bank_rek`, `k`.`no_rek` AS `no_rek`, `k`.`tanggal_masuk` AS `tanggal_masuk`, `k`.`tanggal_keluar` AS `tanggal_keluar`, `k`.`status_rumah` AS `status_rumah`, `k`.`kendaraan` AS `kendaraan`, `k`.`status_kontrak` AS `status_kontrak`, `k`.`berat` AS `berat`, `k`.`tinggi` AS `tinggi`, `k`.`sim` AS `sim`, `k`.`status_aktif` AS `status_aktif`, `k`.`date_create` AS `date_create`, `k`.`user_create` AS `user_create`, `k`.`user_update` AS `user_update`, `k`.`date_update` AS `date_update`, `k`.`uid` AS `uid` FROM ((((((`tb_m_karyawan` `k` left join `tb_m_agama` `ag` on((`k`.`kode_agama` = `ag`.`id_agama`))) left join `tb_m_golongan_darah` `gl` on((`k`.`kode_golongan_darah` = `gl`.`id_golongan_darah`))) left join `view_divisi_jabatan` `jb` on((`k`.`kode_jabatan` = `jb`.`kode_jabatan`))) left join `tb_m_pendidikan` `pd` on((`k`.`kode_pendidikan` = `pd`.`id_pendidikan`))) left join `tb_m_status_kawin` `sk` on((`k`.`kode_status_kawin` = `sk`.`id_status_kawin`))) left join `m_wilayah` `kl` on(((convert(`k`.`kode_wilayah_kelurahan` using utf8mb4) collate utf8mb4_general_ci) = `kl`.`kode_wilayah_kelurahan`))) ;
+CREATE VIEW `view_karyawan`  AS SELECT `k`.`kode_karyawan` AS `kode_karyawan`, `k`.`kantor` AS `kantor`, `k`.`nik` AS `nik`, `k`.`nip` AS `nip`, `k`.`nama_karyawan` AS `nama_karyawan`, `k`.`kode_jabatan` AS `kode_jabatan`, `jb`.`nama_jabatan` AS `nama_jabatan`, `jb`.`kode_divisi` AS `kode_divisi`, `jb`.`nama_divisi` AS `nama_divisi`, `jb`.`desc_jabatan` AS `desc_jabatan`, `k`.`jenis_kelamin` AS `jenis_kelamin`, `k`.`hp_karyawan` AS `hp_karyawan`, `k`.`kode_agama` AS `kode_agama`, `ag`.`nama_agama` AS `nama_agama`, `k`.`email_karyawan` AS `email_karyawan`, `k`.`email_msn` AS `email_msn`, `k`.`tempat_lahir` AS `tempat_lahir`, `k`.`tanggal_lahir` AS `tanggal_lahir`, `k`.`tempat_pendidikan_terakhir` AS `tempat_pendidikan_terakhir`, `k`.`kode_pendidikan` AS `kode_pendidikan`, `pd`.`nama_pendidikan` AS `nama_pendidikan`, `k`.`jmlh_tanggungan` AS `jmlh_tanggungan`, `k`.`desc_tanggungan` AS `desc_tanggungan`, `k`.`kode_golongan_darah` AS `kode_golongan_darah`, `gl`.`nama_golongan_darah` AS `nama_golongan_darah`, `k`.`kode_wilayah_kelurahan` AS `kode_wilayah_kelurahan`, `kl`.`nama_kelurahan` AS `nama_kelurahan`, `kl`.`kode_wilayah_kecamatan` AS `kode_wilayah_kecamatan`, `kl`.`nama_kecamatan` AS `nama_kecamatan`, `kl`.`kode_wilayah_kota` AS `kode_wilayah_kota`, `k`.`kota_kerja` AS `kota_kerja`, `kl`.`nama_kota` AS `nama_kota`, `kl`.`kode_provinsi` AS `kode_provinsi`, `kl`.`nama_provinsi` AS `nama_provinsi`, `k`.`ktp` AS `ktp`, `k`.`cv` AS `cv`, `k`.`foto` AS `foto`, `k`.`ijazah_pendidikan_terakhir` AS `ijazah_pendidikan_terakhir`, `k`.`alamat_asal` AS `alamat_asal`, `k`.`domisili` AS `domisili`, `k`.`kode_status_kawin` AS `kode_status_kawin`, `sk`.`nama_status_kawin` AS `nama_status_kawin`, `k`.`npwp` AS `npwp`, `k`.`bpjs` AS `bpjs`, `k`.`bank_rek` AS `bank_rek`, `k`.`no_rek` AS `no_rek`, `k`.`tanggal_masuk` AS `tanggal_masuk`, `k`.`tanggal_keluar` AS `tanggal_keluar`, `k`.`status_rumah` AS `status_rumah`, `k`.`kendaraan` AS `kendaraan`, `k`.`status_kontrak` AS `status_kontrak`, `k`.`berat` AS `berat`, `k`.`tinggi` AS `tinggi`, `k`.`sim` AS `sim`, `k`.`status_aktif` AS `status_aktif`, `k`.`date_create` AS `date_create`, `k`.`user_create` AS `user_create`, `k`.`user_update` AS `user_update`, `k`.`date_update` AS `date_update`, `k`.`uid` AS `uid` FROM ((((((`tb_m_karyawan` `k` left join `tb_m_agama` `ag` on((`k`.`kode_agama` = `ag`.`id_agama`))) left join `tb_m_golongan_darah` `gl` on((`k`.`kode_golongan_darah` = `gl`.`id_golongan_darah`))) left join `view_divisi_jabatan` `jb` on((`k`.`kode_jabatan` = `jb`.`kode_jabatan`))) left join `tb_m_pendidikan` `pd` on((`k`.`kode_pendidikan` = `pd`.`id_pendidikan`))) left join `tb_m_status_kawin` `sk` on((`k`.`kode_status_kawin` = `sk`.`id_status_kawin`))) left join `m_wilayah` `kl` on(((convert(`k`.`kode_wilayah_kelurahan` using utf8mb4) collate utf8mb4_unicode_ci) = `kl`.`kode_wilayah_kelurahan`))) ;
 
 -- --------------------------------------------------------
 
@@ -87431,7 +87431,7 @@ CREATE VIEW `view_terminasi`  AS SELECT `tr`.`kode_trx_terminasi` AS `kode_trx_t
 --
 DROP TABLE IF EXISTS `view_ubah_layanan`;
 
-CREATE VIEW `view_ubah_layanan`  AS SELECT `tul`.`kode_trx_ubah_layanan` AS `kode_trx_ubah_layanan`, `bj`.`nama_pelanggan` AS `nama_pelanggan`, `bj`.`user_create` AS `sales_create`, `bj`.`kode_wilayah_kota_pasang` AS `kode_wilayah_kota_pasang`, `tul`.`nomor_internet` AS `nomor_internet`, `tul`.`kode_bandwith_lama` AS `kode_bandwith_lama`, `vb1`.`nama_kategori_bandwith` AS `nama_kategori_bandwith_lama`, `vb1`.`alias_nama_kategori` AS `alias_nama_kategori_lama`, `vb1`.`nominal_bandwith` AS `nominal_bandwith_lama`, `tul`.`kode_bandwith_baru` AS `kode_bandwith_baru`, `vb2`.`nama_kategori_bandwith` AS `nama_kategori_bandwith_baru`, `vb2`.`alias_nama_kategori` AS `alias_nama_kategori_baru`, `vb2`.`nominal_bandwith` AS `nominal_bandwith_baru`, `tul`.`status_ubah_layanan` AS `status_ubah_layanan`, `su`.`desc_ubah_layanan` AS `desc_ubah_layanan`, `tul`.`date_request` AS `date_request`, `tul`.`date_closing` AS `date_closing`, `tul`.`doc_ubahlayanan` AS `doc_ubahlayanan`, `tul`.`date_create` AS `date_create`, `tul`.`user_create` AS `user_create`, `tul`.`date_update` AS `date_update`, `tul`.`user_update` AS `user_update`, `tul`.`hide` AS `hide`, `tul`.`note_request` AS `note_request`, `tul`.`date_schedule` AS `date_schedule`, `tul`.`note_closing` AS `note_closing`, `tul`.`note_schedule` AS `note_schedule`, `tul`.`date_cancel` AS `date_cancel`, `tul`.`note_cancel` AS `note_cancel` FROM ((((`trx_ubah_layanan` `tul` left join `view_bandwith` `vb1` on(((convert(`tul`.`kode_bandwith_lama` using utf8mb4) collate utf8mb4_general_ci) = `vb1`.`kode_bandwith`))) left join `view_bandwith` `vb2` on(((convert(`tul`.`kode_bandwith_baru` using utf8mb4) collate utf8mb4_general_ci) = `vb2`.`kode_bandwith`))) left join `m_status_ubahlayanan` `su` on((`tul`.`status_ubah_layanan` = `su`.`status_ubah_layanan`))) left join `view_batchjob` `bj` on((`bj`.`nomor_internet` = `tul`.`nomor_internet`))) ;
+CREATE VIEW `view_ubah_layanan`  AS SELECT `tul`.`kode_trx_ubah_layanan` AS `kode_trx_ubah_layanan`, `bj`.`nama_pelanggan` AS `nama_pelanggan`, `bj`.`user_create` AS `sales_create`, `bj`.`kode_wilayah_kota_pasang` AS `kode_wilayah_kota_pasang`, `tul`.`nomor_internet` AS `nomor_internet`, `tul`.`kode_bandwith_lama` AS `kode_bandwith_lama`, `vb1`.`nama_kategori_bandwith` AS `nama_kategori_bandwith_lama`, `vb1`.`alias_nama_kategori` AS `alias_nama_kategori_lama`, `vb1`.`nominal_bandwith` AS `nominal_bandwith_lama`, `tul`.`kode_bandwith_baru` AS `kode_bandwith_baru`, `vb2`.`nama_kategori_bandwith` AS `nama_kategori_bandwith_baru`, `vb2`.`alias_nama_kategori` AS `alias_nama_kategori_baru`, `vb2`.`nominal_bandwith` AS `nominal_bandwith_baru`, `tul`.`status_ubah_layanan` AS `status_ubah_layanan`, `su`.`desc_ubah_layanan` AS `desc_ubah_layanan`, `tul`.`date_request` AS `date_request`, `tul`.`date_closing` AS `date_closing`, `tul`.`doc_ubahlayanan` AS `doc_ubahlayanan`, `tul`.`date_create` AS `date_create`, `tul`.`user_create` AS `user_create`, `tul`.`date_update` AS `date_update`, `tul`.`user_update` AS `user_update`, `tul`.`hide` AS `hide`, `tul`.`note_request` AS `note_request`, `tul`.`date_schedule` AS `date_schedule`, `tul`.`note_closing` AS `note_closing`, `tul`.`note_schedule` AS `note_schedule`, `tul`.`date_cancel` AS `date_cancel`, `tul`.`note_cancel` AS `note_cancel` FROM ((((`trx_ubah_layanan` `tul` left join `view_bandwith` `vb1` on(((convert(`tul`.`kode_bandwith_lama` using utf8mb4) collate utf8mb4_unicode_ci) = `vb1`.`kode_bandwith`))) left join `view_bandwith` `vb2` on(((convert(`tul`.`kode_bandwith_baru` using utf8mb4) collate utf8mb4_unicode_ci) = `vb2`.`kode_bandwith`))) left join `m_status_ubahlayanan` `su` on((`tul`.`status_ubah_layanan` = `su`.`status_ubah_layanan`))) left join `view_batchjob` `bj` on((`bj`.`nomor_internet` = `tul`.`nomor_internet`))) ;
 
 --
 -- Constraints for dumped tables
