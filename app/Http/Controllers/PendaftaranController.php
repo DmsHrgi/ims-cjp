@@ -183,17 +183,23 @@ class PendaftaranController extends Controller
             ->orderBy('b.nominal_bandwith')
             ->get();
 
-        $compFromPelanggan = DB::table('m_pelanggan')
-            ->whereNotNull('id_perusahaan')
-            ->where('id_perusahaan', '!=', '')
-            ->select('id_perusahaan', 'nama_perusahaan', 'no_telp_perusahaan', 'email_perusahaan')
-            ->get();
+        $compFromPelanggan = collect();
+        try {
+            $compFromPelanggan = DB::table('m_pelanggan')
+                ->whereNotNull('id_perusahaan')
+                ->where('id_perusahaan', '!=', '')
+                ->select('id_perusahaan', 'nama_perusahaan')
+                ->get();
+        } catch (\Exception $e) {}
 
-        $compFromTrx = DB::table('trx_batchjob_register')
-            ->whereNotNull('id_perusahaan')
-            ->where('id_perusahaan', '!=', '')
-            ->select('id_perusahaan', 'nama_pelanggan as nama_perusahaan', 'no_telp_perusahaan', 'email_perusahaan')
-            ->get();
+        $compFromTrx = collect();
+        try {
+            $compFromTrx = DB::table('trx_batchjob_register')
+                ->whereNotNull('id_perusahaan')
+                ->where('id_perusahaan', '!=', '')
+                ->select('id_perusahaan', 'nama_pelanggan as nama_perusahaan')
+                ->get();
+        } catch (\Exception $e) {}
 
         $existingCompanies = $compFromPelanggan->concat($compFromTrx)
             ->filter(fn($c) => !empty($c->id_perusahaan) && !empty($c->nama_perusahaan))
