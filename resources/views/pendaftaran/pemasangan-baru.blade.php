@@ -591,25 +591,71 @@
                         <!-- Row 1: Nama Perusahaan (1st), ID Perusahaan (2nd), No Telp, Email -->
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             <!-- 1. Nama Perusahaan (Pertama) -->
-                            <div>
+                            <div class="relative" id="companyDropdownWrapper">
                                 <div class="flex items-center justify-between mb-1.5">
                                     <label class="block text-xs font-semibold text-slate-700">Nama Perusahaan <span class="text-rose-500 font-bold">*</span></label>
                                     <span id="autoFillAlert" class="hidden text-[10px] text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200 inline-flex items-center gap-1.5 shadow-2xs truncate max-w-[170px]">
                                         <i class="fa-solid fa-circle-check text-emerald-500"></i> Data Terisi
                                     </span>
                                 </div>
-                                <input type="text" name="nama_perusahaan" id="inputNamaPerusahaan" list="listExistingCompanyNames" required maxlength="255" placeholder="Ketik / Pilih Nama Perusahaan" value="{{ old('nama_perusahaan') }}" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 px-3.5 text-sm rounded-xl outline-none transition-all placeholder-slate-400">
-                                <datalist id="listExistingCompanyNames">
-                                    @foreach($existingCompanies ?? [] as $comp)
-                                        @php
-                                            $cName = $comp->nama_perusahaan ?? $comp->nama_pelanggan ?? '';
-                                        @endphp
-                                        @if($cName)
-                                            <option value="{{ $cName }}">{{ $cName }} (ID: {{ $comp->id_perusahaan }})</option>
-                                        @endif
-                                    @endforeach
-                                </datalist>
-                                <p class="text-[10px] text-slate-400 mt-1">Ketik nama perusahaan baru atau pilih yang sudah ada.</p>
+                                <div class="relative">
+                                    <input type="text" name="nama_perusahaan" id="inputNamaPerusahaan" autocomplete="off" required maxlength="255" placeholder="Ketik atau pilih nama perusahaan..." value="{{ old('nama_perusahaan') }}" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 pl-3.5 pr-8 text-sm rounded-xl outline-none transition-all placeholder-slate-400">
+                                    <button type="button" id="btnToggleCompanyDropdown" onclick="toggleCompanyRecommendations()" class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 transition-colors p-1" title="Lihat Rekomendasi Perusahaan Terdaftar">
+                                        <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200" id="iconCompanyDropdown"></i>
+                                    </button>
+                                </div>
+
+                                <!-- Dropdown Rekomendasi Perusahaan Terdaftar -->
+                                <div id="dropdownCompanyRecommendations" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white rounded-xl shadow-2xl border border-slate-200/90 z-50 overflow-hidden divide-y divide-slate-100 animate-in fade-in duration-150">
+                                    <div class="px-3.5 py-2 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                                        <span class="text-[11px] font-bold text-slate-600 flex items-center gap-1.5">
+                                            <i class="fa-solid fa-building text-blue-500"></i> Rekomendasi Perusahaan Terdaftar
+                                        </span>
+                                        <span id="companyCountBadge" class="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold">
+                                            {{ count($existingCompanies ?? []) }}
+                                        </span>
+                                    </div>
+                                    <div class="max-h-56 overflow-y-auto custom-modal-scroll p-1.5 space-y-1" id="companyRecommendationsList">
+                                        @forelse($existingCompanies ?? [] as $comp)
+                                            @php
+                                                $cName = $comp->nama_perusahaan ?? $comp->nama_pelanggan ?? '';
+                                            @endphp
+                                            @if($cName)
+                                                <div class="company-rec-item p-2 rounded-lg hover:bg-blue-50/80 hover:border-blue-200 border border-transparent transition-all cursor-pointer flex items-center justify-between group"
+                                                     data-name="{{ strtolower($cName) }}" 
+                                                     data-id="{{ strtolower($comp->id_perusahaan) }}"
+                                                     onclick="selectCompanyRecommendation('{{ addslashes($cName) }}', '{{ addslashes($comp->id_perusahaan) }}')">
+                                                    <div class="flex items-center gap-2.5 min-w-0 pr-2">
+                                                        <div class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                                            <i class="fa-solid fa-building text-xs"></i>
+                                                        </div>
+                                                        <div class="truncate">
+                                                            <div class="text-xs font-bold text-slate-800 group-hover:text-blue-700 truncate">{{ $cName }}</div>
+                                                            <div class="text-[10px] text-slate-400 font-mono flex items-center gap-1.5">
+                                                                <span class="bg-slate-100 text-slate-600 px-1 rounded font-semibold">{{ $comp->id_perusahaan }}</span>
+                                                                @if(!empty($comp->no_telp_perusahaan))
+                                                                    <span class="truncate">• {{ $comp->no_telp_perusahaan }}</span>
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <span class="text-[10px] font-semibold text-blue-600 bg-blue-50 group-hover:bg-blue-600 group-hover:text-white px-2 py-1 rounded-md transition-colors flex-shrink-0">
+                                                        Pilih & Isi
+                                                    </span>
+                                                </div>
+                                            @endif
+                                        @empty
+                                            <div class="p-4 text-center text-xs text-slate-400">
+                                                Belum ada data perusahaan terdaftar.
+                                            </div>
+                                        @endforelse
+                                        <div id="noCompanyFoundMessage" class="hidden p-3 text-center text-xs text-slate-500 bg-slate-50 rounded-lg">
+                                            <i class="fa-solid fa-circle-plus text-blue-500 mr-1"></i>
+                                            <span>Perusahaan Baru (ID akan di-generate otomatis)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-1">Ketik nama baru atau pilih rekomendasi perusahaan terdaftar di atas.</p>
                             </div>
 
                             <!-- 2. ID Perusahaan (Kedua - Readonly Auto Generated / Auto Match) -->
@@ -2953,6 +2999,93 @@
             };
 
             const inputNama = document.getElementById('inputNamaPerusahaan') || document.querySelector('#formRegistrasi [name="nama_perusahaan"]');
+            const dropdownCompany = document.getElementById('dropdownCompanyRecommendations');
+            const iconDropdownCompany = document.getElementById('iconCompanyDropdown');
+            const listCompanyItems = document.querySelectorAll('.company-rec-item');
+            const noCompanyFoundMsg = document.getElementById('noCompanyFoundMessage');
+            const companyCountBadge = document.getElementById('companyCountBadge');
+
+            // ============================================
+            // DROPDOWN REKOMENDASI PERUSAHAAN TERDAFTAR
+            // ============================================
+            window.showCompanyRecommendations = function() {
+                if (dropdownCompany) {
+                    dropdownCompany.classList.remove('hidden');
+                    if (iconDropdownCompany) iconDropdownCompany.style.transform = 'rotate(180deg)';
+                    filterCompanyRecommendations();
+                }
+            };
+
+            window.hideCompanyRecommendations = function() {
+                if (dropdownCompany) {
+                    dropdownCompany.classList.add('hidden');
+                    if (iconDropdownCompany) iconDropdownCompany.style.transform = 'rotate(0deg)';
+                }
+            };
+
+            window.toggleCompanyRecommendations = function() {
+                if (!dropdownCompany) return;
+                if (dropdownCompany.classList.contains('hidden')) {
+                    window.showCompanyRecommendations();
+                    if (inputNama) inputNama.focus();
+                } else {
+                    window.hideCompanyRecommendations();
+                }
+            };
+
+            function filterCompanyRecommendations() {
+                if (!inputNama) return;
+                const keyword = inputNama.value.trim().toLowerCase();
+                let visibleCount = 0;
+
+                listCompanyItems.forEach(item => {
+                    const name = (item.getAttribute('data-name') || '').toLowerCase();
+                    const id = (item.getAttribute('data-id') || '').toLowerCase();
+                    if (!keyword || name.includes(keyword) || id.includes(keyword)) {
+                        item.classList.remove('hidden');
+                        visibleCount++;
+                    } else {
+                        item.classList.add('hidden');
+                    }
+                });
+
+                if (companyCountBadge) {
+                    companyCountBadge.textContent = visibleCount;
+                }
+
+                if (noCompanyFoundMsg) {
+                    if (visibleCount === 0 && keyword.length > 0) {
+                        noCompanyFoundMsg.classList.remove('hidden');
+                    } else {
+                        noCompanyFoundMsg.classList.add('hidden');
+                    }
+                }
+            }
+
+            window.selectCompanyRecommendation = function(name, id) {
+                if (inputNama) inputNama.value = name;
+                if (inputId) inputId.value = id;
+                window.hideCompanyRecommendations();
+
+                // Fetch detail & auto fill
+                fetch('/api/perusahaan-detail?id_perusahaan=' + encodeURIComponent(id))
+                    .then(r => r.json())
+                    .then(res => {
+                        if (res.found && res.data) {
+                            window.pendingCompanyData = res.data;
+                            window.applyAutoFillCompany(res.data);
+                        }
+                    })
+                    .catch(e => console.error('Error selecting company recommendation:', e));
+            };
+
+            // Close when clicking outside
+            document.addEventListener('click', function(e) {
+                const wrapper = document.getElementById('companyDropdownWrapper');
+                if (wrapper && !wrapper.contains(e.target)) {
+                    window.hideCompanyRecommendations();
+                }
+            });
 
             // Handler ketika nama perusahaan ditulis / dipilih
             if (inputNama) {
@@ -2995,14 +3128,24 @@
                         .catch(err => console.error('Error lookup nama perusahaan:', err));
                 }
 
-                inputNama.addEventListener('change', handleNamaPerusahaanChange);
-                inputNama.addEventListener('blur', handleNamaPerusahaanChange);
+                inputNama.addEventListener('focus', function() {
+                    window.showCompanyRecommendations();
+                });
+
                 inputNama.addEventListener('input', function() {
+                    filterCompanyRecommendations();
+                    window.showCompanyRecommendations();
+
                     clearTimeout(nameSearchTimeout);
                     const cur = this.value.trim();
                     if (cur.length >= 3) {
                         nameSearchTimeout = setTimeout(handleNamaPerusahaanChange, 400);
                     }
+                });
+
+                inputNama.addEventListener('change', handleNamaPerusahaanChange);
+                inputNama.addEventListener('blur', function() {
+                    setTimeout(handleNamaPerusahaanChange, 200);
                 });
             }
 

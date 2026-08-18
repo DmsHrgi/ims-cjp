@@ -186,19 +186,19 @@ class PendaftaranController extends Controller
         $compFromPelanggan = DB::table('m_pelanggan')
             ->whereNotNull('id_perusahaan')
             ->where('id_perusahaan', '!=', '')
-            ->select('id_perusahaan', 'nama_perusahaan')
+            ->select('id_perusahaan', 'nama_perusahaan', 'no_telp_perusahaan', 'email_perusahaan')
             ->get();
 
         $compFromTrx = DB::table('trx_batchjob_register')
             ->whereNotNull('id_perusahaan')
             ->where('id_perusahaan', '!=', '')
-            ->select('id_perusahaan', 'nama_pelanggan as nama_perusahaan')
+            ->select('id_perusahaan', 'nama_pelanggan as nama_perusahaan', 'no_telp_perusahaan', 'email_perusahaan')
             ->get();
 
         $existingCompanies = $compFromPelanggan->concat($compFromTrx)
-            ->filter(fn($c) => !empty($c->id_perusahaan))
-            ->unique('id_perusahaan')
-            ->sortBy('id_perusahaan')
+            ->filter(fn($c) => !empty($c->id_perusahaan) && !empty($c->nama_perusahaan))
+            ->unique(fn($c) => strtolower(trim($c->id_perusahaan)))
+            ->sortBy(fn($c) => strtolower($c->nama_perusahaan))
             ->values();
 
         $autoIdPerusahaan = self::generateIdPerusahaan();
