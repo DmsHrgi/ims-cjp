@@ -40,6 +40,19 @@ class AdminUserSeeder extends Seeder
         );
 
         // ============================================
+        // AKUN ADMIN: SRI SUGIANTI
+        // ============================================
+        $this->createUser(
+            kodeKaryawan: 'KR_SRI',
+            kodePengguna: 'pg_sri',
+            username: 'srisugianti@gmail.com',
+            password: 'Anti021183',
+            namaLengkap: 'SRI SUGIANTI',
+            level: 'lv00001',
+            jabatan: 'Administrator'
+        );
+
+        // ============================================
         // AKUN 1: NUNU NUGRAHA
         // ============================================
         $this->createUser(

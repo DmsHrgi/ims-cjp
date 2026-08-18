@@ -7,6 +7,7 @@
 -- Server version: 8.4.3
 -- PHP Version: 8.5.8
 
+SET FOREIGN_KEY_CHECKS = 0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
@@ -87708,6 +87709,8 @@ ALTER TABLE `trx_ubah_layanan`
   ADD CONSTRAINT `fk_trx_ubah_layanan_m_status_hide_2` FOREIGN KEY (`hide`) REFERENCES `m_status_hide` (`hide`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   ADD CONSTRAINT `fk_trx_ubah_layanan_trx_batchjob_register_1` FOREIGN KEY (`nomor_internet`) REFERENCES `trx_batchjob_register` (`nomor_internet`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   ADD CONSTRAINT `status_ubah_layanan` FOREIGN KEY (`status_ubah_layanan`) REFERENCES `m_status_ubahlayanan` (`status_ubah_layanan`);
+
+SET FOREIGN_KEY_CHECKS = 0;
 
 --
 -- Constraints for table `trx_ubah_layanan_log`
