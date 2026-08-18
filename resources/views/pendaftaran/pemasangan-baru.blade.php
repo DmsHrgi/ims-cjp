@@ -582,44 +582,16 @@
                             <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider">1. Informasi Pelanggan</h4>
                         </div>
 
-                        <!-- Row 1: ID Perusahaan, Nama Perusahaan, No Telp, Email -->
+                        <!-- Row 1: Nama Perusahaan (1st), ID Perusahaan (2nd), No Telp, Email -->
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <!-- 1. Nama Perusahaan (Pertama) -->
                             <div>
                                 <div class="flex items-center justify-between mb-1.5">
-                                    <label class="block text-xs font-semibold text-slate-700">ID Perusahaan <span class="text-rose-500 font-bold">*</span></label>
-                                    <div class="flex items-center gap-1.5">
-                                        <button type="button" id="btnReopenAutoFill" onclick="openConfirmAutoFillModal()" class="hidden text-[10px] text-blue-700 font-semibold bg-blue-50 hover:bg-blue-100 px-2 py-0.5 rounded-md border border-blue-200 inline-flex items-center gap-1 shadow-2xs transition-colors cursor-pointer">
-                                            <i class="fa-solid fa-wand-magic-sparkles text-blue-600"></i> Data Ditemukan (Isi Otomatis)
-                                        </button>
-                                        <span id="autoFillAlert" class="hidden text-[10px] text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200 inline-flex items-center gap-1.5 shadow-2xs">
-                                            <i class="fa-solid fa-circle-check text-emerald-500"></i> Form 1-2 Otomatis Terisi
-                                        </span>
-                                    </div>
+                                    <label class="block text-xs font-semibold text-slate-700">Nama Perusahaan <span class="text-rose-500 font-bold">*</span></label>
+                                    <span id="autoFillAlert" class="hidden text-[10px] text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200 inline-flex items-center gap-1.5 shadow-2xs truncate max-w-[170px]">
+                                        <i class="fa-solid fa-circle-check text-emerald-500"></i> Data Terisi
+                                    </span>
                                 </div>
-                                <div class="relative flex items-center">
-                                    <input type="text" name="id_perusahaan" id="inputIdPerusahaan" list="listExistingCompanyId" required maxlength="100" placeholder="isp-001-{{ date('Y') }} / Pilih ID-Nama" value="{{ old('id_perusahaan', $autoIdPerusahaan ?? '') }}" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 pl-3.5 pr-10 text-sm rounded-xl outline-none transition-all placeholder-slate-400 font-mono">
-                                    <button type="button" id="btnRefreshAutoId" onclick="refreshAutoIdPerusahaan()" title="Generate ID Baru" class="absolute right-2.5 text-slate-400 hover:text-blue-600 transition-colors p-1">
-                                        <i class="fa-solid fa-arrows-rotate text-xs"></i>
-                                    </button>
-                                </div>
-                                <datalist id="listExistingCompanyId">
-                                    @foreach($existingCompanies ?? [] as $comp)
-                                        @php
-                                            $cName = $comp->nama_perusahaan ?? $comp->nama_pelanggan ?? '';
-                                            $displayFormat = $comp->id_perusahaan . ($cName ? ' - ' . $cName : '');
-                                        @endphp
-                                        <option value="{{ $displayFormat }}">{{ $displayFormat }}</option>
-                                        @if($cName)
-                                            <option value="{{ $comp->id_perusahaan }}">{{ $cName }}</option>
-                                        @endif
-                                    @endforeach
-                                </datalist>
-                                <p class="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
-                                    <i class="fa-solid fa-circle-info text-blue-500"></i> Otomatis terisi / generate saat mengisi Nama Perusahaan
-                                </p>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-1.5">Nama Perusahaan <span class="text-rose-500 font-bold">*</span></label>
                                 <input type="text" name="nama_perusahaan" id="inputNamaPerusahaan" list="listExistingCompanyNames" required maxlength="255" placeholder="Ketik / Pilih Nama Perusahaan" value="{{ old('nama_perusahaan') }}" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 px-3.5 text-sm rounded-xl outline-none transition-all placeholder-slate-400">
                                 <datalist id="listExistingCompanyNames">
                                     @foreach($existingCompanies ?? [] as $comp)
@@ -631,11 +603,37 @@
                                         @endif
                                     @endforeach
                                 </datalist>
+                                <p class="text-[10px] text-slate-400 mt-1">Ketik nama perusahaan baru atau pilih yang sudah ada.</p>
                             </div>
+
+                            <!-- 2. ID Perusahaan (Kedua - Readonly Auto Generated / Auto Match) -->
+                            <div>
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <label class="block text-xs font-semibold text-slate-700">ID Perusahaan <span class="text-rose-500 font-bold">*</span></label>
+                                    <div class="flex items-center gap-1">
+                                        <span class="text-[10px] text-blue-700 font-semibold bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200 inline-flex items-center gap-1">
+                                            <i class="fa-solid fa-lock text-[9px] text-blue-500"></i> Auto ID
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="relative flex items-center">
+                                    <input type="text" name="id_perusahaan" id="inputIdPerusahaan" readonly required maxlength="100" placeholder="isp-001-{{ date('Y') }}" value="{{ old('id_perusahaan', $autoIdPerusahaan ?? '') }}" class="w-full bg-slate-50 border border-slate-200 text-slate-700 font-mono py-2.5 pl-3.5 pr-10 text-sm rounded-xl outline-none select-all" title="ID Perusahaan otomatis di-generate atau disesuaikan dengan nama perusahaan">
+                                    <button type="button" id="btnRefreshAutoId" onclick="refreshAutoIdPerusahaan()" title="Generate Ulang ID Baru" class="absolute right-2 text-slate-400 hover:text-blue-600 transition-colors p-1.5">
+                                        <i class="fa-solid fa-arrows-rotate text-xs"></i>
+                                    </button>
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
+                                    <i class="fa-solid fa-circle-info text-blue-500"></i> Otomatis terisi / generate saat mengisi Nama Perusahaan.
+                                </p>
+                            </div>
+
+                            <!-- 3. No Telp Perusahaan -->
                             <div>
                                 <label class="block text-xs font-semibold text-slate-700 mb-1.5">No Telp. Perusahaan <span class="text-rose-500 font-bold">*</span></label>
                                 <input type="text" name="no_telp_perusahaan" required maxlength="30" placeholder="08xxxxxxxxxx" value="{{ old('no_telp_perusahaan') }}" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 px-3.5 text-sm rounded-xl outline-none transition-all placeholder-slate-400">
                             </div>
+
+                            <!-- 4. Email Perusahaan -->
                             <div>
                                 <label class="block text-xs font-semibold text-slate-700 mb-1.5">Email Perusahaan <span class="text-rose-500 font-bold">*</span></label>
                                 <input type="email" name="email_perusahaan" required maxlength="150" placeholder="email@perusahaan.com" value="{{ old('email_perusahaan') }}" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 px-3.5 text-sm rounded-xl outline-none transition-all placeholder-slate-400">
