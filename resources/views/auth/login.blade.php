@@ -88,7 +88,7 @@
                     </div>
                     <div class="leading-tight">
                         <p class="font-display font-extrabold tracking-wide text-base text-white">CONNECTI JELAJAH PRIANGAN</p>
-                        <p class="font-display font-medium text-cyan-300 text-[11px] tracking-wider uppercase">Internet Cepat, Koneksi Tanpa Batas</p>
+                        <p class="font-display font-medium text-cyan-300 text-[11px] tracking-wider uppercase">Koneksi Cepat, Koneksi Tanpa Batas</p>
                     </div>
                 </div>
             </div>
@@ -139,7 +139,7 @@
                     </div>
                     <div class="leading-tight">
                         <span class="font-display font-extrabold tracking-wide text-slate-900 block text-sm">CONNECTI JELAJAH PRIANGAN</span>
-                        <span class="text-[10px] text-slate-500 font-semibold tracking-wider uppercase block">Internet Cepat, Koneksi Tanpa Batas</span>
+                        <span class="text-[10px] text-slate-500 font-semibold tracking-wider uppercase block">Koneksi Cepat, Koneksi Tanpa Batas</span>
                     </div>
                 </div>
 

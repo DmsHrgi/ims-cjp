@@ -70,7 +70,7 @@
                 <div class="flex items-center gap-1.5 mt-0.5">
                     <span class="inline-block w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
                     <p class="text-cyan-300 text-[9.5px] font-semibold tracking-widest uppercase">
-                        Internet Cepat
+                        Koneksi Cepat
                     </p>
                 </div>
             </div>
