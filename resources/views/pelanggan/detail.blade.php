@@ -326,8 +326,23 @@
                                 <span class="text-[11px] font-bold text-slate-700 uppercase flex items-center gap-1.5">
                                     <i class="fa-solid fa-building text-emerald-600"></i> Lokasi Geografis Perusahaan
                                 </span>
-                                @if(!empty($customer->lon_lat_perusahaan))
-                                    <button type="button" onclick="navigator.clipboard.writeText('{{ addslashes($customer->lon_lat_perusahaan) }}'); alert('Koordinat perusahaan berhasil disalin!')" class="text-blue-600 hover:text-blue-700 text-[10px] font-semibold flex items-center gap-1 transition-colors">
+                                @php
+                                    $coordCorp = $customer->lon_lat_perusahaan ?? null;
+                                    $rawMapCorp = $customer->sharelock_perusahaan ?: ($coordCorp ? 'https://www.google.com/maps/search/?api=1&query=' . urlencode(trim($coordCorp)) : null);
+                                    $mapsCorpUrl = null;
+                                    if (!empty($rawMapCorp)) {
+                                        $mapCorpTrim = trim($rawMapCorp);
+                                        if (str_starts_with($mapCorpTrim, 'http://') || str_starts_with($mapCorpTrim, 'https://')) {
+                                            $mapsCorpUrl = $mapCorpTrim;
+                                        } elseif (str_starts_with($mapCorpTrim, 'maps.app.goo.gl') || str_starts_with($mapCorpTrim, 'goo.gl') || str_starts_with($mapCorpTrim, 'maps.google.com') || str_starts_with($mapCorpTrim, 'www.google.com') || str_starts_with($mapCorpTrim, 'google.com/maps')) {
+                                            $mapsCorpUrl = 'https://' . $mapCorpTrim;
+                                        } else {
+                                            $mapsCorpUrl = 'https://www.google.com/maps/search/?api=1&query=' . urlencode($mapCorpTrim);
+                                        }
+                                    }
+                                @endphp
+                                @if(!empty($coordCorp))
+                                    <button type="button" onclick="navigator.clipboard.writeText('{{ addslashes($coordCorp) }}'); alert('Koordinat perusahaan berhasil disalin!')" class="text-blue-600 hover:text-blue-700 text-[10px] font-semibold flex items-center gap-1 transition-colors">
                                         <i class="fa-regular fa-copy"></i> Salin
                                     </button>
                                 @endif
@@ -335,11 +350,11 @@
                             <div>
                                 <span class="text-[10px] text-gray-400 font-medium uppercase block mb-0.5">Titik Koordinat:</span>
                                 <p class="font-mono text-xs font-semibold text-gray-800 break-all leading-relaxed select-all">
-                                    {{ $customer->lon_lat_perusahaan ?: '-' }}
+                                    {{ $coordCorp ?: '-' }}
                                 </p>
                             </div>
-                            @if(!empty($customer->sharelock_perusahaan))
-                                <a href="{{ $customer->sharelock_perusahaan }}" target="_blank" rel="noopener noreferrer" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-3 rounded-xl text-[11px] flex items-center justify-center gap-2 shadow-xs transition-all duration-200">
+                            @if(!empty($mapsCorpUrl))
+                                <a href="{{ $mapsCorpUrl }}" target="_blank" rel="noopener noreferrer" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-3 rounded-xl text-[11px] flex items-center justify-center gap-2 shadow-xs transition-all duration-200">
                                     <i class="fa-solid fa-map-pin text-xs"></i>
                                     <span class="truncate">Buka Peta Lokasi Perusahaan</span>
                                     <i class="fa-solid fa-arrow-up-right-from-square text-[9px] shrink-0"></i>
@@ -357,7 +372,18 @@
                                 </span>
                                 @php
                                     $coordPasang = $customer->lon_lat_pasang ?: $customer->lon_lat;
-                                    $mapPasang = $customer->sharelock_pasang ?: $customer->loc_maps;
+                                    $rawMapPasang = $customer->sharelock_pasang ?: $customer->loc_maps ?: ($coordPasang ? 'https://www.google.com/maps/search/?api=1&query=' . urlencode(trim($coordPasang)) : null);
+                                    $mapsPasangUrl = null;
+                                    if (!empty($rawMapPasang)) {
+                                        $mapPasangTrim = trim($rawMapPasang);
+                                        if (str_starts_with($mapPasangTrim, 'http://') || str_starts_with($mapPasangTrim, 'https://')) {
+                                            $mapsPasangUrl = $mapPasangTrim;
+                                        } elseif (str_starts_with($mapPasangTrim, 'maps.app.goo.gl') || str_starts_with($mapPasangTrim, 'goo.gl') || str_starts_with($mapPasangTrim, 'maps.google.com') || str_starts_with($mapPasangTrim, 'www.google.com') || str_starts_with($mapPasangTrim, 'google.com/maps')) {
+                                            $mapsPasangUrl = 'https://' . $mapPasangTrim;
+                                        } else {
+                                            $mapsPasangUrl = 'https://www.google.com/maps/search/?api=1&query=' . urlencode($mapPasangTrim);
+                                        }
+                                    }
                                 @endphp
                                 @if(!empty($coordPasang))
                                     <button type="button" onclick="navigator.clipboard.writeText('{{ addslashes($coordPasang) }}'); alert('Koordinat pemasangan berhasil disalin!')" class="text-indigo-600 hover:text-indigo-700 text-[10px] font-semibold flex items-center gap-1 transition-colors">
@@ -371,12 +397,7 @@
                                     {{ $coordPasang ?: '-' }}
                                 </p>
                             </div>
-                            @if(!empty($mapPasang))
-                                @php
-                                    $mapsPasangUrl = (str_starts_with($mapPasang, 'http://') || str_starts_with($mapPasang, 'https://')) 
-                                        ? $mapPasang 
-                                        : 'https://www.google.com/maps/search/?api=1&query=' . urlencode($mapPasang);
-                                @endphp
+                            @if(!empty($mapsPasangUrl))
                                 <a href="{{ $mapsPasangUrl }}" target="_blank" rel="noopener noreferrer" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-3 rounded-xl text-[11px] flex items-center justify-center gap-2 shadow-xs transition-all duration-200">
                                     <i class="fa-solid fa-map-pin text-xs"></i>
                                     <span class="truncate">Buka Peta Lokasi Pemasangan</span>
@@ -492,38 +513,36 @@
                                 if (str_starts_with($trimmed, 'http://') || str_starts_with($trimmed, 'https://')) return $trimmed;
 
                                 $cleanPath = ltrim($trimmed, '/');
-                                
-                                // Direct public check
+                                $cleanRelative = preg_replace('/^storage\//', '', $cleanPath);
+
+                                // 1. Direct public asset check
                                 if (file_exists(public_path($cleanPath))) {
                                     return asset($cleanPath);
                                 }
-                                
-                                // Check in storage/
-                                if (!str_starts_with($cleanPath, 'storage/')) {
-                                    if (file_exists(public_path('storage/' . $cleanPath))) {
-                                        return asset('storage/' . $cleanPath);
-                                    }
-                                    if (file_exists(public_path('storage/foto_po/' . $cleanPath))) {
-                                        return asset('storage/foto_po/' . $cleanPath);
-                                    }
-                                    if (file_exists(public_path('storage/foto_bangunan/' . $cleanPath))) {
-                                        return asset('storage/foto_bangunan/' . $cleanPath);
-                                    }
-                                    if (file_exists(public_path('storage/foto_ktp/' . $cleanPath))) {
-                                        return asset('storage/foto_ktp/' . $cleanPath);
-                                    }
-                                    if (file_exists(public_path('storage/foto_rumah/' . $cleanPath))) {
-                                        return asset('storage/foto_rumah/' . $cleanPath);
-                                    }
-                                    if (file_exists(public_path('storage/foto_peta/' . $cleanPath))) {
-                                        return asset('storage/foto_peta/' . $cleanPath);
+                                if (file_exists(public_path('storage/' . $cleanRelative))) {
+                                    return asset('storage/' . $cleanRelative);
+                                }
+
+                                // 2. Local storage check
+                                $candidates = [
+                                    storage_path('app/public/' . $cleanRelative),
+                                    storage_path('app/public/foto_po/' . $cleanRelative),
+                                    storage_path('app/public/foto_bangunan/' . $cleanRelative),
+                                    storage_path('app/public/foto_ktp/' . $cleanRelative),
+                                    storage_path('app/public/foto_rumah/' . $cleanRelative),
+                                    storage_path('app/public/foto_peta/' . $cleanRelative),
+                                    storage_path('app/' . $cleanRelative),
+                                ];
+
+                                foreach ($candidates as $cand) {
+                                    if (file_exists($cand) && is_file($cand)) {
+                                        return url('media-berkas/' . $cleanRelative);
                                     }
                                 }
 
-                                // Storage disk check
-                                $storageRelative = str_starts_with($cleanPath, 'storage/') ? substr($cleanPath, 8) : $cleanPath;
-                                if (\Illuminate\Support\Facades\Storage::disk('public')->exists($storageRelative)) {
-                                    return asset('storage/' . $storageRelative);
+                                // 3. Fallback: stream through media-berkas route
+                                if (!empty($cleanRelative)) {
+                                    return url('media-berkas/' . $cleanRelative);
                                 }
 
                                 return null;

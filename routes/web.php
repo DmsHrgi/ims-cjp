@@ -99,13 +99,56 @@ Route::middleware(\App\Http\Middleware\EnsureAuthenticated::class)->group(functi
     Route::post('/billing/layanan/{kode_billing}/adjust', [BillingController::class, 'adjustLayanan'])->where('kode_billing', '.*');
     Route::delete('/billing/layanan/{kode_billing}', [BillingController::class, 'destroyLayanan'])->where('kode_billing', '.*');
     Route::post('/billing/update-payment-type', [BillingController::class, 'updatePaymentType'])->name('billing.update-payment-type');
-
-    // Fallback route untuk berkas storage
-    Route::get('/storage/{path}', function ($path) {
-        $filePath = storage_path('app/public/' . $path);
-        if (!file_exists($filePath)) {
-            abort(404);
-        }
-        return response()->file($filePath);
-    })->where('path', '.*')->name('storage.fallback');
 });
+
+// Route penayangan berkas media (foto PO, foto bangunan, dokumen) tanpa ketergantungan symlink hosting
+Route::get('/media-berkas/{path}', function ($path) {
+    $cleanPath = ltrim(preg_replace('/^storage\//', '', $path), '/');
+    $candidates = [
+        storage_path('app/public/' . $cleanPath),
+        storage_path('app/public/foto_po/' . $cleanPath),
+        storage_path('app/public/foto_bangunan/' . $cleanPath),
+        storage_path('app/public/foto_ktp/' . $cleanPath),
+        storage_path('app/public/foto_rumah/' . $cleanPath),
+        storage_path('app/public/foto_peta/' . $cleanPath),
+        storage_path('app/' . $cleanPath),
+        public_path('storage/' . $cleanPath),
+        public_path($cleanPath),
+    ];
+    foreach ($candidates as $filePath) {
+        if (file_exists($filePath) && is_file($filePath)) {
+            $mime = @mime_content_type($filePath) ?: 'image/jpeg';
+            return response()->file($filePath, [
+                'Content-Type' => $mime,
+                'Cache-Control' => 'public, max-age=86400',
+            ]);
+        }
+    }
+    abort(404);
+})->where('path', '.*')->name('media.file');
+
+// Fallback route untuk berkas storage
+Route::get('/storage/{path}', function ($path) {
+    $cleanPath = ltrim(preg_replace('/^storage\//', '', $path), '/');
+    $candidates = [
+        storage_path('app/public/' . $cleanPath),
+        storage_path('app/public/foto_po/' . $cleanPath),
+        storage_path('app/public/foto_bangunan/' . $cleanPath),
+        storage_path('app/public/foto_ktp/' . $cleanPath),
+        storage_path('app/public/foto_rumah/' . $cleanPath),
+        storage_path('app/public/foto_peta/' . $cleanPath),
+        storage_path('app/' . $cleanPath),
+        public_path('storage/' . $cleanPath),
+        public_path($cleanPath),
+    ];
+    foreach ($candidates as $filePath) {
+        if (file_exists($filePath) && is_file($filePath)) {
+            $mime = @mime_content_type($filePath) ?: 'image/jpeg';
+            return response()->file($filePath, [
+                'Content-Type' => $mime,
+                'Cache-Control' => 'public, max-age=86400',
+            ]);
+        }
+    }
+    abort(404);
+})->where('path', '.*')->name('storage.fallback');

@@ -348,8 +348,10 @@ class PageController extends Controller
         $customer->harga_paket = $billReg->total_reg ?? $customer->harga_bandwith ?? $reg->total_registrasi ?? null;
 
         // Foto Berkas
-        $customer->foto_po = $reg->foto_po ?? $customer->foto_po ?? $customer->foto_ktp ?? null;
-        $customer->foto_bangunan = $reg->foto_bangunan ?? $customer->foto_bangunan ?? $customer->foto_rumah ?? null;
+        $instData = DB::table('trx_instalasi')->where('nomor_internet', $nomorInternet)->first();
+        $customer->foto_po = $reg->foto_po ?? $instData->foto_ktp ?? $customer->foto_po ?? $customer->foto_ktp ?? null;
+        $customer->foto_bangunan = $reg->foto_bangunan ?? $instData->foto_rumah ?? $customer->foto_bangunan ?? $customer->foto_rumah ?? null;
+        $customer->foto_peta = $instData->foto_peta ?? $customer->foto_peta ?? null;
 
         // --- DATA LOG / RIWAYAT AKTIVITAS ---
         $logs = collect();

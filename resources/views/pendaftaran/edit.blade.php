@@ -338,10 +338,18 @@
                         if (empty($path)) return null;
                         if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) return $path;
                         $cleanPath = ltrim($path, '/');
-                        if (!str_starts_with($cleanPath, 'storage/')) {
-                            $cleanPath = 'storage/' . preg_replace('/^public\//', '', $cleanPath);
+                        $cleanRelative = preg_replace('/^storage\//', '', $cleanPath);
+
+                        if (file_exists(public_path($cleanPath))) {
+                            return asset($cleanPath);
                         }
-                        return asset($cleanPath);
+                        if (file_exists(public_path('storage/' . $cleanRelative))) {
+                            return asset('storage/' . $cleanRelative);
+                        }
+                        if (file_exists(storage_path('app/public/' . $cleanRelative))) {
+                            return url('media-berkas/' . $cleanRelative);
+                        }
+                        return url('media-berkas/' . $cleanRelative);
                     };
                     $editPoUrl = $getPhotoUrl($data->foto_po ?? $data->foto_ktp ?? null);
                     $editBangunanUrl = $getPhotoUrl($data->foto_bangunan ?? $data->foto_rumah ?? null);
