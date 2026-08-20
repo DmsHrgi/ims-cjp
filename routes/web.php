@@ -24,6 +24,14 @@ Route::get('/fix-database-schema', function () {
         $results[] = 'Artisan migrate: ' . $e->getMessage();
     }
 
+    // 2. Buat symlink storage secara otomatis (storage:link)
+    try {
+        \Illuminate\Support\Facades\Artisan::call('storage:link');
+        $results[] = 'Storage link: ' . trim(\Illuminate\Support\Facades\Artisan::output());
+    } catch (\Throwable $e) {
+        $results[] = 'Storage link info: ' . $e->getMessage();
+    }
+
     // 2. Eksekusi ALTER TABLE langsung untuk memastikan perubahan kolom berhasil
     $queries = [
         "ALTER TABLE `trx_batchjob_register` MODIFY `nomor_bangunan` VARCHAR(50) NULL DEFAULT NULL",
