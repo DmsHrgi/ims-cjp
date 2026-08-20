@@ -12,6 +12,50 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+// Route khusus untuk perbaikan skema database hosting via browser (tanpa perlu SSH/cPanel)
+Route::get('/fix-database-schema', function () {
+    $results = [];
+
+    // 1. Jalankan artisan migrate jika ada file migration baru
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        $results[] = 'Artisan migrate: ' . trim(\Illuminate\Support\Facades\Artisan::output());
+    } catch (\Throwable $e) {
+        $results[] = 'Artisan migrate: ' . $e->getMessage();
+    }
+
+    // 2. Eksekusi ALTER TABLE langsung untuk memastikan perubahan kolom berhasil
+    $queries = [
+        "ALTER TABLE `trx_batchjob_register` MODIFY `nomor_bangunan` VARCHAR(50) NULL DEFAULT NULL",
+        "ALTER TABLE `trx_batchjob_register` MODIFY `rt_pasang` VARCHAR(10) NULL DEFAULT NULL",
+        "ALTER TABLE `trx_batchjob_register` MODIFY `rw_pasang` VARCHAR(10) NULL DEFAULT NULL",
+        "ALTER TABLE `trx_batchjob_register` MODIFY `nomor_bangunan_perusahaan` VARCHAR(50) NULL DEFAULT NULL",
+        "ALTER TABLE `trx_batchjob_register` MODIFY `note_request` TEXT NULL DEFAULT NULL",
+        "ALTER TABLE `trx_batchjob_register` MODIFY `nama_sales` VARCHAR(100) NULL DEFAULT NULL",
+        "ALTER TABLE `trx_batchjob_register` MODIFY `group_layanan` VARCHAR(100) NULL DEFAULT NULL",
+        "ALTER TABLE `trx_batchjob_register` MODIFY `user_create` VARCHAR(50) NULL DEFAULT NULL",
+        "ALTER TABLE `trx_batchjob_register` MODIFY `user_update` VARCHAR(50) NULL DEFAULT NULL",
+        "ALTER TABLE `m_pelanggan` MODIFY `nomor_bangunan_perusahaan` VARCHAR(50) NULL DEFAULT NULL",
+        "ALTER TABLE `m_pelanggan` MODIFY `rt_ktp` VARCHAR(10) NULL DEFAULT NULL",
+        "ALTER TABLE `m_pelanggan` MODIFY `rw_ktp` VARCHAR(10) NULL DEFAULT NULL",
+    ];
+
+    foreach ($queries as $q) {
+        try {
+            \Illuminate\Support\Facades\DB::statement($q);
+            $results[] = 'SUCCESS: ' . $q;
+        } catch (\Throwable $e) {
+            $results[] = 'INFO/SKIP: ' . $e->getMessage();
+        }
+    }
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Perbaikan database berhasil dijalankan!',
+        'details' => $results
+    ], 200, [], JSON_PRETTY_PRINT);
+});
+
 // --- APLIKASI (wajib login) ---
 Route::middleware(\App\Http\Middleware\EnsureAuthenticated::class)->group(function () {
 
