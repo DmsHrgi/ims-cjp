@@ -662,7 +662,7 @@ class PendaftaranController extends Controller
             if ($fotoPoPath) Storage::disk('public')->delete($fotoPoPath);
             if ($fotoBangunanPath) Storage::disk('public')->delete($fotoBangunanPath);
 
-            return back()->withInput()->withErrors(['error' => 'Gagal menyimpan: ' . $e->getMessage()]);
+            return back()->withInput()->withErrors(['error' => self::formatDbErrorMessage($e, 'menyimpan pendaftaran')]);
         }
     }
 
@@ -1099,7 +1099,7 @@ class PendaftaranController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withInput()->withErrors(['error' => 'Gagal memperbarui: ' . $e->getMessage()]);
+            return back()->withInput()->withErrors(['error' => self::formatDbErrorMessage($e, 'memperbarui data')]);
         }
     }
 
@@ -1147,7 +1147,7 @@ class PendaftaranController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => 'Gagal membatalkan: ' . $e->getMessage()]);
+            return back()->withErrors(['error' => self::formatDbErrorMessage($e, 'membatalkan pendaftaran')]);
         }
     }
 
@@ -1246,7 +1246,7 @@ class PendaftaranController extends Controller
         } catch (\Exception $e) {
             DB::statement('SET FOREIGN_KEY_CHECKS=1');
             DB::rollBack();
-            return back()->withErrors(['error' => 'Gagal menghapus: ' . $e->getMessage()]);
+            return back()->withErrors(['error' => self::formatDbErrorMessage($e, 'menghapus data pendaftaran')]);
         }
     }
 
@@ -1585,7 +1585,7 @@ class PendaftaranController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withInput()->withErrors(['error' => 'Gagal menyimpan Report Instalasi: ' . $e->getMessage()]);
+            return back()->withInput()->withErrors(['error' => self::formatDbErrorMessage($e, 'menyimpan Report Instalasi')]);
         }
     }
 
@@ -1787,7 +1787,7 @@ class PendaftaranController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => 'Gagal menyimpan aktivasi: ' . $e->getMessage()]);
+            return back()->withErrors(['error' => self::formatDbErrorMessage($e, 'menyimpan jadwal aktivasi')]);
         }
     }
 
@@ -1944,7 +1944,7 @@ class PendaftaranController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withInput()->withErrors(['error' => 'Gagal menyimpan Jadwal Survey: ' . $e->getMessage()]);
+            return back()->withInput()->withErrors(['error' => self::formatDbErrorMessage($e, 'menyimpan Jadwal Survey')]);
         }
     }
 
@@ -2170,7 +2170,7 @@ class PendaftaranController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withInput()->withErrors(['error' => 'Gagal menyimpan Report Survey: ' . $e->getMessage()]);
+            return back()->withInput()->withErrors(['error' => self::formatDbErrorMessage($e, 'menyimpan Report Survey')]);
         }
     }
 
@@ -2348,7 +2348,7 @@ class PendaftaranController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withInput()->withErrors(['error' => 'Gagal menyimpan Jadwal Instalasi: ' . $e->getMessage()]);
+            return back()->withInput()->withErrors(['error' => self::formatDbErrorMessage($e, 'menyimpan Jadwal Instalasi')]);
         }
     }
 
@@ -2559,7 +2559,7 @@ class PendaftaranController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withInput()->withErrors(['error' => 'Gagal menyimpan Report Aktivasi: ' . $e->getMessage()]);
+            return back()->withInput()->withErrors(['error' => self::formatDbErrorMessage($e, 'menyimpan Report Aktivasi')]);
         }
     }
 
@@ -2775,5 +2775,85 @@ class PendaftaranController extends Controller
                 'permintaan_khusus'         => $trx->note_request ?? '',
             ]
         ]);
+    }
+
+    /**
+     * Format database exceptions and system errors into clean, user-friendly Indonesian messages
+     */
+    public static function formatDbErrorMessage(\Throwable $e, string $action = 'menyimpan data'): string
+    {
+        $msg = $e->getMessage();
+
+        // 1. Data too long for column (SQLSTATE 22001 / Error 1406)
+        if (preg_match("/Data too long for column '([^']+)'/i", $msg, $m)) {
+            $col = $m[1];
+            $fieldLabels = [
+                'nomor_bangunan' => 'Nomor Bangunan / No. Rumah',
+                'nomor_bangunan_perusahaan' => 'Nomor Bangunan Perusahaan',
+                'rt_pasang' => 'RT Lokasi Pemasangan',
+                'rw_pasang' => 'RW Lokasi Pemasangan',
+                'rt_perusahaan' => 'RT Perusahaan',
+                'rw_perusahaan' => 'RW Perusahaan',
+                'rt_ktp' => 'RT Perusahaan/KTP',
+                'rw_ktp' => 'RW Perusahaan/KTP',
+                'nama_pelanggan' => 'Nama Perusahaan / Pelanggan',
+                'nama_perusahaan' => 'Nama Perusahaan',
+                'alamat_pasang' => 'Alamat Pemasangan',
+                'alamat_ktp' => 'Alamat Perusahaan',
+                'note_request' => 'Permintaan Khusus / Catatan',
+                'nama_sales' => 'Nama Sales',
+                'group_layanan' => 'Group Layanan',
+                'kode_bandwith' => 'Paket Layanan',
+                'kode_wilayah_kelurahan_pasang' => 'Kelurahan Pemasangan',
+                'kode_wilayah_kelurahan_perusahaan' => 'Kelurahan Perusahaan',
+                'user_create' => 'Nama Pengguna / Admin',
+                'user_update' => 'Nama Pengguna / Admin',
+                'no_telp_perusahaan' => 'No. Telepon Perusahaan',
+                'no_telp_pic_teknis' => 'No. Telepon PIC Teknis',
+                'no_telp_pic_keuangan' => 'No. Telepon PIC Keuangan',
+                'email_perusahaan' => 'Email Perusahaan',
+                'email_pic_teknis' => 'Email PIC Teknis',
+                'email_pic_keuangan' => 'Email PIC Keuangan',
+            ];
+            $fieldName = $fieldLabels[$col] ?? ucwords(str_replace('_', ' ', $col));
+            return "Gagal {$action}: Jumlah karakter pada kolom '{$fieldName}' terlalu panjang. Silakan periksa dan perpendek isian data tersebut lalu coba ulangi.";
+        }
+
+        // 2. Duplicate entry (SQLSTATE 23000 / Error 1062)
+        if (preg_match("/Duplicate entry '([^']+)' for key '([^']+)'/i", $msg, $m)) {
+            $val = $m[1];
+            $key = $m[2];
+            if (str_contains($key, 'nomor_internet')) {
+                return "Gagal {$action}: Nomor Internet '{$val}' sudah terdaftar dalam sistem. Silakan ulangi dengan nomor lain.";
+            }
+            if (str_contains($key, 'id_perusahaan')) {
+                return "Gagal {$action}: ID Perusahaan '{$val}' sudah digunakan. Silakan gunakan ID lain.";
+            }
+            return "Gagal {$action}: Data '{$val}' sudah terdaftar di dalam sistem (duplikat).";
+        }
+
+        // 3. Cannot be null / Not null constraint (SQLSTATE 23000 / Error 1048)
+        if (preg_match("/Column '([^']+)' cannot be null/i", $msg, $m)) {
+            $col = $m[1];
+            $fieldName = ucwords(str_replace('_', ' ', $col));
+            return "Gagal {$action}: Kolom '{$fieldName}' wajib diisi dan tidak boleh kosong.";
+        }
+
+        // 4. Foreign key constraint fails (SQLSTATE 23000 / Error 1452)
+        if (str_contains($msg, 'foreign key constraint fails') || str_contains($msg, 'a foreign key constraint')) {
+            return "Gagal {$action}: Data referensi yang dipilih (seperti wilayah, paket layanan, atau pelanggan) tidak valid atau sudah tidak tersedia di database.";
+        }
+
+        // 5. Out of range value
+        if (str_contains($msg, 'Out of range value')) {
+            return "Gagal {$action}: Nilai angka yang dimasukkan melebihi batas kapasitas yang diizinkan sistem.";
+        }
+
+        // 6. Generic SQL/Database error
+        if (str_contains($msg, 'SQLSTATE') || str_contains($msg, 'Connection: mysql')) {
+            return "Gagal {$action}: Terjadi ketidaksesuaian format data dengan database. Silakan periksa kembali isian formulir Anda.";
+        }
+
+        return "Gagal {$action}: " . $msg;
     }
 }

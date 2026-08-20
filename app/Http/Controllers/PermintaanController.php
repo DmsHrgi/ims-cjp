@@ -108,7 +108,7 @@ class PermintaanController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => 'Gagal memperbarui jadwal ubah layanan: ' . $e->getMessage()]);
+            return back()->withErrors(['error' => PendaftaranController::formatDbErrorMessage($e, 'memperbarui jadwal ubah layanan')]);
         }
     }
 
@@ -159,7 +159,7 @@ class PermintaanController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => 'Gagal membatalkan permintaan ubah layanan: ' . $e->getMessage()]);
+            return back()->withErrors(['error' => PendaftaranController::formatDbErrorMessage($e, 'membatalkan permintaan ubah layanan')]);
         }
     }
 
@@ -373,7 +373,7 @@ class PermintaanController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => 'Gagal menyimpan jadwal schedule collect: ' . $e->getMessage()]);
+            return back()->withErrors(['error' => PendaftaranController::formatDbErrorMessage($e, 'menyimpan jadwal schedule collect')]);
         }
     }
 
@@ -428,7 +428,7 @@ class PermintaanController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => 'Gagal membatalkan permintaan terminasi: ' . $e->getMessage()]);
+            return back()->withErrors(['error' => PendaftaranController::formatDbErrorMessage($e, 'membatalkan permintaan terminasi')]);
         }
     }
 
@@ -597,7 +597,7 @@ class PermintaanController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => 'Gagal menyetujui suspend: ' . $e->getMessage()]);
+            return back()->withErrors(['error' => PendaftaranController::formatDbErrorMessage($e, 'menyetujui suspend')]);
         }
     }
 
@@ -651,7 +651,7 @@ class PermintaanController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => 'Gagal membatalkan suspend: ' . $e->getMessage()]);
+            return back()->withErrors(['error' => PendaftaranController::formatDbErrorMessage($e, 'membatalkan suspend')]);
         }
     }
 
