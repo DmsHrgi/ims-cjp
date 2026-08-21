@@ -346,6 +346,7 @@ class PageController extends Controller
 
         $billReg = DB::table('trx_billing_registrasi')->where('nomor_internet', $nomorInternet)->first();
         $customer->harga_paket = $billReg->total_reg ?? $customer->harga_bandwith ?? $reg->total_registrasi ?? null;
+        $customer->biaya_reg = $billReg->biaya_registrasi ?? $reg->biaya_reg ?? $customer->biaya_reg ?? null;
 
         // Foto Berkas
         $instData = DB::table('trx_instalasi')->where('nomor_internet', $nomorInternet)->first();
@@ -629,6 +630,7 @@ class PageController extends Controller
 
         $billReg = DB::table('trx_billing_registrasi')->where('nomor_internet', $nomorInternet)->first();
         $customer->harga_paket = $billReg->total_reg ?? $customer->harga_bandwith ?? $reg->total_registrasi ?? null;
+        $customer->biaya_reg = $billReg->biaya_registrasi ?? $reg->biaya_reg ?? $customer->biaya_reg ?? null;
 
         // --- DATA LOG / RIWAYAT AKTIVITAS ---
         $logs = collect();

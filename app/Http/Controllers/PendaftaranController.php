@@ -142,6 +142,41 @@ class PendaftaranController extends Controller
         $isNoc = !$isAdmin && ($userLevel === 'NOC' || $kodeLevel === 'lv68132');
         $isFinance = !$isAdmin && ($userLevel === 'FINANCE' || $kodeLevel === 'lv33501' || ($u['level_num'] ?? null) == 6 || str_contains($userLevel, 'FINANCE') || str_contains($userLevel, 'KEUANGAN'));
 
+        // Daftar teknisi lapangan khusus untuk Team Survey & Instalasi
+        $targetTeknisNames = [
+            'Abdul Ghani',
+            'Dede',
+            'Dika',
+            'Dodi Sodikin',
+            'Cristian',
+            'Iyan sofian',
+            'Fadil',
+            'M Ryan Septiadi',
+            'Sandi',
+            'Dudi',
+        ];
+
+        $existingTeknis = DB::table('tb_m_karyawan')
+            ->whereIn('status_aktif', ['1', '01'])
+            ->where(function ($q) use ($targetTeknisNames) {
+                foreach ($targetTeknisNames as $name) {
+                    $q->orWhere('nama_karyawan', 'LIKE', '%' . $name . '%');
+                }
+            })
+            ->get(['kode_karyawan', 'nama_karyawan']);
+
+        $teamTeknisList = collect($targetTeknisNames)->map(function ($targetName) use ($existingTeknis) {
+            $found = $existingTeknis->first(function ($item) use ($targetName) {
+                return strcasecmp(trim($item->nama_karyawan), trim($targetName)) === 0
+                    || stripos($item->nama_karyawan, $targetName) !== false;
+            });
+
+            return (object)[
+                'kode_karyawan' => $found ? $found->kode_karyawan : 'KRY-' . strtoupper(Str::slug($targetName)),
+                'nama_karyawan' => $found ? $found->nama_karyawan : $targetName,
+            ];
+        });
+
         // Master data untuk NOC (Jadwal Aktivasi, POP, Media Akses, Perangkat)
         $teamAktivasiList = DB::table('tb_m_karyawan')
             ->whereIn('status_aktif', ['1', '01'])
@@ -210,7 +245,7 @@ class PendaftaranController extends Controller
         $autoIdPerusahaan = self::generateIdPerusahaan();
 
         return view('pendaftaran.pemasangan-baru', compact(
-            'bangunan', 'kategori', 'groupLayanan', 'sales', 'provinsi', 'rows', 'statusList', 'wilayahList', 'isAdmin', 'isNoc', 'isFinance', 'teamAktivasiList', 'popList', 'mediaAksesList', 'barangList', 'installedItems', 'paketList', 'existingCompanies', 'autoIdPerusahaan'
+            'bangunan', 'kategori', 'groupLayanan', 'sales', 'provinsi', 'rows', 'statusList', 'wilayahList', 'isAdmin', 'isNoc', 'isFinance', 'teamAktivasiList', 'teamTeknisList', 'popList', 'mediaAksesList', 'barangList', 'installedItems', 'paketList', 'existingCompanies', 'autoIdPerusahaan'
         ));
     }
 
@@ -1374,13 +1409,40 @@ class PendaftaranController extends Controller
             ->where('nomor_internet', $nomorInternet)
             ->first();
 
-        // Ambil daftar karyawan aktif untuk team instalasi
-        $teamList = DB::table('tb_m_karyawan')
+        // Ambil daftar teknisi lapangan khusus untuk team instalasi
+        $targetTeknisNames = [
+            'Abdul Ghani',
+            'Dede',
+            'Dika',
+            'Dodi Sodikin',
+            'Cristian',
+            'Iyan sofian',
+            'Fadil',
+            'M Ryan Septiadi',
+            'Sandi',
+            'Dudi',
+        ];
+
+        $existingTeknis = DB::table('tb_m_karyawan')
             ->whereIn('status_aktif', ['1', '01'])
-            ->whereNotNull('nama_karyawan')
-            ->where('nama_karyawan', '!=', '')
-            ->orderBy('nama_karyawan')
+            ->where(function ($q) use ($targetTeknisNames) {
+                foreach ($targetTeknisNames as $name) {
+                    $q->orWhere('nama_karyawan', 'LIKE', '%' . $name . '%');
+                }
+            })
             ->get(['kode_karyawan', 'nama_karyawan']);
+
+        $teamList = collect($targetTeknisNames)->map(function ($targetName) use ($existingTeknis) {
+            $found = $existingTeknis->first(function ($item) use ($targetName) {
+                return strcasecmp(trim($item->nama_karyawan), trim($targetName)) === 0
+                    || stripos($item->nama_karyawan, $targetName) !== false;
+            });
+
+            return (object)[
+                'kode_karyawan' => $found ? $found->kode_karyawan : 'KRY-' . strtoupper(Str::slug($targetName)),
+                'nama_karyawan' => $found ? $found->nama_karyawan : $targetName,
+            ];
+        });
 
         // Team yang terpilih sebelumnya
         $selectedTeams = [];

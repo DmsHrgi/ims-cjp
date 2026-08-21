@@ -253,6 +253,7 @@
 
         // Product & Financials
         $nominalBandwith = $customer->nominal_bandwith ?? 1024;
+        $biayaRegistrasi = !empty($customer->biaya_reg) ? (float)$customer->biaya_reg : 100000;
         $subTotal = floatval(preg_replace('/[^0-9.]/', '', (string)($customer->harga_paket ?? 3500000)));
         if ($subTotal <= 0) {
             $subTotal = 3500000;
@@ -554,7 +555,7 @@
             <tr>
                 <td class="label-cell">Biaya Registrasi</td>
                 <td class="colon-cell">:</td>
-                <td class="val-cell" colspan="3"></td>
+                <td class="val-cell" colspan="3">Rp. {{ number_format($biayaRegistrasi, 0, ',', '.') }}</td>
             </tr>
             <tr>
                 <td class="label-cell">Sewa Perangkat</td>

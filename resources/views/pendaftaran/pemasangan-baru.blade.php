@@ -1337,7 +1337,7 @@
                             <div>
                                 <label class="block text-xs font-semibold text-slate-700 mb-1.5">Team Survey</label>
                                 <div class="grid grid-cols-2 gap-2 max-h-[210px] overflow-y-auto custom-modal-scroll p-3 border border-slate-200 rounded-xl text-xs text-slate-700 bg-slate-50/50">
-                                    @foreach($teamAktivasiList as $tm)
+                                    @foreach($teamTeknisList ?? $teamAktivasiList as $tm)
                                         <label class="flex items-center gap-2 cursor-pointer hover:bg-white p-1.5 rounded-lg border border-transparent hover:border-slate-200 transition-all">
                                             <input type="checkbox" name="teams[]" value="{{ $tm->nama_karyawan }}" class="survey-team-cb w-3.5 h-3.5 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
                                             <span class="truncate uppercase text-[11px] font-semibold text-slate-700">{{ $tm->nama_karyawan }}</span>
@@ -1472,7 +1472,7 @@
                             <div>
                                 <label class="block text-xs font-semibold text-slate-700 mb-1.5">Team Survey</label>
                                 <div class="grid grid-cols-2 gap-2 max-h-[170px] overflow-y-auto custom-modal-scroll p-3 border border-slate-200 rounded-xl text-xs text-slate-700 bg-slate-50/50">
-                                    @foreach($teamAktivasiList as $tm)
+                                    @foreach($teamTeknisList ?? $teamAktivasiList as $tm)
                                         <label class="flex items-center gap-2 cursor-pointer hover:bg-white p-1.5 rounded-lg border border-transparent hover:border-slate-200 transition-all">
                                             <input type="checkbox" name="teams[]" value="{{ $tm->nama_karyawan }}" class="report-survey-team-cb w-3.5 h-3.5 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
                                             <span class="truncate uppercase text-[11px] font-semibold text-slate-700">{{ $tm->nama_karyawan }}</span>
@@ -1598,7 +1598,7 @@
                             <div>
                                 <label class="block text-xs font-semibold text-slate-700 mb-1.5">Team Instalasi</label>
                                 <div class="grid grid-cols-2 gap-2 max-h-[170px] overflow-y-auto custom-modal-scroll p-3 border border-slate-200 rounded-xl text-xs text-slate-700 bg-slate-50/50">
-                                    @foreach($teamAktivasiList as $tm)
+                                    @foreach($teamTeknisList ?? $teamAktivasiList as $tm)
                                         <label class="flex items-center gap-2 cursor-pointer hover:bg-white p-1.5 rounded-lg border border-transparent hover:border-slate-200 transition-all">
                                             <input type="checkbox" name="teams[]" value="{{ $tm->nama_karyawan }}" class="instalasi-team-cb w-3.5 h-3.5 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
                                             <span class="truncate uppercase text-[11px] font-semibold text-slate-700">{{ $tm->nama_karyawan }}</span>
