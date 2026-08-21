@@ -177,13 +177,53 @@ class PendaftaranController extends Controller
             ];
         });
 
-        // Master data untuk NOC (Jadwal Aktivasi, POP, Media Akses, Perangkat)
-        $teamAktivasiList = DB::table('tb_m_karyawan')
-            ->whereIn('status_aktif', ['1', '01'])
-            ->whereNotNull('nama_karyawan')
-            ->where('nama_karyawan', '!=', '')
-            ->orderBy('nama_karyawan')
-            ->get(['kode_karyawan', 'nama_karyawan']);
+        // Master data tim NOC untuk Jadwal & Report Aktivasi (Hanya role NOC, kecuali BAGUS JOKO PRIYONO dan LEVANDRI AHMAD FAUZAN AJMAL)
+        $excludedNoc = [
+            'BAGUS JOKO PRIYONO',
+            'LEVANDRI AHMAD FAUZAN AJMAL',
+        ];
+
+        $targetNocNames = [
+            'KELVIN SULTAN ASHARI',
+            'HARRY SETIONO',
+            'RICKY SAHARA PUTRA',
+            'MUHAMAD RAFI RAMDHANI',
+        ];
+
+        $teamAktivasiDb = collect();
+        try {
+            $teamAktivasiDb = DB::table('view_pengguna')
+                ->where(function($q) {
+                    $q->where('nama_level', 'LIKE', '%NOC%')
+                      ->orWhere('kode_level', 'lv68132')
+                      ->orWhere('level', '3');
+                })
+                ->whereIn('status_aktif', ['1', '01'])
+                ->whereNotNull('nama_karyawan')
+                ->where('nama_karyawan', '!=', '')
+                ->orderBy('nama_karyawan')
+                ->get(['kode_karyawan', 'nama_karyawan'])
+                ->filter(function ($tm) use ($excludedNoc) {
+                    $name = strtoupper(trim($tm->nama_karyawan));
+                    foreach ($excludedNoc as $exc) {
+                        if (str_contains($name, $exc)) return false;
+                    }
+                    return true;
+                })
+                ->values();
+        } catch (\Exception $e) {}
+
+        if ($teamAktivasiDb->isNotEmpty()) {
+            $teamAktivasiList = $teamAktivasiDb;
+        } else {
+            // Fallback dengan target karyawan NOC yang aktif
+            $teamAktivasiList = collect($targetNocNames)->map(function ($name) {
+                return (object)[
+                    'kode_karyawan' => 'KRY-' . strtoupper(Str::slug($name)),
+                    'nama_karyawan' => $name,
+                ];
+            });
+        }
 
         $popList = DB::table('m_pop')
             ->where(function ($q) { $q->where('hide', '0')->orWhereNull('hide'); })
