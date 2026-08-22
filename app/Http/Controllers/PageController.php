@@ -274,6 +274,9 @@ class PageController extends Controller
         $pelanggan = $targetId ? DB::table('m_pelanggan')->where('id_perusahaan', $targetId)->first() : null;
 
         $customer->scan_dokumen = $reg->scan_dokumen ?? $customer->scan_dokumen ?? null;
+        $customer->scan_dokumen_survey = $reg->scan_dokumen_survey ?? $customer->scan_dokumen_survey ?? null;
+        $customer->scan_dokumen_instalasi = $reg->scan_dokumen_instalasi ?? $customer->scan_dokumen_instalasi ?? null;
+        $customer->scan_dokumen_aktivasi = $reg->scan_dokumen_aktivasi ?? $customer->scan_dokumen_aktivasi ?? null;
 
         // Seksi 1: Informasi Pelanggan
         $customer->nama_perusahaan = $pelanggan->nama_perusahaan ?? $reg->nama_pelanggan ?? $customer->nama_perusahaan ?? $customer->nama_pelanggan ?? $customer->nama_penduduk ?? null;
@@ -559,6 +562,11 @@ class PageController extends Controller
         $targetId = $customer->id_perusahaan ?? $customer->nik_penduduk ?? ($reg ? ($reg->id_perusahaan ?? $reg->nik_penduduk) : null);
         $pelanggan = $targetId ? DB::table('m_pelanggan')->where('id_perusahaan', $targetId)->first() : null;
 
+        $customer->scan_dokumen = $reg->scan_dokumen ?? $customer->scan_dokumen ?? null;
+        $customer->scan_dokumen_survey = $reg->scan_dokumen_survey ?? $customer->scan_dokumen_survey ?? null;
+        $customer->scan_dokumen_instalasi = $reg->scan_dokumen_instalasi ?? $customer->scan_dokumen_instalasi ?? null;
+        $customer->scan_dokumen_aktivasi = $reg->scan_dokumen_aktivasi ?? $customer->scan_dokumen_aktivasi ?? null;
+
         // Seksi 1: Informasi Pelanggan
         $customer->nama_perusahaan = $pelanggan->nama_perusahaan ?? $reg->nama_pelanggan ?? $customer->nama_perusahaan ?? $customer->nama_pelanggan ?? $customer->nama_penduduk ?? null;
         $customer->no_telp_perusahaan = $pelanggan->no_telp_perusahaan ?? $customer->no_telp_perusahaan ?? $customer->nomor_hp ?? null;
@@ -726,6 +734,7 @@ class PageController extends Controller
     {
         $request->validate([
             'scan_dokumen' => 'required|file|mimes:pdf,jpg,jpeg,png|max:10240',
+            'tipe_dokumen' => 'nullable|string|in:berlangganan,survey,instalasi,aktivasi',
         ], [
             'scan_dokumen.required' => 'File scan dokumen wajib dipilih.',
             'scan_dokumen.mimes' => 'Format file yang diperbolehkan hanya PDF, JPG, JPEG, atau PNG.',
@@ -737,8 +746,17 @@ class PageController extends Controller
             return redirect()->back()->withErrors(['scan_dokumen' => 'Data pendaftaran pelanggan tidak ditemukan.']);
         }
 
+        $tipe = $request->input('tipe_dokumen', 'berlangganan');
+        $columnMap = [
+            'berlangganan' => 'scan_dokumen',
+            'survey' => 'scan_dokumen_survey',
+            'instalasi' => 'scan_dokumen_instalasi',
+            'aktivasi' => 'scan_dokumen_aktivasi',
+        ];
+        $targetColumn = $columnMap[$tipe] ?? 'scan_dokumen';
+
         $file = $request->file('scan_dokumen');
-        $fileName = 'scan_master_' . preg_replace('/[^A-Za-z0-9_\-]/', '_', $nomorInternet) . '_' . time() . '.' . $file->getClientOriginalExtension();
+        $fileName = 'scan_' . $tipe . '_' . preg_replace('/[^A-Za-z0-9_\-]/', '_', $nomorInternet) . '_' . time() . '.' . $file->getClientOriginalExtension();
         
         $destinationPath = public_path('storage/scan_dokumen');
         if (!file_exists($destinationPath)) {
@@ -748,35 +766,54 @@ class PageController extends Controller
         $file->move($destinationPath, $fileName);
         $savedPath = 'storage/scan_dokumen/' . $fileName;
 
+        // Hapus file lama jika ada
+        if (!empty($reg->{$targetColumn})) {
+            $oldFile = public_path($reg->{$targetColumn});
+            if (file_exists($oldFile)) {
+                @unlink($oldFile);
+            }
+        }
+
         DB::table('trx_batchjob_register')
             ->where('nomor_internet', $nomorInternet)
             ->update([
-                'scan_dokumen' => $savedPath,
+                $targetColumn => $savedPath,
                 'user_update' => session('user.username', 'SYSTEM'),
                 'date_update' => now(),
             ]);
 
-        return redirect()->back()->with('success', 'Scan master dokumen bertanda tangan berhasil diunggah!');
+        $tipeLabel = ucfirst($tipe);
+        return redirect()->back()->with('success', "Scan dokumen {$tipeLabel} bertanda tangan berhasil diunggah!");
     }
 
-    public function deleteScanDokumen($nomorInternet)
+    public function deleteScanDokumen(Request $request, $nomorInternet)
     {
+        $tipe = $request->input('tipe_dokumen', 'berlangganan');
+        $columnMap = [
+            'berlangganan' => 'scan_dokumen',
+            'survey' => 'scan_dokumen_survey',
+            'instalasi' => 'scan_dokumen_instalasi',
+            'aktivasi' => 'scan_dokumen_aktivasi',
+        ];
+        $targetColumn = $columnMap[$tipe] ?? 'scan_dokumen';
+
         $reg = DB::table('trx_batchjob_register')->where('nomor_internet', $nomorInternet)->first();
-        if ($reg && !empty($reg->scan_dokumen)) {
-            $filePath = public_path($reg->scan_dokumen);
+        if ($reg && !empty($reg->{$targetColumn})) {
+            $filePath = public_path($reg->{$targetColumn});
             if (file_exists($filePath)) {
                 @unlink($filePath);
             }
             DB::table('trx_batchjob_register')
                 ->where('nomor_internet', $nomorInternet)
                 ->update([
-                    'scan_dokumen' => null,
+                    $targetColumn => null,
                     'user_update' => session('user.username', 'SYSTEM'),
                     'date_update' => now(),
                 ]);
         }
 
-        return redirect()->back()->with('success', 'File scan dokumen berhasil dihapus.');
+        $tipeLabel = ucfirst($tipe);
+        return redirect()->back()->with('success', "File scan dokumen {$tipeLabel} berhasil dihapus.");
     }
 
     /* ---------------------- helper ---------------------- */

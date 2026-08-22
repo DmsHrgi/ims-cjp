@@ -663,35 +663,41 @@
                                     </div>
                                 </div>
 
-                                <!-- 2. Scan Dokumen (Presisi Sesuai Mockup Gambar) -->
+                                <!-- 2. Scan Dokumen (Presisi Sesuai Mockup Gambar: Berlangganan, Survey, Instalasi, Aktivasi) -->
                                 <div class="space-y-3 pt-2">
-                                    <h3 class="text-sm font-bold text-slate-800">Scan Dokumen</h3>
-                                    <div class="flex flex-wrap gap-4">
-                                        <!-- Kartu Scan Dokumen Berlangganan -->
-                                        <div class="w-36 h-36 bg-white rounded-xl border border-slate-200/90 hover:border-blue-400 p-3.5 flex flex-col justify-between items-center relative shadow-xs hover:shadow-md transition-all duration-200 group cursor-pointer" onclick="openScanModal()">
-                                            @if(!empty($customer->scan_dokumen))
-                                                <a href="{{ asset($customer->scan_dokumen) }}" target="_blank" onclick="event.stopPropagation()" class="absolute top-2.5 right-2.5 text-blue-500 hover:text-blue-700 transition-colors p-1" title="Download Scan Dokumen">
-                                                    <i class="fa-solid fa-download text-xs"></i>
-                                                </a>
-                                            @else
-                                                <button type="button" onclick="openScanModal(); event.stopPropagation();" class="absolute top-2.5 right-2.5 text-slate-400 hover:text-blue-600 transition-colors p-1" title="Upload Scan Dokumen">
-                                                    <i class="fa-solid fa-download text-xs"></i>
-                                                </button>
-                                            @endif
+                                    <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wide">Scan Dokumen</h3>
+                                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                                        @php
+                                            $scanDocCards = [
+                                                ['key' => 'berlangganan', 'title' => 'Berlangganan', 'file' => $customer->scan_dokumen ?? null],
+                                                ['key' => 'survey', 'title' => 'Survey', 'file' => $customer->scan_dokumen_survey ?? null],
+                                                ['key' => 'instalasi', 'title' => 'Instalasi', 'file' => $customer->scan_dokumen_instalasi ?? null],
+                                                ['key' => 'aktivasi', 'title' => 'Aktivasi', 'file' => $customer->scan_dokumen_aktivasi ?? null],
+                                            ];
+                                        @endphp
 
-                                            <div class="my-auto pt-2">
-                                                <i class="fa-solid fa-file-lines text-blue-600 text-4xl group-hover:scale-105 transition-transform duration-200"></i>
-                                            </div>
-
-                                            <div class="text-center w-full">
-                                                <p class="text-[11px] font-medium text-slate-500 leading-tight">Berlangganan</p>
-                                                @if(!empty($customer->scan_dokumen))
-                                                    <p class="text-[11px] font-semibold text-emerald-600 leading-tight mt-0.5">Sudah Diunggah</p>
+                                        @foreach($scanDocCards as $docCard)
+                                            <div class="w-full h-36 bg-white rounded-xl border border-slate-200/90 hover:border-blue-400 p-3.5 flex flex-col justify-between items-center relative shadow-xs hover:shadow-md transition-all duration-200 group cursor-pointer" onclick="openScanModal('{{ $docCard['key'] }}')">
+                                                @if(!empty($docCard['file']))
+                                                    <a href="{{ asset($docCard['file']) }}" target="_blank" onclick="event.stopPropagation()" class="absolute top-2.5 right-2.5 text-blue-500 hover:text-blue-700 transition-colors p-1" title="Download Scan Dokumen {{ $docCard['title'] }}">
+                                                        <i class="fa-solid fa-download text-xs"></i>
+                                                    </a>
                                                 @else
-                                                    <p class="text-[11px] font-medium text-slate-400 leading-tight mt-0.5">Belum Tersedia</p>
+                                                    <button type="button" onclick="openScanModal('{{ $docCard['key'] }}'); event.stopPropagation();" class="absolute top-2.5 right-2.5 text-slate-400 hover:text-blue-600 transition-colors p-1" title="Upload Scan Dokumen {{ $docCard['title'] }}">
+                                                        <i class="fa-solid fa-download text-xs"></i>
+                                                    </button>
                                                 @endif
+
+                                                <div class="my-auto pt-2">
+                                                    <i class="fa-solid fa-file-lines text-blue-600 text-4xl group-hover:scale-105 transition-transform duration-200"></i>
+                                                </div>
+
+                                                <div class="text-center w-full">
+                                                    <p class="text-[12px] font-bold text-slate-800 leading-tight">{{ $docCard['title'] }}</p>
+                                                    <p class="text-[11px] font-medium text-blue-600 leading-tight mt-0.5">Cetak / Unduh PDF</p>
+                                                </div>
                                             </div>
-                                        </div>
+                                        @endforeach
                                     </div>
                                 </div>
                             </div>
@@ -1128,6 +1134,64 @@
                 }
             });
         });
+
+        const scanDocData = {
+            berlangganan: {
+                title: 'Scan Dokumen Berlangganan',
+                desc: 'Master formulir berlangganan bertanda tangan',
+                url: @json(!empty($customer->scan_dokumen) ? asset($customer->scan_dokumen) : null),
+            },
+            survey: {
+                title: 'Scan Dokumen Survey',
+                desc: 'Dokumen berita acara survey bertanda tangan',
+                url: @json(!empty($customer->scan_dokumen_survey) ? asset($customer->scan_dokumen_survey) : null),
+            },
+            instalasi: {
+                title: 'Scan Dokumen Instalasi',
+                desc: 'Berita acara instalasi & pemasangan bertanda tangan',
+                url: @json(!empty($customer->scan_dokumen_instalasi) ? asset($customer->scan_dokumen_instalasi) : null),
+            },
+            aktivasi: {
+                title: 'Scan Dokumen Aktivasi',
+                desc: 'Berita acara aktivasi & serah terima bertanda tangan',
+                url: @json(!empty($customer->scan_dokumen_aktivasi) ? asset($customer->scan_dokumen_aktivasi) : null),
+            }
+        };
+
+        function openScanModal(tipe = 'berlangganan') {
+            const data = scanDocData[tipe] || scanDocData.berlangganan;
+            const titleEl = document.getElementById('scanModalTitle');
+            const descEl = document.getElementById('scanModalDesc');
+            const tipeInput = document.getElementById('scanModalTipeInput');
+            const deleteTipeInput = document.getElementById('scanModalDeleteTipeInput');
+            const uploadedBox = document.getElementById('scanModalUploadedBox');
+            const labelUpload = document.getElementById('scanModalUploadLabel');
+            const viewBtn = document.getElementById('scanModalViewBtn');
+            const downloadBtn = document.getElementById('scanModalDownloadBtn');
+
+            if (titleEl) titleEl.textContent = data.title;
+            if (descEl) descEl.textContent = data.desc;
+            if (tipeInput) tipeInput.value = tipe;
+            if (deleteTipeInput) deleteTipeInput.value = tipe;
+
+            if (data.url) {
+                if (uploadedBox) uploadedBox.classList.remove('hidden');
+                if (viewBtn) viewBtn.href = data.url;
+                if (downloadBtn) downloadBtn.href = data.url;
+                if (labelUpload) labelUpload.textContent = 'Ganti File Scan Dokumen:';
+            } else {
+                if (uploadedBox) uploadedBox.classList.add('hidden');
+                if (labelUpload) labelUpload.textContent = 'Pilih File Scan Dokumen (PDF, JPG, JPEG, PNG max 10MB):';
+            }
+
+            const modal = document.getElementById('modalScanDokumen');
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeScanModal() {
+            const modal = document.getElementById('modalScanDokumen');
+            if (modal) modal.classList.add('hidden');
+        }
     </script>
 
     <!-- Modal Scan Dokumen Upload & Management -->
@@ -1142,44 +1206,43 @@
                     <i class="fa-solid fa-file-signature"></i>
                 </div>
                 <div>
-                    <h3 class="text-sm font-bold text-gray-800">Scan Dokumen Berlangganan</h3>
-                    <p class="text-xs text-gray-400">Master dokumen bertanda tangan</p>
+                    <h3 id="scanModalTitle" class="text-sm font-bold text-gray-800">Scan Dokumen Berlangganan</h3>
+                    <p id="scanModalDesc" class="text-xs text-gray-400">Master dokumen bertanda tangan</p>
                 </div>
             </div>
 
-            @if(!empty($customer->scan_dokumen))
-                @php
-                    $scanUrl = asset($customer->scan_dokumen);
-                @endphp
-                <div class="bg-emerald-50/60 rounded-xl border border-emerald-200 p-4 space-y-3">
-                    <div class="flex items-center justify-between text-xs">
-                        <span class="font-bold text-emerald-800 flex items-center gap-1.5">
-                            <i class="fa-solid fa-circle-check text-emerald-500"></i> Dokumen Sudah Diunggah
-                        </span>
-                        <a href="{{ $scanUrl }}" target="_blank" class="text-blue-600 hover:underline font-semibold flex items-center gap-1">
-                            <i class="fa-solid fa-eye"></i> Lihat
-                        </a>
-                    </div>
-                    <div class="flex items-center gap-2 pt-1">
-                        <a href="{{ $scanUrl }}" download class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold py-2 px-3 rounded-lg text-center flex items-center justify-center gap-1.5 transition-colors">
-                            <i class="fa-solid fa-download"></i> Unduh File
-                        </a>
-                        <form method="POST" action="{{ route('pelanggan.delete-scan', $customer->nomor_internet) }}" onsubmit="return confirm('Apakah Anda yakin ingin menghapus file scan dokumen ini?')" class="inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="bg-rose-100 hover:bg-rose-200 text-rose-700 text-xs font-semibold py-2 px-3 rounded-lg flex items-center gap-1 transition-colors" title="Hapus Scan Dokumen">
-                                <i class="fa-solid fa-trash-can"></i> Hapus
-                            </button>
-                        </form>
-                    </div>
+            <!-- Uploaded file info & actions box -->
+            <div id="scanModalUploadedBox" class="bg-emerald-50/60 rounded-xl border border-emerald-200 p-4 space-y-3 hidden">
+                <div class="flex items-center justify-between text-xs">
+                    <span class="font-bold text-emerald-800 flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-check text-emerald-500"></i> Dokumen Sudah Diunggah
+                    </span>
+                    <a id="scanModalViewBtn" href="#" target="_blank" class="text-blue-600 hover:underline font-semibold flex items-center gap-1">
+                        <i class="fa-solid fa-eye"></i> Lihat
+                    </a>
                 </div>
-            @endif
+                <div class="flex items-center gap-2 pt-1">
+                    <a id="scanModalDownloadBtn" href="#" download class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold py-2 px-3 rounded-lg text-center flex items-center justify-center gap-1.5 transition-colors">
+                        <i class="fa-solid fa-download"></i> Unduh File
+                    </a>
+                    <form id="scanModalDeleteForm" method="POST" action="{{ route('pelanggan.delete-scan', $customer->nomor_internet) }}" onsubmit="return confirm('Apakah Anda yakin ingin menghapus file scan dokumen ini?')" class="inline">
+                        @csrf
+                        @method('DELETE')
+                        <input type="hidden" name="tipe_dokumen" id="scanModalDeleteTipeInput" value="berlangganan">
+                        <button type="submit" class="bg-rose-100 hover:bg-rose-200 text-rose-700 text-xs font-semibold py-2 px-3 rounded-lg flex items-center gap-1 transition-colors" title="Hapus Scan Dokumen">
+                            <i class="fa-solid fa-trash-can"></i> Hapus
+                        </button>
+                    </form>
+                </div>
+            </div>
 
+            <!-- Upload form -->
             <form method="POST" action="{{ route('pelanggan.upload-scan', $customer->nomor_internet) }}" enctype="multipart/form-data" class="space-y-4">
                 @csrf
+                <input type="hidden" name="tipe_dokumen" id="scanModalTipeInput" value="berlangganan">
                 <div class="space-y-1.5">
-                    <label class="block text-xs font-semibold text-gray-700">
-                        {{ !empty($customer->scan_dokumen) ? 'Ganti File Scan Dokumen:' : 'Pilih File Scan Dokumen (PDF, JPG, JPEG, PNG max 10MB):' }}
+                    <label id="scanModalUploadLabel" class="block text-xs font-semibold text-gray-700">
+                        Pilih File Scan Dokumen (PDF, JPG, JPEG, PNG max 10MB):
                     </label>
                     <input type="file" name="scan_dokumen" accept=".pdf,.jpg,.jpeg,.png" required class="w-full text-xs text-gray-700 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer bg-gray-50 rounded-xl border border-gray-200 p-1.5">
                 </div>
