@@ -12,11 +12,34 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Route khusus untuk perbaikan skema database hosting via browser (tanpa perlu SSH/cPanel)
+// Route khusus untuk perbaikan skema database & pembersihan cache hosting via browser
+Route::get('/clear-cache', function () {
+    $results = [];
+    try {
+        \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+        $results[] = 'Optimize Clear: ' . trim(\Illuminate\Support\Facades\Artisan::output());
+    } catch (\Throwable $e) {
+        $results[] = 'Optimize Clear error: ' . $e->getMessage();
+    }
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Cache aplikasi berhasil dibersihkan!',
+        'details' => $results
+    ], 200, [], JSON_PRETTY_PRINT);
+});
+
 Route::get('/fix-database-schema', function () {
     $results = [];
 
-    // 1. Jalankan artisan migrate jika ada file migration baru
+    // 1. Bersihkan cache
+    try {
+        \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+        $results[] = 'Optimize Clear: ' . trim(\Illuminate\Support\Facades\Artisan::output());
+    } catch (\Throwable $e) {
+        $results[] = 'Optimize Clear info: ' . $e->getMessage();
+    }
+
+    // 2. Jalankan artisan migrate jika ada file migration baru
     try {
         \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
         $results[] = 'Artisan migrate: ' . trim(\Illuminate\Support\Facades\Artisan::output());
@@ -24,15 +47,7 @@ Route::get('/fix-database-schema', function () {
         $results[] = 'Artisan migrate: ' . $e->getMessage();
     }
 
-    // 2. Buat symlink storage secara otomatis (storage:link)
-    try {
-        \Illuminate\Support\Facades\Artisan::call('storage:link');
-        $results[] = 'Storage link: ' . trim(\Illuminate\Support\Facades\Artisan::output());
-    } catch (\Throwable $e) {
-        $results[] = 'Storage link info: ' . $e->getMessage();
-    }
-
-    // 2. Eksekusi ALTER TABLE langsung untuk memastikan perubahan kolom berhasil
+    // 3. Eksekusi ALTER TABLE langsung untuk memastikan perubahan kolom berhasil
     $queries = [
         "ALTER TABLE `trx_batchjob_register` MODIFY `nomor_bangunan` VARCHAR(50) NULL DEFAULT NULL",
         "ALTER TABLE `trx_batchjob_register` MODIFY `rt_pasang` VARCHAR(10) NULL DEFAULT NULL",
@@ -59,7 +74,7 @@ Route::get('/fix-database-schema', function () {
 
     return response()->json([
         'status' => 'success',
-        'message' => 'Perbaikan database berhasil dijalankan!',
+        'message' => 'Perbaikan database & clear cache berhasil dijalankan!',
         'details' => $results
     ], 200, [], JSON_PRETTY_PRINT);
 });
