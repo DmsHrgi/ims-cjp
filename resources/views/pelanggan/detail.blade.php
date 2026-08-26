@@ -675,6 +675,21 @@
                                             </a>
                                         </div>
                                         @endif
+
+                                        @if(!empty($customer->instalasi_date_start) || !empty($customer->instalasi_date_finish) || !empty($customer->instalasi_team) || !empty($customer->doc_instalasi))
+                                        <!-- instalasi.pdf (Surat Tugas Instalasi) -->
+                                        <div class="w-36 h-36 bg-white rounded-xl border border-slate-200/90 hover:border-blue-400 p-3.5 flex flex-col justify-between items-center relative shadow-xs hover:shadow-md transition-all duration-200 group">
+                                            <a href="{{ route('pelanggan.pdf-instalasi', $customer->nomor_internet) }}" target="_blank" class="absolute top-2.5 right-2.5 text-slate-400 hover:text-blue-600 transition-colors p-1" title="Download instalasi.pdf">
+                                                <i class="fa-solid fa-download text-xs"></i>
+                                            </a>
+                                            <div class="my-auto pt-2">
+                                                <i class="fa-solid fa-file-lines text-blue-600 text-4xl group-hover:scale-105 transition-transform duration-200"></i>
+                                            </div>
+                                            <a href="{{ route('pelanggan.pdf-instalasi', $customer->nomor_internet) }}" target="_blank" class="text-xs font-medium text-slate-500 group-hover:text-blue-600 text-center truncate w-full" title="instalasi.pdf">
+                                                instalasi.pdf
+                                            </a>
+                                        </div>
+                                        @endif
                                     </div>
                                 </div>
 

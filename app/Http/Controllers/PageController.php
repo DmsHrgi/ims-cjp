@@ -351,7 +351,7 @@ class PageController extends Controller
         $customer->harga_paket = $billReg->total_reg ?? $customer->harga_bandwith ?? $reg->total_registrasi ?? null;
         $customer->biaya_reg = $billReg->biaya_registrasi ?? $reg->biaya_reg ?? $customer->biaya_reg ?? null;
 
-        // Foto Berkas & Data Survey
+        // Foto Berkas & Data Survey / Instalasi
         $instData = DB::table('trx_instalasi')->where('nomor_internet', $nomorInternet)->first();
         $customer->foto_po = $reg->foto_po ?? $instData->foto_ktp ?? $customer->foto_po ?? $customer->foto_ktp ?? null;
         $customer->foto_bangunan = $reg->foto_bangunan ?? $instData->foto_rumah ?? $customer->foto_bangunan ?? $customer->foto_rumah ?? null;
@@ -362,6 +362,14 @@ class PageController extends Controller
             $customer->survey_time = $instData->survey_time ?? $customer->survey_time ?? null;
             $customer->survey_team = $instData->survey_team ?? $customer->survey_team ?? null;
             $customer->survey_note = $instData->survey_note ?? $customer->survey_note ?? null;
+            $customer->doc_survey = $instData->doc_survey ?? $customer->doc_survey ?? null;
+
+            $customer->instalasi_date_start = $instData->instalasi_date_start ?? $customer->instalasi_date_start ?? null;
+            $customer->instalasi_date_finish = $instData->instalasi_date_finish ?? $customer->instalasi_date_finish ?? null;
+            $customer->instalasi_time = $instData->instalasi_time ?? $customer->instalasi_time ?? null;
+            $customer->instalasi_team = $instData->instalasi_team ?? $customer->instalasi_team ?? null;
+            $customer->instalasi_note = $instData->instalasi_note ?? $customer->instalasi_note ?? null;
+            $customer->doc_instalasi = $instData->doc_instalasi ?? $customer->doc_instalasi ?? null;
         }
 
         // --- DATA LOG / RIWAYAT AKTIVITAS ---
@@ -833,6 +841,107 @@ class PageController extends Controller
         $pdf->setPaper('a4', 'portrait');
 
         $fileName = 'Surat_Tugas_Survey_' . preg_replace('/[^A-Za-z0-9_\-]/', '_', $nomorInternet) . '.pdf';
+        return $pdf->stream($fileName);
+    }
+
+    public function downloadInstalasiPdf($nomorInternet)
+    {
+        if (!session()->has('user')) {
+            abort(401, 'Silakan login terlebih dahulu untuk mengunduh dokumen.');
+        }
+
+        $customer = DB::table('view_batchjob')
+            ->where('nomor_internet', $nomorInternet)
+            ->first();
+
+        if (!$customer) {
+            return redirect()->route('pelanggan')->withErrors(['error' => 'Pelanggan tidak ditemukan.']);
+        }
+
+        $customer = $this->decorate($customer);
+
+        $reg = DB::table('trx_batchjob_register')->where('nomor_internet', $nomorInternet)->first();
+        $targetId = $customer->id_perusahaan ?? $customer->nik_penduduk ?? ($reg ? ($reg->id_perusahaan ?? $reg->nik_penduduk) : null);
+        $pelanggan = $targetId ? DB::table('m_pelanggan')->where('id_perusahaan', $targetId)->first() : null;
+        $instData = DB::table('trx_instalasi')->where('nomor_internet', $nomorInternet)->first();
+
+        // 1. Tanggal Instalasi
+        $instalasiDate = $instData->instalasi_date_start ?? $customer->instalasi_date_start ?? $customer->date_create ?? now();
+        $instalasiDateObj = \Carbon\Carbon::parse($instalasiDate);
+        $bulanIndo = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+        ];
+        $instalasiDateFormatted = $instalasiDateObj->format('d') . ' ' . ($bulanIndo[(int)$instalasiDateObj->format('m')] ?? $instalasiDateObj->format('F')) . ' ' . $instalasiDateObj->format('Y');
+        $instalasiMonth = $instalasiDateObj->format('m');
+        $instalasiYear = $instalasiDateObj->format('Y');
+
+        // Tim teknisi instalasi
+        $instalasiTeam = $instData->instalasi_team ?? $customer->instalasi_team ?? 'TIM TEKNISI';
+
+        // 2. Data Pelanggan
+        $customerName = $pelanggan->nama_perusahaan ?? $reg->nama_pelanggan ?? $customer->nama_pelanggan ?? $customer->nama_penduduk ?? 'TEST';
+
+        // Alamat Pasang Lengkap
+        $kodeKel = $reg->kode_wilayah_kelurahan_pasang ?? $customer->kode_wilayah_kelurahan_pasang ?? null;
+        $namaKel = $customer->nama_kelurahan_pasang ?? null;
+        $namaKec = $customer->nama_kecamatan_pasang ?? null;
+        $namaKot = $customer->nama_kota_pasang ?? null;
+        $namaPro = $customer->nama_provinsi_pasang ?? null;
+
+        if ($kodeKel && (empty($namaKel) || empty($namaKec))) {
+            $wil = DB::table('m_wilayah')->where('kode_wilayah_kelurahan', $kodeKel)->first();
+            if ($wil) {
+                $namaKel = $wil->nama_kelurahan;
+                $namaKec = $wil->nama_kecamatan;
+                $namaKot = $wil->nama_kota;
+                $namaPro = $wil->nama_provinsi;
+            }
+        }
+
+        $alamatParts = array_filter([
+            $reg->alamat_pasang ?? $customer->alamat_pasang ?? $customer->alamat_p ?? null,
+            !empty($reg->nomor_bangunan ?? $customer->nomor_bangunan) ? 'NO. ' . ($reg->nomor_bangunan ?? $customer->nomor_bangunan) : null,
+            (!empty($reg->rt_pasang ?? $customer->rt_pasang) || !empty($reg->rw_pasang ?? $customer->rw_pasang)) ? 'RT' . ($reg->rt_pasang ?? $customer->rt_pasang ?: '00') . '/RW' . ($reg->rw_pasang ?? $customer->rw_pasang ?: '00') : null,
+            !empty($namaKel) ? 'KEL. ' . $namaKel : null,
+            !empty($namaKec) ? 'KEC. ' . $namaKec : null,
+            !empty($namaKot) ? $namaKot : null,
+            !empty($namaPro) ? $namaPro : null,
+        ]);
+        $installationAddress = !empty($alamatParts) ? implode(', ', $alamatParts) : ($customer->alamat_pasang ?: ($customer->alamat_p ?: '-'));
+
+        $phoneNumber = $pelanggan->no_telp_perusahaan ?? $customer->no_telp_perusahaan ?? $customer->nomor_hp ?? $reg->nomor_hp ?? '-';
+
+        $serviceBandwidth = trim(($customer->nama_kategori_bandwith ?? '') . ($customer->nominal_bandwith ? ' ' . $customer->nominal_bandwith . ' Mbps' : ''));
+        $serviceName = !empty($serviceBandwidth) ? $serviceBandwidth : ($customer->paket ?? '-');
+
+        // Waktu Pengerjaan
+        $rawTime = $instData->instalasi_time ?? $customer->instalasi_time ?? '';
+        $workingTime = !empty($rawTime) ? (str_contains(strtoupper($rawTime), 'WIB') ? $rawTime : $rawTime . 'WIB') : '-';
+
+        $jobDetails = $instData->instalasi_note ?? $customer->instalasi_note ?? $reg->note_request ?? '-';
+
+        // Penanggung Jawab
+        $personInCharge = '-';
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.surat-tugas-instalasi', compact(
+            'customer',
+            'instalasiDateFormatted',
+            'instalasiMonth',
+            'instalasiYear',
+            'instalasiTeam',
+            'customerName',
+            'installationAddress',
+            'phoneNumber',
+            'serviceName',
+            'workingTime',
+            'jobDetails',
+            'personInCharge'
+        ));
+        $pdf->setPaper('a4', 'portrait');
+
+        $fileName = 'Surat_Tugas_Instalasi_' . preg_replace('/[^A-Za-z0-9_\-]/', '_', $nomorInternet) . '.pdf';
         return $pdf->stream($fileName);
     }
 

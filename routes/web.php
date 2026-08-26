@@ -145,6 +145,7 @@ Route::middleware(\App\Http\Middleware\EnsureAuthenticated::class)->group(functi
     Route::get('/pelanggan/{nomor_internet}', [PageController::class, 'pelangganDetail'])->name('pelanggan.detail');
     Route::get('/pelanggan/{nomor_internet}/pdf', [PageController::class, 'downloadPelangganPdf'])->name('pelanggan.pdf');
     Route::get('/pelanggan/{nomor_internet}/pdf-survey', [PageController::class, 'downloadSurveyPdf'])->name('pelanggan.pdf-survey');
+    Route::get('/pelanggan/{nomor_internet}/pdf-instalasi', [PageController::class, 'downloadInstalasiPdf'])->name('pelanggan.pdf-instalasi');
     Route::post('/pelanggan/{nomor_internet}/upload-scan', [PageController::class, 'uploadScanDokumen'])->name('pelanggan.upload-scan');
     Route::delete('/pelanggan/{nomor_internet}/delete-scan', [PageController::class, 'deleteScanDokumen'])->name('pelanggan.delete-scan');
 
