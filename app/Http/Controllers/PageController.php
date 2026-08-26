@@ -742,7 +742,7 @@ class PageController extends Controller
         $pdf->setPaper('a4', 'portrait');
 
         $fileName = 'Profil_Pelanggan_' . preg_replace('/[^A-Za-z0-9_\-]/', '_', $nomorInternet) . '.pdf';
-        return $pdf->download($fileName);
+        return $pdf->stream($fileName);
     }
 
     public function downloadSurveyPdf($nomorInternet)
