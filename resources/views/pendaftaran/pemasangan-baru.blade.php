@@ -7,6 +7,25 @@
     @php /** @var \Illuminate\Support\Collection $groupLayanan */ @endphp
     @php /** @var \Illuminate\Support\Collection $sales */ @endphp
     @php /** @var \Illuminate\Support\Collection $provinsi */ @endphp
+    @php
+        $getPhotoUrl = function($path) {
+            if (empty($path)) return '';
+            if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) return $path;
+            $cleanPath = ltrim($path, '/');
+            $cleanRelative = preg_replace('/^storage\//', '', $cleanPath);
+
+            if (file_exists(public_path($cleanPath))) {
+                return asset($cleanPath);
+            }
+            if (file_exists(public_path('storage/' . $cleanRelative))) {
+                return asset('storage/' . $cleanRelative);
+            }
+            if (file_exists(storage_path('app/public/' . $cleanRelative))) {
+                return url('media-berkas/' . $cleanRelative);
+            }
+            return url('media-berkas/' . $cleanRelative);
+        };
+    @endphp
 
     <style>
         /* Hide datalist dropdown indicator arrow ONLY for inputs with list attribute */
@@ -343,7 +362,8 @@
                                                              '{{ addslashes($r->media_akses ?? '') }}',
                                                              '{{ addslashes($r->index_olt ?? '') }}',
                                                              '{{ addslashes($r->aktivasi_note ?? '') }}',
-                                                             {{ json_encode($rItems) }}
+                                                             {{ json_encode($rItems) }},
+                                                             '{{ $getPhotoUrl($r->foto_peta ?? null) }}'
                                                          )" class="flex items-center gap-1.5 text-gray-700 hover:text-blue-600 transition-colors whitespace-nowrap">
                                                          <i class="fa-solid fa-pen-to-square text-blue-500"></i>
                                                          <span>Jadwal Aktivasi</span>
@@ -403,7 +423,8 @@
                                                           '{{ $r->survey_date_start ?? '' }}',
                                                           '{{ $r->survey_time ?? '' }}',
                                                           '{{ addslashes($r->survey_note ?? '') }}',
-                                                          '{{ addslashes($r->survey_team ?? '') }}'
+                                                          '{{ addslashes($r->survey_team ?? '') }}',
+                                                           '{{ $getPhotoUrl($r->foto_peta ?? null) }}'
                                                       )" class="flex items-center gap-1.5 text-gray-700 hover:text-blue-600 transition-colors whitespace-nowrap">
                                                       <i class="fa-solid fa-pen-to-square text-blue-500"></i>
                                                       <span>Jadwal Survey</span>
@@ -414,7 +435,8 @@
                                                           '{{ addslashes($r->nama_pelanggan) }}',
                                                           '{{ $r->survey_date_finish ?? '' }}',
                                                           '{{ addslashes($r->survey_note_finish ?? '') }}',
-                                                          '{{ addslashes($r->survey_team ?? '') }}'
+                                                          '{{ addslashes($r->survey_team ?? '') }}',
+                                                           '{{ $getPhotoUrl($r->foto_peta ?? null) }}'
                                                       )" class="flex items-center gap-1.5 text-gray-700 hover:text-blue-600 transition-colors whitespace-nowrap">
                                                       <i class="fa-solid fa-pen-to-square text-blue-500"></i>
                                                       <span>Report Survey</span>
@@ -431,7 +453,8 @@
                                                           '{{ $r->instalasi_time ?? '' }}',
                                                           '{{ addslashes($r->instalasi_note ?? '') }}',
                                                           '{{ addslashes($r->instalasi_team ?? '') }}',
-                                                          {{ json_encode($rItems) }}
+                                                          {{ json_encode($rItems) }},
+                                                          '{{ $getPhotoUrl($r->foto_peta ?? null) }}'
                                                       )" class="flex items-center gap-1.5 text-gray-700 hover:text-blue-600 transition-colors whitespace-nowrap">
                                                       <i class="fa-solid fa-pen-to-square text-blue-500"></i>
                                                       <span>Jadwal Instalasi</span>
@@ -1306,13 +1329,43 @@
                             <!-- Foto Mapping -->
                             <div>
                                 <label class="block text-xs font-semibold text-slate-700 mb-1.5">Foto Mapping<span class="text-rose-500">*</span></label>
-                                <div class="relative border-2 border-dashed border-slate-200 hover:border-blue-400 rounded-xl p-5 text-center bg-slate-50/50 hover:bg-blue-50/20 transition-all group cursor-pointer" onclick="document.getElementById('fotoMappingInput').click()">
-                                    <input type="file" name="foto_mapping" id="fotoMappingInput" accept="image/*" class="hidden" onchange="previewFotoMapping(this)">
-                                    <div class="flex flex-col items-center justify-center space-y-1.5">
-                                        <div class="w-10 h-10 rounded-full bg-slate-100 group-hover:bg-blue-100 text-slate-400 group-hover:text-blue-600 flex items-center justify-center transition-colors">
-                                            <i class="fa-solid fa-cloud-arrow-up text-lg"></i>
+                                <div class="relative">
+                                    <input type="file" name="foto_mapping" id="fotoMappingInput" accept="image/*" class="hidden" onchange="handleFotoMappingChange(this, 'survey')">
+                                    
+                                    <!-- Dropzone -->
+                                    <div id="fotoMappingSurveyDropzone" class="border-2 border-dashed border-slate-200 hover:border-blue-400 rounded-xl p-4 text-center bg-slate-50/50 hover:bg-blue-50/20 transition-all group cursor-pointer" onclick="document.getElementById('fotoMappingInput').click()">
+                                        <div class="flex flex-col items-center justify-center space-y-1.5">
+                                            <div class="w-9 h-9 rounded-full bg-slate-100 group-hover:bg-blue-100 text-slate-400 group-hover:text-blue-600 flex items-center justify-center transition-colors">
+                                                <i class="fa-solid fa-cloud-arrow-up text-base"></i>
+                                            </div>
+                                            <p class="text-xs text-slate-600 font-medium">Klik untuk upload foto mapping</p>
+                                            <p class="text-[10px] text-slate-400">JPG, PNG, WEBP (Max 5MB)</p>
                                         </div>
-                                        <p class="text-xs text-slate-500 font-medium" id="fotoMappingText">Drag and drop a file here or click</p>
+                                    </div>
+
+                                    <!-- Preview Box -->
+                                    <div id="fotoMappingSurveyPreviewBox" class="hidden border border-slate-200 rounded-xl p-3 bg-white shadow-xs">
+                                        <div class="flex items-center gap-3">
+                                            <div class="relative group/img cursor-pointer w-20 h-16 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 flex-shrink-0" onclick="viewCurrentFotoMapping('survey')">
+                                                <img id="fotoMappingSurveyImg" src="" alt="Preview Foto Mapping" class="w-full h-full object-cover group-hover/img:scale-105 transition-transform">
+                                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center text-white text-xs">
+                                                    <i class="fa-solid fa-magnifying-glass-plus"></i>
+                                                </div>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <span id="fotoMappingSurveyBadge" class="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-700 mb-1">Foto Baru</span>
+                                                <p id="fotoMappingSurveyFileName" class="text-xs font-semibold text-slate-700 truncate">nama_file.webp</p>
+                                                <div class="flex items-center gap-2 mt-1.5">
+                                                    <button type="button" onclick="viewCurrentFotoMapping('survey')" class="text-[11px] font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1">
+                                                        <i class="fa-solid fa-eye"></i> Lihat
+                                                    </button>
+                                                    <span class="text-slate-300">•</span>
+                                                    <button type="button" onclick="document.getElementById('fotoMappingInput').click()" class="text-[11px] font-semibold text-slate-600 hover:text-slate-800 flex items-center gap-1">
+                                                        <i class="fa-solid fa-arrows-rotate"></i> Ganti
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1453,13 +1506,43 @@
                                 <!-- Update Foto Mapping -->
                                 <div>
                                     <label class="block text-xs font-semibold text-slate-700 mb-1.5">Update Foto Mapping<span class="text-rose-500">*</span></label>
-                                    <div class="relative border-2 border-dashed border-slate-200 hover:border-blue-400 rounded-xl p-5 text-center bg-slate-50/50 hover:bg-blue-50/20 transition-all group cursor-pointer" onclick="document.getElementById('fotoMappingUpdateInput').click()">
-                                        <input type="file" name="foto_mapping" id="fotoMappingUpdateInput" accept="image/*" class="hidden" onchange="previewFotoMappingUpdate(this)">
-                                        <div class="flex flex-col items-center justify-center space-y-1.5">
-                                            <div class="w-10 h-10 rounded-full bg-slate-100 group-hover:bg-blue-100 text-slate-400 group-hover:text-blue-600 flex items-center justify-center transition-colors">
-                                                <i class="fa-solid fa-cloud-arrow-up text-lg"></i>
+                                    <div class="relative">
+                                        <input type="file" name="foto_mapping" id="fotoMappingUpdateInput" accept="image/*" class="hidden" onchange="handleFotoMappingChange(this, 'report')">
+                                        
+                                        <!-- Dropzone -->
+                                        <div id="fotoMappingReportDropzone" class="border-2 border-dashed border-slate-200 hover:border-blue-400 rounded-xl p-4 text-center bg-slate-50/50 hover:bg-blue-50/20 transition-all group cursor-pointer" onclick="document.getElementById('fotoMappingUpdateInput').click()">
+                                            <div class="flex flex-col items-center justify-center space-y-1.5">
+                                                <div class="w-9 h-9 rounded-full bg-slate-100 group-hover:bg-blue-100 text-slate-400 group-hover:text-blue-600 flex items-center justify-center transition-colors">
+                                                    <i class="fa-solid fa-cloud-arrow-up text-base"></i>
+                                                </div>
+                                                <p class="text-xs text-slate-600 font-medium">Klik untuk upload foto mapping baru</p>
+                                                <p class="text-[10px] text-slate-400">JPG, PNG, WEBP (Max 5MB)</p>
                                             </div>
-                                            <p class="text-xs text-slate-500 font-medium" id="fotoMappingUpdateText">Drag and drop a file here or click</p>
+                                        </div>
+
+                                        <!-- Preview Box -->
+                                        <div id="fotoMappingReportPreviewBox" class="hidden border border-slate-200 rounded-xl p-3 bg-white shadow-xs">
+                                            <div class="flex items-center gap-3">
+                                                <div class="relative group/img cursor-pointer w-20 h-16 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 flex-shrink-0" onclick="viewCurrentFotoMapping('report')">
+                                                    <img id="fotoMappingReportImg" src="" alt="Preview Foto Mapping" class="w-full h-full object-cover group-hover/img:scale-105 transition-transform">
+                                                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center text-white text-xs">
+                                                        <i class="fa-solid fa-magnifying-glass-plus"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="flex-1 min-w-0">
+                                                    <span id="fotoMappingReportBadge" class="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-700 mb-1">Foto Tersimpan</span>
+                                                    <p id="fotoMappingReportFileName" class="text-xs font-semibold text-slate-700 truncate">nama_file.webp</p>
+                                                    <div class="flex items-center gap-2 mt-1.5">
+                                                        <button type="button" onclick="viewCurrentFotoMapping('report')" class="text-[11px] font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1">
+                                                            <i class="fa-solid fa-eye"></i> Lihat
+                                                        </button>
+                                                        <span class="text-slate-300">•</span>
+                                                        <button type="button" onclick="document.getElementById('fotoMappingUpdateInput').click()" class="text-[11px] font-semibold text-slate-600 hover:text-slate-800 flex items-center gap-1">
+                                                            <i class="fa-solid fa-arrows-rotate"></i> Ganti
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -1661,13 +1744,43 @@
                             <!-- Update Foto Mapping -->
                             <div>
                                 <label class="block text-xs font-semibold text-slate-700 mb-1.5">Update Foto Mapping<span class="text-rose-500">*</span></label>
-                                <div class="relative border-2 border-dashed border-slate-200 hover:border-blue-400 rounded-xl p-5 text-center bg-slate-50/50 hover:bg-blue-50/20 transition-all group cursor-pointer" onclick="document.getElementById('fotoMappingInstalasiInput').click()">
-                                    <input type="file" name="foto_mapping" id="fotoMappingInstalasiInput" accept="image/*" class="hidden" onchange="previewFotoMappingInstalasi(this)">
-                                    <div class="flex flex-col items-center justify-center space-y-1.5">
-                                        <div class="w-10 h-10 rounded-full bg-slate-100 group-hover:bg-blue-100 text-slate-400 group-hover:text-blue-600 flex items-center justify-center transition-colors">
-                                            <i class="fa-solid fa-cloud-arrow-up text-lg"></i>
+                                <div class="relative">
+                                    <input type="file" name="foto_mapping" id="fotoMappingInstalasiInput" accept="image/*" class="hidden" onchange="handleFotoMappingChange(this, 'instalasi')">
+                                    
+                                    <!-- Dropzone -->
+                                    <div id="fotoMappingInstalasiDropzone" class="border-2 border-dashed border-slate-200 hover:border-blue-400 rounded-xl p-4 text-center bg-slate-50/50 hover:bg-blue-50/20 transition-all group cursor-pointer" onclick="document.getElementById('fotoMappingInstalasiInput').click()">
+                                        <div class="flex flex-col items-center justify-center space-y-1.5">
+                                            <div class="w-9 h-9 rounded-full bg-slate-100 group-hover:bg-blue-100 text-slate-400 group-hover:text-blue-600 flex items-center justify-center transition-colors">
+                                                <i class="fa-solid fa-cloud-arrow-up text-base"></i>
+                                            </div>
+                                            <p class="text-xs text-slate-600 font-medium">Klik untuk upload foto mapping baru</p>
+                                            <p class="text-[10px] text-slate-400">JPG, PNG, WEBP (Max 5MB)</p>
                                         </div>
-                                        <p class="text-xs text-slate-500 font-medium" id="fotoMappingInstalasiText">Drag and drop a file here or click</p>
+                                    </div>
+
+                                    <!-- Preview Box -->
+                                    <div id="fotoMappingInstalasiPreviewBox" class="hidden border border-slate-200 rounded-xl p-3 bg-white shadow-xs">
+                                        <div class="flex items-center gap-3">
+                                            <div class="relative group/img cursor-pointer w-20 h-16 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 flex-shrink-0" onclick="viewCurrentFotoMapping('instalasi')">
+                                                <img id="fotoMappingInstalasiImg" src="" alt="Preview Foto Mapping" class="w-full h-full object-cover group-hover/img:scale-105 transition-transform">
+                                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center text-white text-xs">
+                                                    <i class="fa-solid fa-magnifying-glass-plus"></i>
+                                                </div>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <span id="fotoMappingInstalasiBadge" class="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-700 mb-1">Foto Tersimpan</span>
+                                                <p id="fotoMappingInstalasiFileName" class="text-xs font-semibold text-slate-700 truncate">nama_file.webp</p>
+                                                <div class="flex items-center gap-2 mt-1.5">
+                                                    <button type="button" onclick="viewCurrentFotoMapping('instalasi')" class="text-[11px] font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1">
+                                                        <i class="fa-solid fa-eye"></i> Lihat
+                                                    </button>
+                                                    <span class="text-slate-300">•</span>
+                                                    <button type="button" onclick="document.getElementById('fotoMappingInstalasiInput').click()" class="text-[11px] font-semibold text-slate-600 hover:text-slate-800 flex items-center gap-1">
+                                                        <i class="fa-solid fa-arrows-rotate"></i> Ganti
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1926,8 +2039,127 @@
         </div>
     </div>
 
+    <!-- Modal Preview Foto / Lightbox -->
+    <div id="modalGlobalFotoPreview" class="hidden fixed inset-0 z-[9999] overflow-y-auto bg-slate-900/80 backdrop-blur-xs flex items-center justify-center p-4" onclick="if(event.target === this) closeGlobalFotoPreview()">
+        <div class="relative bg-white rounded-2xl shadow-2xl max-w-3xl w-full overflow-hidden border border-slate-200">
+            <div class="flex items-center justify-between px-5 py-3.5 border-b border-slate-100 bg-slate-50">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-image text-blue-600"></i>
+                    <h3 id="globalFotoPreviewTitle" class="text-sm font-bold text-slate-800 truncate">Preview Foto Mapping</h3>
+                </div>
+                <div class="flex items-center gap-2">
+                    <a id="globalFotoPreviewDownload" href="#" target="_blank" class="px-2.5 py-1 text-xs font-semibold text-slate-600 hover:text-blue-600 hover:bg-white rounded-lg border border-slate-200 transition-all flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Buka Asli
+                    </a>
+                    <button type="button" onclick="closeGlobalFotoPreview()" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 flex items-center justify-center transition-colors">
+                        <i class="fa-solid fa-xmark text-sm"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-4 bg-slate-900/5 flex items-center justify-center min-h-[250px] max-h-[75vh] overflow-auto">
+                <img id="globalFotoPreviewImg" src="" alt="Foto Mapping" class="max-w-full max-h-[70vh] rounded-lg shadow-md object-contain">
+            </div>
+        </div>
+    </div>
+
     <script>
-        function openSurveyModal(nomorInternet, namaPelanggan, surveyDate, surveyTime, surveyNote, surveyTeamStr) {
+        // State tracking URL foto mapping untuk setiap modal
+        const currentFotoMappingState = {
+            survey: { url: '', name: '', title: '' },
+            report: { url: '', name: '', title: '' },
+            instalasi: { url: '', name: '', title: '' }
+        };
+
+        function setupFotoMappingUI(type, existingUrl, title) {
+            const capitalType = type.charAt(0).toUpperCase() + type.slice(1);
+            const dropzone = document.getElementById('fotoMapping' + capitalType + 'Dropzone');
+            const previewBox = document.getElementById('fotoMapping' + capitalType + 'PreviewBox');
+            const img = document.getElementById('fotoMapping' + capitalType + 'Img');
+            const fileName = document.getElementById('fotoMapping' + capitalType + 'FileName');
+            const badge = document.getElementById('fotoMapping' + capitalType + 'Badge');
+
+            currentFotoMappingState[type] = {
+                url: existingUrl || '',
+                name: existingUrl ? existingUrl.split('/').pop() : '',
+                title: title || 'Preview Foto Mapping'
+            };
+
+            if (existingUrl) {
+                if (img) img.src = existingUrl;
+                if (fileName) fileName.textContent = existingUrl.split('/').pop();
+                if (badge) {
+                    badge.textContent = 'Foto Tersimpan';
+                    badge.className = 'inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-700 mb-1';
+                }
+                if (dropzone) dropzone.classList.add('hidden');
+                if (previewBox) previewBox.classList.remove('hidden');
+            } else {
+                if (img) img.src = '';
+                if (fileName) fileName.textContent = '';
+                if (dropzone) dropzone.classList.remove('hidden');
+                if (previewBox) previewBox.classList.add('hidden');
+            }
+        }
+
+        function handleFotoMappingChange(input, type) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const reader = new FileReader();
+                const capitalType = type.charAt(0).toUpperCase() + type.slice(1);
+                const dropzone = document.getElementById('fotoMapping' + capitalType + 'Dropzone');
+                const previewBox = document.getElementById('fotoMapping' + capitalType + 'PreviewBox');
+                const img = document.getElementById('fotoMapping' + capitalType + 'Img');
+                const fileName = document.getElementById('fotoMapping' + capitalType + 'FileName');
+                const badge = document.getElementById('fotoMapping' + capitalType + 'Badge');
+
+                reader.onload = function(e) {
+                    currentFotoMappingState[type].url = e.target.result;
+                    currentFotoMappingState[type].name = file.name;
+
+                    if (img) img.src = e.target.result;
+                    if (fileName) fileName.textContent = file.name;
+                    if (badge) {
+                        badge.textContent = 'Foto Baru Dipilih';
+                        badge.className = 'inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-700 mb-1';
+                    }
+                    if (dropzone) dropzone.classList.add('hidden');
+                    if (previewBox) previewBox.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function viewCurrentFotoMapping(type) {
+            const item = currentFotoMappingState[type];
+            if (item && item.url) {
+                openGlobalFotoPreview(item.url, item.title || 'Preview Foto Mapping');
+            }
+        }
+
+        function openGlobalFotoPreview(url, title) {
+            const modal = document.getElementById('modalGlobalFotoPreview');
+            const img = document.getElementById('globalFotoPreviewImg');
+            const titleEl = document.getElementById('globalFotoPreviewTitle');
+            const dlBtn = document.getElementById('globalFotoPreviewDownload');
+
+            if (modal && img) {
+                img.src = url;
+                if (titleEl) titleEl.textContent = title || 'Preview Foto Mapping';
+                if (dlBtn) dlBtn.href = url;
+                modal.classList.remove('hidden');
+            }
+        }
+
+        function closeGlobalFotoPreview() {
+            const modal = document.getElementById('modalGlobalFotoPreview');
+            const img = document.getElementById('globalFotoPreviewImg');
+            if (modal) {
+                modal.classList.add('hidden');
+                if (img) img.src = '';
+            }
+        }
+
+        function openSurveyModal(nomorInternet, namaPelanggan, surveyDate, surveyTime, surveyNote, surveyTeamStr, fotoPetaUrl) {
             var form = document.getElementById('formSurvey');
             form.action = '/pendaftaran/' + encodeURIComponent(nomorInternet) + '/jadwal-survey';
 
@@ -1940,7 +2172,11 @@
             }
 
             document.getElementById('surveyNote').value = surveyNote || '';
-            document.getElementById('fotoMappingText').textContent = 'Drag and drop a file here or click';
+            
+            // Reset input file
+            var fileInput = document.getElementById('fotoMappingInput');
+            if (fileInput) fileInput.value = '';
+            setupFotoMappingUI('survey', fotoPetaUrl || '', 'Foto Mapping - ' + (namaPelanggan || ''));
 
             var selectedTeams = surveyTeamStr ? surveyTeamStr.split(',').map(function(s) { return s.trim(); }) : [];
             document.querySelectorAll('.survey-team-cb').forEach(function(cb) {
@@ -1954,23 +2190,26 @@
             document.getElementById('modalSurvey').classList.add('hidden');
         }
 
+        // Backward compatibility
         function previewFotoMapping(input) {
-            if (input.files && input.files[0]) {
-                document.getElementById('fotoMappingText').textContent = '📄 ' + input.files[0].name;
-            }
+            handleFotoMappingChange(input, 'survey');
         }
 
         // ── Report Survey Functions (Proses 2) ──
         let globalReportSurveyItems = [];
 
-        function openReportSurveyModal(nomorInternet, namaPelanggan, surveyDateFinish, surveyNoteFinish, surveyTeamStr) {
+        function openReportSurveyModal(nomorInternet, namaPelanggan, surveyDateFinish, surveyNoteFinish, surveyTeamStr, fotoPetaUrl) {
             var form = document.getElementById('formReportSurvey');
             form.action = '/pendaftaran/' + encodeURIComponent(nomorInternet) + '/report-survey';
 
             document.getElementById('reportSurveyModalTitle').textContent = 'Report Survey An/' + (namaPelanggan || '');
             document.getElementById('surveyDateFinish').value = surveyDateFinish || new Date().toISOString().split('T')[0];
             document.getElementById('surveyNoteFinish').value = surveyNoteFinish || '';
-            document.getElementById('fotoMappingUpdateText').textContent = 'Drag and drop a file here or click';
+            
+            // Reset input file dan pasang preview existing foto peta
+            var fileInput = document.getElementById('fotoMappingUpdateInput');
+            if (fileInput) fileInput.value = '';
+            setupFotoMappingUI('report', fotoPetaUrl || '', 'Foto Mapping - ' + (namaPelanggan || ''));
             
             var rescheduleCb = document.getElementById('checkRescheduleSurvey');
             rescheduleCb.checked = false;
@@ -2010,9 +2249,7 @@
         }
 
         function previewFotoMappingUpdate(input) {
-            if (input.files && input.files[0]) {
-                document.getElementById('fotoMappingUpdateText').textContent = '📄 ' + input.files[0].name;
-            }
+            handleFotoMappingChange(input, 'report');
         }
 
         function addReportSurveyBarang() {
@@ -2078,7 +2315,7 @@
         // ── Form Instalasi Functions (Proses 3) ──
         let globalInstalasiItems = [];
 
-        function openFormInstalasiModal(nomorInternet, namaPelanggan, noteRequest, dateStart, timeVal, noteVal, teamStr, existingItems) {
+        function openFormInstalasiModal(nomorInternet, namaPelanggan, noteRequest, dateStart, timeVal, noteVal, teamStr, existingItems, fotoPetaUrl) {
             var form = document.getElementById('formInstalasiTeknik');
             form.action = '/pendaftaran/' + encodeURIComponent(nomorInternet) + '/jadwal-instalasi';
 
@@ -2092,7 +2329,11 @@
             }
 
             document.getElementById('instalasiNote').value = noteVal || 'masukan catatan untuk teknisi lapangan saat proses instalasi.';
-            document.getElementById('fotoMappingInstalasiText').textContent = 'Drag and drop a file here or click';
+            
+            // Reset input file dan pasang preview existing foto peta
+            var fileInput = document.getElementById('fotoMappingInstalasiInput');
+            if (fileInput) fileInput.value = '';
+            setupFotoMappingUI('instalasi', fotoPetaUrl || '', 'Foto Mapping - ' + (namaPelanggan || ''));
 
             var selectedTeams = teamStr ? teamStr.split(',').map(function(s) { return s.trim(); }) : [];
             document.querySelectorAll('.instalasi-team-cb').forEach(function(cb) {
@@ -2119,9 +2360,7 @@
         }
 
         function previewFotoMappingInstalasi(input) {
-            if (input.files && input.files[0]) {
-                document.getElementById('fotoMappingInstalasiText').textContent = '📄 ' + input.files[0].name;
-            }
+            handleFotoMappingChange(input, 'instalasi');
         }
 
         function addInstalasiBarang() {
@@ -3317,6 +3556,7 @@
             if (e.key === 'Escape') {
                 closeModal();
                 closeHapusModal();
+                closeGlobalFotoPreview();
                 if (typeof closeAktivasiModal === 'function') closeAktivasiModal();
                 if (typeof window.closeConfirmAutoFillModal === 'function') window.closeConfirmAutoFillModal();
             }

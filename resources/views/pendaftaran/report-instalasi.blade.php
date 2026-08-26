@@ -111,26 +111,47 @@
                         <label class="block text-xs font-semibold text-gray-700 mb-2">
                             Update Foto Mapping <span class="text-rose-500">*</span>
                         </label>
-                        <div class="relative border-2 border-dashed border-gray-200 hover:border-blue-400 bg-gray-50/50 hover:bg-blue-50/30 rounded-2xl p-6 text-center transition-all cursor-pointer group" onclick="document.getElementById('foto_mapping').click()">
+                        <div class="relative">
                             <input type="file" id="foto_mapping" name="foto_mapping" accept="image/*" class="hidden" onchange="previewImage(this)">
                             
-                            <div id="dropzone_content" class="space-y-2">
+                            <!-- Dropzone -->
+                            <div id="dropzone_content" class="{{ !empty($instalasi->foto_peta) ? 'hidden' : '' }} border-2 border-dashed border-gray-200 hover:border-blue-400 bg-gray-50/50 hover:bg-blue-50/30 rounded-2xl p-6 text-center transition-all cursor-pointer group" onclick="document.getElementById('foto_mapping').click()">
                                 <div class="w-12 h-12 rounded-full bg-white border border-gray-100 shadow-xs mx-auto flex items-center justify-center text-gray-400 group-hover:text-blue-500 group-hover:scale-110 transition-all">
                                     <i class="fa-solid fa-cloud-arrow-up text-xl"></i>
                                 </div>
-                                <p class="text-xs text-gray-500 font-medium">
+                                <p class="text-xs text-gray-500 font-medium mt-2">
                                     Drag and drop a file here or click
                                 </p>
                                 <p class="text-[10px] text-gray-400">Format: JPG, PNG, WEBP (Max 5MB)</p>
                             </div>
 
                             <!-- Preview Container -->
-                            <div id="preview_box" class="{{ !empty($instalasi->foto_peta) ? '' : 'hidden' }} space-y-2">
-                                <img id="img_preview" src="{{ !empty($instalasi->foto_peta) ? asset($instalasi->foto_peta) : '' }}" class="max-h-36 mx-auto rounded-lg shadow-sm object-cover border border-gray-200">
-                                <span id="file_name" class="block text-xs font-semibold text-gray-600 truncate">
-                                    {{ !empty($instalasi->foto_peta) ? basename($instalasi->foto_peta) : '' }}
-                                </span>
-                                <span class="text-[10px] text-blue-600 underline">Klik untuk mengganti foto</span>
+                            <div id="preview_box" class="{{ !empty($instalasi->foto_peta) ? '' : 'hidden' }} border border-slate-200 rounded-2xl p-4 bg-white shadow-xs">
+                                <div class="flex items-center gap-4">
+                                    <div class="relative group/img cursor-pointer w-24 h-20 rounded-xl overflow-hidden border border-slate-200 bg-slate-100 flex-shrink-0" onclick="viewCurrentReportInstalasiFoto()">
+                                        <img id="img_preview" src="{{ !empty($instalasi->foto_peta) ? asset($instalasi->foto_peta) : '' }}" class="w-full h-full object-cover group-hover/img:scale-105 transition-transform">
+                                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center text-white text-xs">
+                                            <i class="fa-solid fa-magnifying-glass-plus"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <span id="badge_preview" class="inline-block px-2 py-0.5 rounded text-[10px] font-bold {{ !empty($instalasi->foto_peta) ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700' }} mb-1">
+                                            {{ !empty($instalasi->foto_peta) ? 'Foto Tersimpan' : 'Foto Baru Dipilih' }}
+                                        </span>
+                                        <span id="file_name" class="block text-xs font-semibold text-gray-700 truncate">
+                                            {{ !empty($instalasi->foto_peta) ? basename($instalasi->foto_peta) : '' }}
+                                        </span>
+                                        <div class="flex items-center gap-2 mt-2">
+                                            <button type="button" onclick="viewCurrentReportInstalasiFoto()" class="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1">
+                                                <i class="fa-solid fa-eye"></i> Lihat
+                                            </button>
+                                            <span class="text-slate-300">•</span>
+                                            <button type="button" onclick="document.getElementById('foto_mapping').click()" class="text-xs font-semibold text-slate-600 hover:text-slate-800 flex items-center gap-1">
+                                                <i class="fa-solid fa-arrows-rotate"></i> Ganti
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -227,7 +248,55 @@
     </form>
 </div>
 
+<!-- Modal Preview Foto / Lightbox -->
+<div id="modalGlobalFotoPreview" class="hidden fixed inset-0 z-[9999] overflow-y-auto bg-slate-900/80 backdrop-blur-xs flex items-center justify-center p-4" onclick="if(event.target === this) closeGlobalFotoPreview()">
+    <div class="relative bg-white rounded-2xl shadow-2xl max-w-3xl w-full overflow-hidden border border-slate-200">
+        <div class="flex items-center justify-between px-5 py-3.5 border-b border-slate-100 bg-slate-50">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-image text-blue-600"></i>
+                <h3 class="text-sm font-bold text-slate-800 truncate">Preview Foto Mapping - {{ $customer->nama_pelanggan ?? '' }}</h3>
+            </div>
+            <div class="flex items-center gap-2">
+                <a id="globalFotoPreviewDownload" href="{{ !empty($instalasi->foto_peta) ? asset($instalasi->foto_peta) : '#' }}" target="_blank" class="px-2.5 py-1 text-xs font-semibold text-slate-600 hover:text-blue-600 hover:bg-white rounded-lg border border-slate-200 transition-all flex items-center gap-1">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Buka Asli
+                </a>
+                <button type="button" onclick="closeGlobalFotoPreview()" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+        </div>
+        <div class="p-4 bg-slate-900/5 flex items-center justify-center min-h-[250px] max-h-[75vh] overflow-auto">
+            <img id="globalFotoPreviewImg" src="{{ !empty($instalasi->foto_peta) ? asset($instalasi->foto_peta) : '' }}" alt="Foto Mapping" class="max-w-full max-h-[70vh] rounded-lg shadow-md object-contain">
+        </div>
+    </div>
+</div>
+
 <script>
+    let currentReportInstalasiFotoUrl = "{{ !empty($instalasi->foto_peta) ? asset($instalasi->foto_peta) : '' }}";
+
+    function viewCurrentReportInstalasiFoto() {
+        if (currentReportInstalasiFotoUrl) {
+            openGlobalFotoPreview(currentReportInstalasiFotoUrl);
+        }
+    }
+
+    function openGlobalFotoPreview(url) {
+        const modal = document.getElementById('modalGlobalFotoPreview');
+        const img = document.getElementById('globalFotoPreviewImg');
+        const dlBtn = document.getElementById('globalFotoPreviewDownload');
+
+        if (modal && img) {
+            img.src = url;
+            if (dlBtn) dlBtn.href = url;
+            modal.classList.remove('hidden');
+        }
+    }
+
+    function closeGlobalFotoPreview() {
+        const modal = document.getElementById('modalGlobalFotoPreview');
+        if (modal) modal.classList.add('hidden');
+    }
+
     let itemIndex = {{ count($installedBarang) }};
 
     function toggleReschedule(checkbox) {
@@ -248,16 +317,29 @@
 
     function previewImage(input) {
         if (input.files && input.files[0]) {
+            const file = input.files[0];
             const reader = new FileReader();
             reader.onload = function(e) {
+                currentReportInstalasiFotoUrl = e.target.result;
                 document.getElementById('img_preview').src = e.target.result;
-                document.getElementById('file_name').textContent = input.files[0].name;
+                document.getElementById('file_name').textContent = file.name;
+                const badge = document.getElementById('badge_preview');
+                if (badge) {
+                    badge.textContent = 'Foto Baru Dipilih';
+                    badge.className = 'inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-700 mb-1';
+                }
                 document.getElementById('dropzone_content').classList.add('hidden');
                 document.getElementById('preview_box').classList.remove('hidden');
             }
-            reader.readAsDataURL(input.files[0]);
+            reader.readAsDataURL(file);
         }
     }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeGlobalFotoPreview();
+        }
+    });
 
     function addBarangItem() {
         const select = document.getElementById('select_barang');
