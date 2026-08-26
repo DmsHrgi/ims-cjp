@@ -296,6 +296,10 @@
                                                 <i class="fa-solid fa-pen-to-square text-blue-500 text-[11px]"></i>
                                                 <span>Adjust</span>
                                             </button>
+                                            <button type="button" onclick="openModalHapus('{{ $c->nomor_internet }}', '{{ addslashes($c->nama_display) }}')" class="flex items-center gap-1.5 text-gray-700 hover:text-rose-600 transition-colors font-medium text-left cursor-pointer">
+                                                <i class="fa-solid fa-trash-can text-rose-500 text-[11px]"></i>
+                                                <span>Hapus</span>
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -747,7 +751,36 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- JAVASCRIPT HANDLERS FOR THE 4 MODALS -->
+    <!-- 5. MODAL KONFIRMASI HAPUS PELANGGAN -->
+    <!-- ========================================================================= -->
+    <div id="modal-hapus" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all border border-gray-100 animate-in fade-in zoom-in-95 duration-200">
+            <div class="p-6 text-center">
+                <div class="w-16 h-16 rounded-full bg-rose-100 flex items-center justify-center mx-auto mb-4">
+                    <i class="fa-solid fa-triangle-exclamation text-3xl text-rose-500"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800 mb-2">Konfirmasi Hapus</h3>
+                <p class="text-sm text-gray-500 mb-1">Apakah Anda yakin ingin menghapus data pelanggan ini?</p>
+                <p id="hapus-nomor-internet" class="text-sm font-semibold text-rose-600 mb-6"></p>
+
+                <form id="form-hapus-pelanggan" method="POST" action="">
+                    @csrf
+                    @method('DELETE')
+                    <div class="flex items-center justify-center gap-3">
+                        <button type="button" onclick="closeAllModals()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-5 py-2.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-xmark"></i> Batal
+                        </button>
+                        <button type="submit" class="bg-rose-500 hover:bg-rose-600 text-white px-5 py-2.5 rounded-lg text-xs font-bold transition-all shadow-md shadow-rose-200/50 flex items-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-trash-can"></i> Hapus
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- JAVASCRIPT HANDLERS FOR THE MODALS -->
     <!-- ========================================================================= -->
     <script>
         let cachedPaketList = [];
@@ -767,6 +800,21 @@
                 if (e.target === this) closeAllModals();
             });
         });
+
+        // -------------------------------------------------------------
+        // 0. MODAL HAPUS
+        // -------------------------------------------------------------
+        function openModalHapus(nomorInternet, namaDisplay = '') {
+            closeAllModals();
+            const form = document.getElementById('form-hapus-pelanggan');
+            form.action = '/pendaftaran/' + encodeURIComponent(nomorInternet);
+            document.getElementById('hapus-nomor-internet').textContent = nomorInternet + (namaDisplay ? ' - ' + namaDisplay : '');
+            document.getElementById('modal-hapus').classList.remove('hidden');
+        }
+
+        function konfirmasiHapus(nomorInternet, namaDisplay = '') {
+            openModalHapus(nomorInternet, namaDisplay);
+        }
 
         // -------------------------------------------------------------
         // 1. MODAL TERMINASI
