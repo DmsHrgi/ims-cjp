@@ -351,11 +351,18 @@ class PageController extends Controller
         $customer->harga_paket = $billReg->total_reg ?? $customer->harga_bandwith ?? $reg->total_registrasi ?? null;
         $customer->biaya_reg = $billReg->biaya_registrasi ?? $reg->biaya_reg ?? $customer->biaya_reg ?? null;
 
-        // Foto Berkas
+        // Foto Berkas & Data Survey
         $instData = DB::table('trx_instalasi')->where('nomor_internet', $nomorInternet)->first();
         $customer->foto_po = $reg->foto_po ?? $instData->foto_ktp ?? $customer->foto_po ?? $customer->foto_ktp ?? null;
         $customer->foto_bangunan = $reg->foto_bangunan ?? $instData->foto_rumah ?? $customer->foto_bangunan ?? $customer->foto_rumah ?? null;
         $customer->foto_peta = $instData->foto_peta ?? $customer->foto_peta ?? null;
+        if ($instData) {
+            $customer->survey_date_start = $instData->survey_date_start ?? $customer->survey_date_start ?? null;
+            $customer->survey_date_finish = $instData->survey_date_finish ?? $customer->survey_date_finish ?? null;
+            $customer->survey_time = $instData->survey_time ?? $customer->survey_time ?? null;
+            $customer->survey_team = $instData->survey_team ?? $customer->survey_team ?? null;
+            $customer->survey_note = $instData->survey_note ?? $customer->survey_note ?? null;
+        }
 
         // --- DATA LOG / RIWAYAT AKTIVITAS ---
         $logs = collect();
@@ -728,6 +735,105 @@ class PageController extends Controller
 
         $fileName = 'Profil_Pelanggan_' . preg_replace('/[^A-Za-z0-9_\-]/', '_', $nomorInternet) . '.pdf';
         return $pdf->download($fileName);
+    }
+
+    public function downloadSurveyPdf($nomorInternet)
+    {
+        if (!session()->has('user')) {
+            abort(401, 'Silakan login terlebih dahulu untuk mengunduh dokumen.');
+        }
+
+        $customer = DB::table('view_batchjob')
+            ->where('nomor_internet', $nomorInternet)
+            ->first();
+
+        if (!$customer) {
+            return redirect()->route('pelanggan')->withErrors(['error' => 'Pelanggan tidak ditemukan.']);
+        }
+
+        $customer = $this->decorate($customer);
+
+        $reg = DB::table('trx_batchjob_register')->where('nomor_internet', $nomorInternet)->first();
+        $targetId = $customer->id_perusahaan ?? $customer->nik_penduduk ?? ($reg ? ($reg->id_perusahaan ?? $reg->nik_penduduk) : null);
+        $pelanggan = $targetId ? DB::table('m_pelanggan')->where('id_perusahaan', $targetId)->first() : null;
+        $instData = DB::table('trx_instalasi')->where('nomor_internet', $nomorInternet)->first();
+
+        // 1. Tanggal Survey
+        $surveyDate = $instData->survey_date_start ?? $customer->survey_date_start ?? $customer->date_create ?? now();
+        $surveyDateObj = \Carbon\Carbon::parse($surveyDate);
+        $bulanIndo = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+        ];
+        $surveyDateFormatted = $surveyDateObj->format('d') . ' ' . ($bulanIndo[(int)$surveyDateObj->format('m')] ?? $surveyDateObj->format('F')) . ' ' . $surveyDateObj->format('Y');
+        $surveyMonth = $surveyDateObj->format('m');
+        $surveyYear = $surveyDateObj->format('Y');
+
+        // Tim teknisi survey
+        $surveyTeam = $instData->survey_team ?? $customer->survey_team ?? 'TIM TEKNISI';
+
+        // 2. Data Pelanggan
+        $customerName = $pelanggan->nama_perusahaan ?? $reg->nama_pelanggan ?? $customer->nama_pelanggan ?? $customer->nama_penduduk ?? 'TEST';
+
+        // Alamat Pasang Lengkap
+        $kodeKel = $reg->kode_wilayah_kelurahan_pasang ?? $customer->kode_wilayah_kelurahan_pasang ?? null;
+        $namaKel = $customer->nama_kelurahan_pasang ?? null;
+        $namaKec = $customer->nama_kecamatan_pasang ?? null;
+        $namaKot = $customer->nama_kota_pasang ?? null;
+        $namaPro = $customer->nama_provinsi_pasang ?? null;
+
+        if ($kodeKel && (empty($namaKel) || empty($namaKec))) {
+            $wil = DB::table('m_wilayah')->where('kode_wilayah_kelurahan', $kodeKel)->first();
+            if ($wil) {
+                $namaKel = $wil->nama_kelurahan;
+                $namaKec = $wil->nama_kecamatan;
+                $namaKot = $wil->nama_kota;
+                $namaPro = $wil->nama_provinsi;
+            }
+        }
+
+        $alamatParts = array_filter([
+            $reg->alamat_pasang ?? $customer->alamat_pasang ?? $customer->alamat_p ?? null,
+            !empty($reg->nomor_bangunan ?? $customer->nomor_bangunan) ? 'NO. ' . ($reg->nomor_bangunan ?? $customer->nomor_bangunan) : null,
+            (!empty($reg->rt_pasang ?? $customer->rt_pasang) || !empty($reg->rw_pasang ?? $customer->rw_pasang)) ? 'RT' . ($reg->rt_pasang ?? $customer->rt_pasang ?: '00') . '/RW' . ($reg->rw_pasang ?? $customer->rw_pasang ?: '00') : null,
+            !empty($namaKel) ? 'KEL. ' . $namaKel : null,
+            !empty($namaKec) ? 'KEC. ' . $namaKec : null,
+            !empty($namaKot) ? $namaKot : null,
+            !empty($namaPro) ? $namaPro : null,
+        ]);
+        $installationAddress = !empty($alamatParts) ? implode(', ', $alamatParts) : ($customer->alamat_pasang ?: ($customer->alamat_p ?: '-'));
+
+        // PIC, Telepon, Layanan, Detail Pekerjaan
+        $picName = $pelanggan->nama_pic_teknis ?? $customer->nama_pic_teknis ?? $customer->pic ?? $reg->pic ?? '';
+        $phoneNumber = $pelanggan->no_telp_perusahaan ?? $customer->no_telp_perusahaan ?? $customer->nomor_hp ?? $reg->nomor_hp ?? '-';
+
+        $serviceBandwidth = trim(($customer->nama_kategori_bandwith ?? '') . ($customer->nominal_bandwith ? ', ' . $customer->nominal_bandwith . ' Mbps' : ''));
+        $serviceName = !empty($serviceBandwidth) ? $serviceBandwidth : ($customer->paket ?? '-');
+
+        $jobDetails = $instData->survey_note ?? $customer->survey_note ?? $reg->note_request ?? '-';
+
+        // Penanggung Jawab
+        $personInCharge = 'IPIN ARIPIN';
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.surat-tugas-survey', compact(
+            'customer',
+            'surveyDateFormatted',
+            'surveyMonth',
+            'surveyYear',
+            'surveyTeam',
+            'customerName',
+            'installationAddress',
+            'picName',
+            'phoneNumber',
+            'serviceName',
+            'jobDetails',
+            'personInCharge'
+        ));
+        $pdf->setPaper('a4', 'portrait');
+
+        $fileName = 'Surat_Tugas_Survey_' . preg_replace('/[^A-Za-z0-9_\-]/', '_', $nomorInternet) . '.pdf';
+        return $pdf->stream($fileName);
     }
 
     public function uploadScanDokumen(Request $request, $nomorInternet)
