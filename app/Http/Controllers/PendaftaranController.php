@@ -213,53 +213,38 @@ class PendaftaranController extends Controller
             ];
         });
 
-        // Master data tim NOC untuk Jadwal & Report Aktivasi (Hanya role NOC, kecuali BAGUS JOKO PRIYONO dan LEVANDRI AHMAD FAUZAN AJMAL)
-        $excludedNoc = [
-            'BAGUS JOKO PRIYONO',
-            'LEVANDRI AHMAD FAUZAN AJMAL',
-        ];
-
+        // Master data tim NOC untuk Jadwal & Report Aktivasi
         $targetNocNames = [
             'KELVIN SULTAN ASHARI',
             'HARRY SETIONO',
             'RICKY SAHARA PUTRA',
             'MUHAMAD RAFI RAMDHANI',
+            'RIDWAN',
+            'RASHIF',
         ];
 
-        $teamAktivasiDb = collect();
+        $existingNocKaryawan = collect();
         try {
-            $teamAktivasiDb = DB::table('view_pengguna')
-                ->where(function($q) {
-                    $q->where('nama_level', 'LIKE', '%NOC%')
-                      ->orWhere('kode_level', 'lv68132')
-                      ->orWhere('level', '3');
-                })
-                ->whereIn('status_aktif', ['1', '01'])
-                ->whereNotNull('nama_karyawan')
-                ->where('nama_karyawan', '!=', '')
-                ->orderBy('nama_karyawan')
-                ->get(['kode_karyawan', 'nama_karyawan'])
-                ->filter(function ($tm) use ($excludedNoc) {
-                    $name = strtoupper(trim($tm->nama_karyawan));
-                    foreach ($excludedNoc as $exc) {
-                        if (str_contains($name, $exc)) return false;
+            $existingNocKaryawan = DB::table('tb_m_karyawan')
+                ->where(function ($q) use ($targetNocNames) {
+                    foreach ($targetNocNames as $name) {
+                        $q->orWhere('nama_karyawan', 'LIKE', '%' . $name . '%');
                     }
-                    return true;
                 })
-                ->values();
+                ->get(['kode_karyawan', 'nama_karyawan']);
         } catch (\Exception $e) {}
 
-        if ($teamAktivasiDb->isNotEmpty()) {
-            $teamAktivasiList = $teamAktivasiDb;
-        } else {
-            // Fallback dengan target karyawan NOC yang aktif
-            $teamAktivasiList = collect($targetNocNames)->map(function ($name) {
-                return (object)[
-                    'kode_karyawan' => 'KRY-' . strtoupper(Str::slug($name)),
-                    'nama_karyawan' => $name,
-                ];
+        $teamAktivasiList = collect($targetNocNames)->map(function ($targetName) use ($existingNocKaryawan) {
+            $found = $existingNocKaryawan->first(function ($item) use ($targetName) {
+                return strcasecmp(trim($item->nama_karyawan), trim($targetName)) === 0
+                    || stripos($item->nama_karyawan, $targetName) !== false;
             });
-        }
+
+            return (object)[
+                'kode_karyawan' => $found ? $found->kode_karyawan : 'KRY-' . strtoupper(Str::slug($targetName)),
+                'nama_karyawan' => $found ? $found->nama_karyawan : $targetName,
+            ];
+        });
 
         $popList = DB::table('m_pop')
             ->where(function ($q) { $q->where('hide', '0')->orWhereNull('hide'); })
