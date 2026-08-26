@@ -1,6 +1,30 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    $getPhotoUrl = function($path) {
+        if (empty($path)) return '';
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, 'data:image')) return $path;
+        $cleanPath = ltrim($path, '/');
+        $cleanRelative = preg_replace('/^storage\//', '', $cleanPath);
+
+        if (file_exists(public_path($cleanPath))) {
+            return asset($cleanPath);
+        }
+        if (file_exists(public_path('storage/' . $cleanRelative))) {
+            return asset('storage/' . $cleanRelative);
+        }
+        if (file_exists(storage_path('app/public/' . $cleanRelative))) {
+            return url('media-berkas/' . $cleanRelative);
+        }
+        if (file_exists(storage_path('app/public/foto_peta/' . basename($cleanRelative)))) {
+            return url('media-berkas/foto_peta/' . basename($cleanRelative));
+        }
+        return url('media-berkas/' . $cleanRelative);
+    };
+
+    $fotoPetaUrl = $getPhotoUrl($instalasi->foto_peta ?? null);
+@endphp
 <div class="max-w-7xl mx-auto space-y-6">
     <!-- Breadcrumb & Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -115,7 +139,7 @@
                             <input type="file" id="foto_mapping" name="foto_mapping" accept="image/*" class="hidden" onchange="previewImage(this)">
                             
                             <!-- Dropzone -->
-                            <div id="dropzone_content" class="{{ !empty($instalasi->foto_peta) ? 'hidden' : '' }} border-2 border-dashed border-gray-200 hover:border-blue-400 bg-gray-50/50 hover:bg-blue-50/30 rounded-2xl p-6 text-center transition-all cursor-pointer group" onclick="document.getElementById('foto_mapping').click()">
+                            <div id="dropzone_content" class="{{ !empty($fotoPetaUrl) ? 'hidden' : '' }} border-2 border-dashed border-gray-200 hover:border-blue-400 bg-gray-50/50 hover:bg-blue-50/30 rounded-2xl p-6 text-center transition-all cursor-pointer group" onclick="document.getElementById('foto_mapping').click()">
                                 <div class="w-12 h-12 rounded-full bg-white border border-gray-100 shadow-xs mx-auto flex items-center justify-center text-gray-400 group-hover:text-blue-500 group-hover:scale-110 transition-all">
                                     <i class="fa-solid fa-cloud-arrow-up text-xl"></i>
                                 </div>
@@ -126,17 +150,17 @@
                             </div>
 
                             <!-- Preview Container -->
-                            <div id="preview_box" class="{{ !empty($instalasi->foto_peta) ? '' : 'hidden' }} border border-slate-200 rounded-2xl p-4 bg-white shadow-xs">
+                            <div id="preview_box" class="{{ !empty($fotoPetaUrl) ? '' : 'hidden' }} border border-slate-200 rounded-2xl p-4 bg-white shadow-xs">
                                 <div class="flex items-center gap-4">
                                     <div class="relative group/img cursor-pointer w-24 h-20 rounded-xl overflow-hidden border border-slate-200 bg-slate-100 flex-shrink-0" onclick="viewCurrentReportInstalasiFoto()">
-                                        <img id="img_preview" src="{{ !empty($instalasi->foto_peta) ? asset($instalasi->foto_peta) : '' }}" class="w-full h-full object-cover group-hover/img:scale-105 transition-transform">
+                                        <img id="img_preview" src="{{ $fotoPetaUrl }}" class="w-full h-full object-cover group-hover/img:scale-105 transition-transform">
                                         <div class="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center text-white text-xs">
                                             <i class="fa-solid fa-magnifying-glass-plus"></i>
                                         </div>
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <span id="badge_preview" class="inline-block px-2 py-0.5 rounded text-[10px] font-bold {{ !empty($instalasi->foto_peta) ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700' }} mb-1">
-                                            {{ !empty($instalasi->foto_peta) ? 'Foto Tersimpan' : 'Foto Baru Dipilih' }}
+                                        <span id="badge_preview" class="inline-block px-2 py-0.5 rounded text-[10px] font-bold {{ !empty($fotoPetaUrl) ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700' }} mb-1">
+                                            {{ !empty($fotoPetaUrl) ? 'Foto Tersimpan' : 'Foto Baru Dipilih' }}
                                         </span>
                                         <span id="file_name" class="block text-xs font-semibold text-gray-700 truncate">
                                             {{ !empty($instalasi->foto_peta) ? basename($instalasi->foto_peta) : '' }}
@@ -257,7 +281,7 @@
                 <h3 class="text-sm font-bold text-slate-800 truncate">Preview Foto Mapping - {{ $customer->nama_pelanggan ?? '' }}</h3>
             </div>
             <div class="flex items-center gap-2">
-                <a id="globalFotoPreviewDownload" href="{{ !empty($instalasi->foto_peta) ? asset($instalasi->foto_peta) : '#' }}" target="_blank" class="px-2.5 py-1 text-xs font-semibold text-slate-600 hover:text-blue-600 hover:bg-white rounded-lg border border-slate-200 transition-all flex items-center gap-1">
+                <a id="globalFotoPreviewDownload" href="{{ $fotoPetaUrl ?: '#' }}" target="_blank" class="px-2.5 py-1 text-xs font-semibold text-slate-600 hover:text-blue-600 hover:bg-white rounded-lg border border-slate-200 transition-all flex items-center gap-1">
                     <i class="fa-solid fa-arrow-up-right-from-square"></i> Buka Asli
                 </a>
                 <button type="button" onclick="closeGlobalFotoPreview()" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 flex items-center justify-center transition-colors">
@@ -266,13 +290,13 @@
             </div>
         </div>
         <div class="p-4 bg-slate-900/5 flex items-center justify-center min-h-[250px] max-h-[75vh] overflow-auto">
-            <img id="globalFotoPreviewImg" src="{{ !empty($instalasi->foto_peta) ? asset($instalasi->foto_peta) : '' }}" alt="Foto Mapping" class="max-w-full max-h-[70vh] rounded-lg shadow-md object-contain">
+            <img id="globalFotoPreviewImg" src="{{ $fotoPetaUrl }}" alt="Foto Mapping" class="max-w-full max-h-[70vh] rounded-lg shadow-md object-contain">
         </div>
     </div>
 </div>
 
 <script>
-    let currentReportInstalasiFotoUrl = "{{ !empty($instalasi->foto_peta) ? asset($instalasi->foto_peta) : '' }}";
+    let currentReportInstalasiFotoUrl = "{{ $fotoPetaUrl }}";
 
     function viewCurrentReportInstalasiFoto() {
         if (currentReportInstalasiFotoUrl) {
