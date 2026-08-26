@@ -310,9 +310,9 @@
                                     <a href="{{ route('pelanggan.detail', $c->nomor_internet) }}" class="font-bold text-blue-600 hover:underline block text-sm">
                                         {{ $c->nomor_internet }}
                                     </a>
-                                    <div class="font-bold text-gray-900 uppercase">
+                                    <a href="{{ route('pelanggan.detail', $c->nomor_internet) }}" class="font-bold text-gray-900 hover:text-blue-600 hover:underline uppercase block">
                                         {{ $c->nama_display }}
-                                    </div>
+                                    </a>
                                     <a href="{{ route('pelanggan.detail', $c->nomor_internet) }}" class="text-[11px] font-semibold text-blue-600 hover:underline block">
                                         {{ $c->paket }}
                                     </a>
