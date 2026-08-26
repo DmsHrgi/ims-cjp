@@ -89,7 +89,7 @@
 
     <div class="text-center">
         <div class="title">SURAT TUGAS INSTALASI</div>
-        <div class="nomor-surat">Nomor : &nbsp;&nbsp;&nbsp;&nbsp;/MSN-NOC/{{ $instalasiMonth ?? date('m') }}/{{ $instalasiYear ?? date('Y') }}</div>
+        <div class="nomor-surat">Nomor : &nbsp;&nbsp;&nbsp;&nbsp;/CJP-NOC/{{ $instalasiMonth ?? date('m') }}/{{ $instalasiYear ?? date('Y') }}</div>
     </div>
 
     <div class="content-p">
@@ -147,7 +147,7 @@
             <td class="space-sign"></td>
         </tr>
         <tr>
-            <td class="sign-name">{{ $personInCharge ?: '-' }}</td>
+            <td class="sign-name">{{ strtoupper($personInCharge ?: 'IPIN ARIPIN') }}</td>
             <td class="sign-name">{{ strtoupper($customerName) }}</td>
         </tr>
     </table>

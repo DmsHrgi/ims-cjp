@@ -89,7 +89,7 @@
 
     <div class="text-center">
         <div class="title">SURAT TUGAS SURVEY</div>
-        <div class="nomor-surat">Nomor : &nbsp;&nbsp;&nbsp;&nbsp;/MSN-NOC/{{ $surveyMonth ?? date('m') }}/{{ $surveyYear ?? date('Y') }}</div>
+        <div class="nomor-surat">Nomor : &nbsp;&nbsp;&nbsp;&nbsp;/CJP-NOC/{{ $surveyMonth ?? date('m') }}/{{ $surveyYear ?? date('Y') }}</div>
     </div>
 
     <div class="content-p">

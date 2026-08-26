@@ -923,7 +923,7 @@ class PageController extends Controller
         $jobDetails = $instData->instalasi_note ?? $customer->instalasi_note ?? $reg->note_request ?? '-';
 
         // Penanggung Jawab
-        $personInCharge = '-';
+        $personInCharge = 'IPIN ARIPIN';
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.surat-tugas-instalasi', compact(
             'customer',
