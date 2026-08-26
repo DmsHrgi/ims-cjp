@@ -307,15 +307,15 @@
                             <tr class="hover:bg-blue-50/20 transition-colors">
                                 <!-- Col 1: Pelanggan -->
                                 <td class="py-4 px-6 align-top space-y-1">
-                                    <span class="font-bold text-blue-600 block text-sm">
+                                    <a href="{{ route('pelanggan.detail', $c->nomor_internet) }}" class="font-bold text-blue-600 hover:underline block text-sm">
                                         {{ $c->nomor_internet }}
-                                    </span>
+                                    </a>
                                     <div class="font-bold text-gray-900 uppercase">
                                         {{ $c->nama_display }}
                                     </div>
-                                    <span class="text-[11px] font-semibold text-blue-600 block">
+                                    <a href="{{ route('pelanggan.detail', $c->nomor_internet) }}" class="text-[11px] font-semibold text-blue-600 hover:underline block">
                                         {{ $c->paket }}
-                                    </span>
+                                    </a>
                                     <div class="text-[11px] text-gray-400 mt-1">
                                         Group Layanan : <span class="font-semibold text-gray-700 uppercase">{{ $c->group_layanan ?: 'MEDIANET' }}</span>
                                     </div>
