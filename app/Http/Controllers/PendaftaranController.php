@@ -242,7 +242,7 @@ class PendaftaranController extends Controller
 
             return (object)[
                 'kode_karyawan' => $found ? $found->kode_karyawan : 'KRY-' . strtoupper(Str::slug($targetName)),
-                'nama_karyawan' => $found ? $found->nama_karyawan : $targetName,
+                'nama_karyawan' => $targetName,
             ];
         });
 
