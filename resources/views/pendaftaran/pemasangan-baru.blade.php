@@ -460,10 +460,21 @@
                                                       <span>Jadwal Instalasi</span>
                                                   </button>
                                               @elseif($step4_instalasiScheduled)
-                                                  <a href="{{ route('pendaftaran.report-instalasi', $r->nomor_internet) }}" class="flex items-center gap-1.5 text-gray-700 hover:text-blue-600 transition-colors whitespace-nowrap">
-                                                      <i class="fa-solid fa-pen-to-square text-blue-500"></i>
-                                                      <span>Report Instalasi</span>
-                                                  </a>
+                                                   @php
+                                                       $rItems = $installedItems->get($r->nomor_internet, collect());
+                                                   @endphp
+                                                   <button type="button" onclick="openReportInstalasiModal(
+                                                           '{{ $r->nomor_internet }}',
+                                                           '{{ addslashes($r->nama_pelanggan ?: $r->nama_penduduk ?: 'Pelanggan') }}',
+                                                           '{{ $r->instalasi_date_finish ?? '' }}',
+                                                           '{{ addslashes($r->instalasi_note_finish ?? '') }}',
+                                                           '{{ addslashes($r->instalasi_team ?? '') }}',
+                                                           {{ json_encode($rItems) }},
+                                                           '{{ $getPhotoUrl($r->foto_peta ?? null) }}'
+                                                       )" class="flex items-center gap-1.5 text-gray-700 hover:text-blue-600 transition-colors whitespace-nowrap">
+                                                       <i class="fa-solid fa-pen-to-square text-blue-500"></i>
+                                                       <span>Report Instalasi</span>
+                                                   </button>
                                               @elseif($step5_instalasiDone)
                                                   {{-- Process Selesai: Tombol Report Instalasi HILANG --}}
                                               @endif
@@ -1804,6 +1815,183 @@
     </div>
 
     <!-- ============================================ -->
+    <!-- MODAL REPORT INSTALASI (ROLE TEKNIK - PROSES 4) -->
+    <!-- ============================================ -->
+    <div id="modalReportInstalasi" class="hidden fixed inset-0 z-50 overflow-y-auto transition-all duration-300">
+        <!-- Backdrop Blur -->
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity" onclick="closeReportInstalasiModal()"></div>
+
+        <div class="flex min-h-screen w-full items-center justify-center p-3 sm:p-4 md:p-6">
+            <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl flex flex-col overflow-hidden border border-slate-200/80 my-auto transform transition-all">
+
+                <!-- Modal Header -->
+                <div class="shrink-0 flex items-center justify-between px-6 py-4 bg-white border-b border-slate-100">
+                    <h3 class="text-base font-bold text-slate-800" id="reportInstalasiModalTitle">Report Instalasi An/</h3>
+                    <button type="button" onclick="closeReportInstalasiModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+
+                <!-- Form Content -->
+                <form id="formReportInstalasi" method="POST" action="" enctype="multipart/form-data" class="p-6 space-y-5">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Left Column -->
+                        <div class="space-y-4">
+                            <!-- Checkbox Jadwal Ulang Pemasangan -->
+                            <div class="flex items-center gap-2">
+                                <label class="text-xs font-semibold text-rose-500">Jadwal Ulang Pemasangan ?</label>
+                                <label class="flex items-center gap-1.5 cursor-pointer">
+                                    <input type="checkbox" name="is_reschedule" id="checkRescheduleReportInstalasi" onchange="toggleRescheduleReportInstalasi(this)" class="w-4 h-4 text-rose-600 rounded border-slate-300 focus:ring-rose-500">
+                                    <span class="text-xs font-medium text-slate-600">Ya, Jadwal Ulang</span>
+                                </label>
+                            </div>
+
+                            <!-- Form Reschedule (hidden by default) -->
+                            <div id="sectionRescheduleReportInstalasi" class="hidden space-y-3 p-3 bg-amber-50/50 border border-amber-200/80 rounded-xl">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Tanggal Jadwal Ulang Baru<span class="text-rose-500">*</span></label>
+                                    <input type="date" name="reschedule_date" id="reportInstalasiRescheduleDate" class="w-full bg-white border border-slate-200 focus:border-blue-500 text-slate-800 py-2 px-3 text-xs rounded-lg outline-none">
+                                </div>
+                            </div>
+
+                            <!-- Form Selesai Instalasi -->
+                            <div id="sectionSelesaiReportInstalasi" class="space-y-4">
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-700 mb-1">Selesai Instalasi<span class="text-rose-500">*</span></label>
+                                        <input type="date" name="instalasi_date_finish" id="reportInstalasiDateFinish" required class="w-full bg-white border border-slate-200 focus:border-blue-500 text-slate-800 py-2 px-3 text-xs rounded-lg outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-700 mb-1">Catatan Selesai Instalasi<span class="text-rose-500">*</span></label>
+                                        <input type="text" name="instalasi_note_finish" id="reportInstalasiNoteFinish" required placeholder="catatan Instalasi" class="w-full bg-white border border-slate-200 focus:border-blue-500 text-slate-800 py-2 px-3 text-xs rounded-lg outline-none">
+                                    </div>
+                                </div>
+
+                                <!-- Team Instalasi -->
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Team Instalasi</label>
+                                    <div class="grid grid-cols-2 gap-2 max-h-[170px] overflow-y-auto custom-modal-scroll p-3 border border-slate-200 rounded-xl text-xs text-slate-700 bg-slate-50/50">
+                                        @foreach($teamTeknisList ?? $teamAktivasiList as $tm)
+                                            <label class="flex items-center gap-2 cursor-pointer hover:bg-white p-1.5 rounded-lg border border-transparent hover:border-slate-200 transition-all">
+                                                <input type="checkbox" name="teams[]" value="{{ $tm->nama_karyawan }}" class="report-instalasi-team-cb w-3.5 h-3.5 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                                                <span class="truncate uppercase text-[11px] font-semibold text-slate-700">{{ $tm->nama_karyawan }}</span>
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                </div>
+
+                                <!-- Update Foto Mapping -->
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Update Foto Mapping<span class="text-rose-500">*</span></label>
+                                    <div class="relative">
+                                        <input type="file" name="foto_mapping" id="fotoMappingReportInstalasiInput" accept="image/*" class="hidden" onchange="handleFotoMappingChange(this, 'reportInstalasi')">
+                                        
+                                        <!-- Dropzone -->
+                                        <div id="fotoMappingReportInstalasiDropzone" class="border-2 border-dashed border-slate-200 hover:border-blue-400 rounded-xl p-4 text-center bg-slate-50/50 hover:bg-blue-50/20 transition-all group cursor-pointer" onclick="document.getElementById('fotoMappingReportInstalasiInput').click()">
+                                            <div class="flex flex-col items-center justify-center space-y-1.5">
+                                                <div class="w-9 h-9 rounded-full bg-slate-100 group-hover:bg-blue-100 text-slate-400 group-hover:text-blue-600 flex items-center justify-center transition-colors">
+                                                    <i class="fa-solid fa-cloud-arrow-up text-base"></i>
+                                                </div>
+                                                <p class="text-xs text-slate-600 font-medium">Klik untuk upload foto mapping baru</p>
+                                                <p class="text-[10px] text-slate-400">JPG, PNG, WEBP (Max 5MB)</p>
+                                            </div>
+                                        </div>
+
+                                        <!-- Preview Box -->
+                                        <div id="fotoMappingReportInstalasiPreviewBox" class="hidden border border-slate-200 rounded-xl p-3 bg-white shadow-xs">
+                                            <div class="flex items-center gap-3">
+                                                <div class="relative group/img cursor-pointer w-20 h-16 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 flex-shrink-0" onclick="viewCurrentFotoMapping('reportInstalasi')">
+                                                    <img id="fotoMappingReportInstalasiImg" src="" alt="Preview Foto Mapping" class="w-full h-full object-cover group-hover/img:scale-105 transition-transform">
+                                                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center text-white text-xs">
+                                                        <i class="fa-solid fa-magnifying-glass-plus"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="flex-1 min-w-0">
+                                                    <span id="fotoMappingReportInstalasiBadge" class="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-700 mb-1">Foto Tersimpan</span>
+                                                    <p id="fotoMappingReportInstalasiFileName" class="text-xs font-semibold text-slate-700 truncate">nama_file.webp</p>
+                                                    <div class="flex items-center gap-2 mt-1.5">
+                                                        <button type="button" onclick="viewCurrentFotoMapping('reportInstalasi')" class="text-[11px] font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1">
+                                                            <i class="fa-solid fa-eye"></i> Lihat
+                                                        </button>
+                                                        <span class="text-slate-300">•</span>
+                                                        <button type="button" onclick="document.getElementById('fotoMappingReportInstalasiInput').click()" class="text-[11px] font-semibold text-slate-600 hover:text-slate-800 flex items-center gap-1">
+                                                            <i class="fa-solid fa-arrows-rotate"></i> Ganti
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column -->
+                        <div class="space-y-4">
+                            <!-- Perangkat / Peralatan Yang Digunakan -->
+                            <div class="space-y-3">
+                                <h4 class="text-xs font-bold text-slate-800">Perangkat/ Peralatan Yang Digunakan</h4>
+                                
+                                <div class="flex items-end gap-2">
+                                    <div class="flex-1">
+                                        <label class="block text-[11px] font-semibold text-slate-600 mb-1">Perangkat</label>
+                                        <select id="reportInstalasiSelectBarang" class="w-full bg-white border border-slate-200 text-slate-800 py-1.5 px-2.5 text-xs rounded-lg outline-none">
+                                            <option value="">Pilih Perangkat</option>
+                                            @foreach($barangList as $b)
+                                                <option value="{{ $b->kode_barang }}" data-nama="{{ $b->nama_barang }} {{ $b->tipe_barang }}" data-satuan="{{ $b->satuan ?: 'UNIT' }}">{{ $b->nama_barang }} {{ $b->tipe_barang }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="w-20">
+                                        <label class="block text-[11px] font-semibold text-slate-600 mb-1">Jumlah</label>
+                                        <input type="number" id="reportInstalasiQtyBarang" min="1" value="1" class="w-full bg-white border border-slate-200 text-slate-800 py-1.5 px-2.5 text-xs rounded-lg outline-none text-center">
+                                    </div>
+                                    <button type="button" onclick="addReportInstalasiBarang()" class="px-3 py-1.5 rounded-lg bg-teal-400 hover:bg-teal-500 text-white text-xs font-bold transition-colors">
+                                        Add
+                                    </button>
+                                </div>
+
+                                <div class="border border-slate-200 rounded-lg overflow-hidden max-h-[170px] overflow-y-auto">
+                                    <table class="w-full text-xs">
+                                        <thead>
+                                            <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
+                                                <th class="py-1.5 px-3 text-left">Barang</th>
+                                                <th class="py-1.5 px-3 text-center">Jumlah</th>
+                                                <th class="py-1.5 px-3 text-center">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tableReportInstalasiBarang" class="divide-y divide-slate-100">
+                                            <tr id="emptyReportInstalasiBarangRow">
+                                                <td colspan="3" class="py-4 text-center text-xs text-slate-400">No data available in table</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div id="hiddenReportInstalasiBarangContainer"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer Buttons -->
+                    <div class="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100">
+                        <button type="button" onclick="closeReportInstalasiModal()" class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-cyan-500 hover:bg-cyan-600 transition-colors shadow-xs">
+                            <i class="fa-solid fa-xmark text-xs"></i>
+                            Batal
+                        </button>
+                        <button type="submit" class="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-xs">
+                            <i class="fa-solid fa-floppy-disk text-xs"></i>
+                            Update
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
     <!-- MODAL REPORT AKTIVASI (ROLE NOC)             -->
     <!-- ============================================ -->
     <div id="modalReportAktivasi" class="hidden fixed inset-0 z-50 overflow-y-auto transition-all duration-300">
@@ -2067,7 +2255,8 @@
         const currentFotoMappingState = {
             survey: { url: '', name: '', title: '' },
             report: { url: '', name: '', title: '' },
-            instalasi: { url: '', name: '', title: '' }
+            instalasi: { url: '', name: '', title: '' },
+            reportInstalasi: { url: '', name: '', title: '' }
         };
 
         function setupFotoMappingUI(type, existingUrl, title) {
@@ -2406,6 +2595,134 @@
                 tr.innerHTML = '<td class="py-1.5 px-3 font-semibold text-slate-800">' + item.nama_barang + '</td>' +
                                '<td class="py-1.5 px-3 text-center text-slate-700 font-bold">' + item.jumlah + '</td>' +
                                '<td class="py-1.5 px-3 text-center"><button type="button" onclick="removeInstalasiBarang(' + idx + ')" class="text-rose-500 hover:text-rose-700 font-bold text-xs"><i class="fa-solid fa-trash-can"></i></button></td>';
+                tbody.appendChild(tr);
+
+                var inputKode = document.createElement('input');
+                inputKode.type = 'hidden';
+                inputKode.name = 'items[' + idx + '][kode_barang]';
+                inputKode.value = item.kode_barang;
+
+                var inputJml = document.createElement('input');
+                inputJml.type = 'hidden';
+                inputJml.name = 'items[' + idx + '][jumlah]';
+                inputJml.value = item.jumlah;
+
+                hiddenContainer.appendChild(inputKode);
+                hiddenContainer.appendChild(inputJml);
+            });
+        }
+
+        // ── Report Instalasi Functions (Proses 4) ──
+        let globalReportInstalasiItems = [];
+
+        function openReportInstalasiModal(nomorInternet, namaPelanggan, dateFinish, noteFinish, teamStr, existingItems, fotoPetaUrl) {
+            var form = document.getElementById('formReportInstalasi');
+            form.action = '/pendaftaran/' + encodeURIComponent(nomorInternet) + '/report-instalasi';
+
+            document.getElementById('reportInstalasiModalTitle').textContent = 'Report Instalasi An/' + (namaPelanggan || '');
+            document.getElementById('reportInstalasiDateFinish').value = dateFinish || new Date().toISOString().split('T')[0];
+            document.getElementById('reportInstalasiNoteFinish').value = noteFinish || '';
+            
+            // Reset input file dan pasang preview existing foto peta
+            var fileInput = document.getElementById('fotoMappingReportInstalasiInput');
+            if (fileInput) fileInput.value = '';
+            setupFotoMappingUI('reportInstalasi', fotoPetaUrl || '', 'Foto Mapping - ' + (namaPelanggan || ''));
+
+            var rescheduleCb = document.getElementById('checkRescheduleReportInstalasi');
+            if (rescheduleCb) {
+                rescheduleCb.checked = false;
+                toggleRescheduleReportInstalasi(rescheduleCb);
+            }
+
+            var selectedTeams = teamStr ? teamStr.split(',').map(function(s) { return s.trim(); }) : [];
+            document.querySelectorAll('.report-instalasi-team-cb').forEach(function(cb) {
+                cb.checked = selectedTeams.indexOf(cb.value) !== -1;
+            });
+
+            globalReportInstalasiItems = [];
+            if (Array.isArray(existingItems) && existingItems.length > 0) {
+                existingItems.forEach(function(it) {
+                    var namaLengkap = (it.nama_barang || '');
+                    if (it.tipe_barang && !namaLengkap.includes(it.tipe_barang)) {
+                        namaLengkap += ' ' + it.tipe_barang;
+                    }
+                    globalReportInstalasiItems.push({
+                        kode_barang: it.kode_barang,
+                        nama_barang: namaLengkap,
+                        jumlah: it.jumlah_barang || it.jumlah || 1
+                    });
+                });
+            }
+
+            renderReportInstalasiBarangTable();
+            document.getElementById('modalReportInstalasi').classList.remove('hidden');
+        }
+
+        function closeReportInstalasiModal() {
+            document.getElementById('modalReportInstalasi').classList.add('hidden');
+        }
+
+        function toggleRescheduleReportInstalasi(cb) {
+            var resSec = document.getElementById('sectionRescheduleReportInstalasi');
+            var finSec = document.getElementById('sectionSelesaiReportInstalasi');
+            if (cb.checked) {
+                if (resSec) resSec.classList.remove('hidden');
+                if (finSec) finSec.classList.add('hidden');
+                document.getElementById('reportInstalasiDateFinish').required = false;
+                document.getElementById('reportInstalasiNoteFinish').required = false;
+                document.getElementById('reportInstalasiRescheduleDate').required = true;
+            } else {
+                if (resSec) resSec.classList.add('hidden');
+                if (finSec) finSec.classList.remove('hidden');
+                document.getElementById('reportInstalasiDateFinish').required = true;
+                document.getElementById('reportInstalasiNoteFinish').required = true;
+                document.getElementById('reportInstalasiRescheduleDate').required = false;
+            }
+        }
+
+        function addReportInstalasiBarang() {
+            var sel = document.getElementById('reportInstalasiSelectBarang');
+            var qtyInput = document.getElementById('reportInstalasiQtyBarang');
+            var kodeBarang = sel.value;
+            var namaBarang = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].getAttribute('data-nama') : '';
+            var jumlah = parseInt(qtyInput.value) || 1;
+
+            if (!kodeBarang) return;
+
+            var existingIndex = globalReportInstalasiItems.findIndex(function(it) { return it.kode_barang === kodeBarang; });
+            if (existingIndex !== -1) {
+                globalReportInstalasiItems[existingIndex].jumlah += jumlah;
+            } else {
+                globalReportInstalasiItems.push({ kode_barang: kodeBarang, nama_barang: namaBarang, jumlah: jumlah });
+            }
+
+            renderReportInstalasiBarangTable();
+            sel.value = '';
+            qtyInput.value = 1;
+        }
+
+        function removeReportInstalasiBarang(index) {
+            globalReportInstalasiItems.splice(index, 1);
+            renderReportInstalasiBarangTable();
+        }
+
+        function renderReportInstalasiBarangTable() {
+            var tbody = document.getElementById('tableReportInstalasiBarang');
+            var hiddenContainer = document.getElementById('hiddenReportInstalasiBarangContainer');
+            tbody.innerHTML = '';
+            hiddenContainer.innerHTML = '';
+
+            if (globalReportInstalasiItems.length === 0) {
+                tbody.innerHTML = '<tr id="emptyReportInstalasiBarangRow"><td colspan="3" class="py-4 text-center text-xs text-slate-400">No data available in table</td></tr>';
+                return;
+            }
+
+            globalReportInstalasiItems.forEach(function(item, idx) {
+                var tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50 border-b border-slate-100';
+                tr.innerHTML = '<td class="py-1.5 px-3 font-semibold text-slate-800 uppercase">' + item.nama_barang + '</td>' +
+                               '<td class="py-1.5 px-3 text-center text-slate-700 font-bold">' + item.jumlah + '</td>' +
+                               '<td class="py-1.5 px-3 text-center"><button type="button" onclick="removeReportInstalasiBarang(' + idx + ')" class="text-rose-500 hover:text-rose-700 font-bold text-xs"><i class="fa-solid fa-trash-can"></i></button></td>';
                 tbody.appendChild(tr);
 
                 var inputKode = document.createElement('input');
