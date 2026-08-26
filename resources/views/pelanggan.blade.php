@@ -12,6 +12,7 @@
         $levelNum  = $u['level_num'] ?? null;
         $isAdmin   = ($userLevel === 'ADMIN' || $kodeLevel === 'lv00001' || ($u['username'] ?? '') === 'admin');
         $isNoc     = !$isAdmin && ($userLevel === 'NOC' || $kodeLevel === 'lv68132');
+        $isTeknik  = !$isAdmin && ($userLevel === 'TEKNIK' || $kodeLevel === 'lv9812' || $levelNum == 4 || str_contains($userLevel, 'TEKNIK'));
         $isFinance = !$isAdmin && ($userLevel === 'FINANCE' || $kodeLevel === 'lv33501' || $levelNum == 6 || str_contains($userLevel, 'FINANCE') || str_contains($userLevel, 'KEUANGAN') || str_contains($userLevel, 'KASIR'));
         
         $tones = [
@@ -306,15 +307,15 @@
                             <tr class="hover:bg-blue-50/20 transition-colors">
                                 <!-- Col 1: Pelanggan -->
                                 <td class="py-4 px-6 align-top space-y-1">
-                                    <a href="{{ route('pelanggan.detail', $c->nomor_internet) }}" class="font-bold text-blue-600 hover:underline block text-sm">
+                                    <span class="font-bold text-blue-600 block text-sm">
                                         {{ $c->nomor_internet }}
-                                    </a>
+                                    </span>
                                     <div class="font-bold text-gray-900 uppercase">
                                         {{ $c->nama_display }}
                                     </div>
-                                    <a href="{{ route('pelanggan.detail', $c->nomor_internet) }}" class="text-[11px] font-semibold text-blue-600 hover:underline block">
+                                    <span class="text-[11px] font-semibold text-blue-600 block">
                                         {{ $c->paket }}
-                                    </a>
+                                    </span>
                                     <div class="text-[11px] text-gray-400 mt-1">
                                         Group Layanan : <span class="font-semibold text-gray-700 uppercase">{{ $c->group_layanan ?: 'MEDIANET' }}</span>
                                     </div>
@@ -378,14 +379,18 @@
                                     <!-- Col 5: Aksi -->
                                     <td class="py-4 px-6 align-top">
                                         <div class="flex flex-col gap-1.5 text-xs whitespace-nowrap">
-                                            {{-- Detail bisa dilihat oleh semua role --}}
-                                            <a href="{{ route('pelanggan.detail', $c->nomor_internet) }}" class="flex items-center gap-1.5 text-gray-700 hover:text-blue-600 transition-colors font-medium">
-                                                <i class="fa-solid fa-eye text-blue-500 text-[11px]"></i>
-                                                <span>Detail</span>
-                                            </a>
-
-                                            {{-- Edit & Aksi Permintaan: Admin & Finance --}}
-                                            @if($isAdmin || $isFinance)
+                                            @if($isAdmin || $isNoc || $isTeknik)
+                                                {{-- Role NOC, ADMIN, TEKNIK: Hanya Edit dan Hapus --}}
+                                                <a href="{{ route('pendaftaran.edit', $c->nomor_internet) }}" class="flex items-center gap-1.5 text-gray-700 hover:text-emerald-600 transition-colors font-medium">
+                                                    <i class="fa-solid fa-pen-to-square text-emerald-500 text-[11px]"></i>
+                                                    <span>Edit</span>
+                                                </a>
+                                                <button type="button" onclick="openModalHapus('{{ $c->nomor_internet }}', '{{ addslashes($c->nama_display) }}')" class="flex items-center gap-1.5 text-gray-700 hover:text-rose-600 transition-colors font-medium text-left cursor-pointer">
+                                                    <i class="fa-solid fa-trash-can text-rose-500 text-[11px]"></i>
+                                                    <span>Hapus</span>
+                                                </button>
+                                            @elseif($isFinance)
+                                                {{-- Role Finance: Edit & Aksi Permintaan --}}
                                                 <a href="{{ route('pendaftaran.edit', $c->nomor_internet) }}" class="flex items-center gap-1.5 text-gray-700 hover:text-emerald-600 transition-colors font-medium">
                                                     <i class="fa-solid fa-pen-to-square text-emerald-500 text-[11px]"></i>
                                                     <span>Edit</span>
@@ -406,10 +411,12 @@
                                                     <i class="fa-solid fa-sliders text-cyan-500 text-[11px]"></i>
                                                     <span>Adjust</span>
                                                 </button>
-                                            @endif
-
-                                            {{-- Hapus: Hanya Admin --}}
-                                            @if($isAdmin)
+                                            @else
+                                                {{-- Default role lainnya: Edit dan Hapus --}}
+                                                <a href="{{ route('pendaftaran.edit', $c->nomor_internet) }}" class="flex items-center gap-1.5 text-gray-700 hover:text-emerald-600 transition-colors font-medium">
+                                                    <i class="fa-solid fa-pen-to-square text-emerald-500 text-[11px]"></i>
+                                                    <span>Edit</span>
+                                                </a>
                                                 <button type="button" onclick="openModalHapus('{{ $c->nomor_internet }}', '{{ addslashes($c->nama_display) }}')" class="flex items-center gap-1.5 text-gray-700 hover:text-rose-600 transition-colors font-medium text-left cursor-pointer">
                                                     <i class="fa-solid fa-trash-can text-rose-500 text-[11px]"></i>
                                                     <span>Hapus</span>
