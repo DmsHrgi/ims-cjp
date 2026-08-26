@@ -276,14 +276,44 @@ class PendaftaranController extends Controller
             ->where(function ($q) { $q->where('b.hide', '0')->orWhereNull('b.hide'); })
             ->select('b.kode_barang', 'b.nama_barang', 'b.tipe_barang', 'jb.satuan')
             ->orderBy('b.nama_barang')
-            ->get();
+            ->get()
+            ->map(function ($item) {
+                $nama = strtoupper(trim($item->nama_barang ?? ''));
+                $tipe = strtoupper(trim($item->tipe_barang ?? ''));
+                $kode = trim($item->kode_barang ?? '');
+                if ($kode === 'BR003' || $nama === 'HUAWEI') {
+                    $item->nama_barang = 'ONU HUAWEI';
+                } elseif ($kode === 'BR013' || ($nama === 'ZTE' && str_contains($tipe, 'F660'))) {
+                    $item->nama_barang = 'ONU ZTE F660';
+                } elseif ($kode === 'BR011' || ($nama === 'ZTE' && str_contains($tipe, 'F609 V3'))) {
+                    $item->nama_barang = 'ONU ZTE F609 V3';
+                } elseif ($kode === 'BR004' || $nama === 'ZTE') {
+                    $item->nama_barang = 'ONU ZTE';
+                }
+                return $item;
+            });
 
         $installedItems = DB::table('trx_instalasi_barang as ib')
             ->leftJoin('m_barang as b', 'b.kode_barang', '=', 'ib.kode_barang')
             ->leftJoin('m_jns_barang as jb', 'jb.kode_jns_barang', '=', 'b.kode_jns_barang')
             ->where(function ($q) { $q->where('ib.hide', '0')->orWhereNull('ib.hide'); })
-            ->select('ib.nomor_internet', 'ib.kode_barang', 'ib.jumlah_barang', 'b.nama_barang', 'jb.satuan')
+            ->select('ib.nomor_internet', 'ib.kode_barang', 'ib.jumlah_barang', 'b.nama_barang', 'b.tipe_barang', 'jb.satuan')
             ->get()
+            ->map(function ($item) {
+                $nama = strtoupper(trim($item->nama_barang ?? ''));
+                $tipe = strtoupper(trim($item->tipe_barang ?? ''));
+                $kode = trim($item->kode_barang ?? '');
+                if ($kode === 'BR003' || $nama === 'HUAWEI') {
+                    $item->nama_barang = 'ONU HUAWEI';
+                } elseif ($kode === 'BR013' || ($nama === 'ZTE' && str_contains($tipe, 'F660'))) {
+                    $item->nama_barang = 'ONU ZTE F660';
+                } elseif ($kode === 'BR011' || ($nama === 'ZTE' && str_contains($tipe, 'F609 V3'))) {
+                    $item->nama_barang = 'ONU ZTE F609 V3';
+                } elseif ($kode === 'BR004' || $nama === 'ZTE') {
+                    $item->nama_barang = 'ONU ZTE';
+                }
+                return $item;
+            })
             ->groupBy('nomor_internet');
 
         $paketList = DB::table('m_bandwith as b')
@@ -1554,7 +1584,22 @@ class PendaftaranController extends Controller
             })
             ->select('b.kode_barang', 'b.nama_barang', 'b.tipe_barang', 'jb.satuan', 'jb.nama_jns_barang')
             ->orderBy('b.nama_barang')
-            ->get();
+            ->get()
+            ->map(function ($item) {
+                $nama = strtoupper(trim($item->nama_barang ?? ''));
+                $tipe = strtoupper(trim($item->tipe_barang ?? ''));
+                $kode = trim($item->kode_barang ?? '');
+                if ($kode === 'BR003' || $nama === 'HUAWEI') {
+                    $item->nama_barang = 'ONU HUAWEI';
+                } elseif ($kode === 'BR013' || ($nama === 'ZTE' && str_contains($tipe, 'F660'))) {
+                    $item->nama_barang = 'ONU ZTE F660';
+                } elseif ($kode === 'BR011' || ($nama === 'ZTE' && str_contains($tipe, 'F609 V3'))) {
+                    $item->nama_barang = 'ONU ZTE F609 V3';
+                } elseif ($kode === 'BR004' || $nama === 'ZTE') {
+                    $item->nama_barang = 'ONU ZTE';
+                }
+                return $item;
+            });
 
         // Ambil barang yang sudah terpasang
         $installedBarang = DB::table('trx_instalasi_barang as ib')
@@ -1565,7 +1610,22 @@ class PendaftaranController extends Controller
                 $q->where('ib.hide', '0')->orWhereNull('ib.hide');
             })
             ->select('ib.*', 'b.nama_barang', 'b.tipe_barang', 'jb.satuan')
-            ->get();
+            ->get()
+            ->map(function ($item) {
+                $nama = strtoupper(trim($item->nama_barang ?? ''));
+                $tipe = strtoupper(trim($item->tipe_barang ?? ''));
+                $kode = trim($item->kode_barang ?? '');
+                if ($kode === 'BR003' || $nama === 'HUAWEI') {
+                    $item->nama_barang = 'ONU HUAWEI';
+                } elseif ($kode === 'BR013' || ($nama === 'ZTE' && str_contains($tipe, 'F660'))) {
+                    $item->nama_barang = 'ONU ZTE F660';
+                } elseif ($kode === 'BR011' || ($nama === 'ZTE' && str_contains($tipe, 'F609 V3'))) {
+                    $item->nama_barang = 'ONU ZTE F609 V3';
+                } elseif ($kode === 'BR004' || $nama === 'ZTE') {
+                    $item->nama_barang = 'ONU ZTE';
+                }
+                return $item;
+            });
 
         return view('pendaftaran.report-instalasi', compact(
             'customer', 'instalasi', 'teamList', 'selectedTeams', 'barangList', 'installedBarang'

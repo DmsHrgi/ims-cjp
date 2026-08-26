@@ -552,7 +552,22 @@ class PageController extends Controller
             ->leftJoin('m_barang as b', 'b.kode_barang', '=', 'ib.kode_barang')
             ->select('ib.*', 'b.nama_barang', 'b.tipe_barang')
             ->where('ib.nomor_internet', $nomorInternet)
-            ->get();
+            ->get()
+            ->map(function ($item) {
+                $nama = strtoupper(trim($item->nama_barang ?? ''));
+                $tipe = strtoupper(trim($item->tipe_barang ?? ''));
+                $kode = trim($item->kode_barang ?? '');
+                if ($kode === 'BR003' || $nama === 'HUAWEI') {
+                    $item->nama_barang = 'ONU HUAWEI';
+                } elseif ($kode === 'BR013' || ($nama === 'ZTE' && str_contains($tipe, 'F660'))) {
+                    $item->nama_barang = 'ONU ZTE F660';
+                } elseif ($kode === 'BR011' || ($nama === 'ZTE' && str_contains($tipe, 'F609 V3'))) {
+                    $item->nama_barang = 'ONU ZTE F609 V3';
+                } elseif ($kode === 'BR004' || $nama === 'ZTE') {
+                    $item->nama_barang = 'ONU ZTE';
+                }
+                return $item;
+            });
 
         return view('pelanggan.detail', compact('customer', 'logs', 'ubahLayanan', 'suspends', 'billings', 'pengaduan', 'perangkat'));
     }
@@ -736,7 +751,22 @@ class PageController extends Controller
             ->leftJoin('m_barang as b', 'b.kode_barang', '=', 'ib.kode_barang')
             ->select('ib.*', 'b.nama_barang', 'b.tipe_barang')
             ->where('ib.nomor_internet', $nomorInternet)
-            ->get();
+            ->get()
+            ->map(function ($item) {
+                $nama = strtoupper(trim($item->nama_barang ?? ''));
+                $tipe = strtoupper(trim($item->tipe_barang ?? ''));
+                $kode = trim($item->kode_barang ?? '');
+                if ($kode === 'BR003' || $nama === 'HUAWEI') {
+                    $item->nama_barang = 'ONU HUAWEI';
+                } elseif ($kode === 'BR013' || ($nama === 'ZTE' && str_contains($tipe, 'F660'))) {
+                    $item->nama_barang = 'ONU ZTE F660';
+                } elseif ($kode === 'BR011' || ($nama === 'ZTE' && str_contains($tipe, 'F609 V3'))) {
+                    $item->nama_barang = 'ONU ZTE F609 V3';
+                } elseif ($kode === 'BR004' || $nama === 'ZTE') {
+                    $item->nama_barang = 'ONU ZTE';
+                }
+                return $item;
+            });
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.pelanggan-detail', compact('customer', 'logs', 'suspends', 'billings', 'pengaduan', 'perangkat'));
         $pdf->setPaper('a4', 'portrait');
