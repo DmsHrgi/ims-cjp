@@ -44,6 +44,18 @@ class PendaftaranController extends Controller
             ->where(function ($q) {
                 $q->where('hide', '0')->orWhereNull('hide');
             })
+            ->where(function ($q) {
+                $q->whereNull('aktivasi_date_finish')
+                  ->orWhere('aktivasi_date_finish', '');
+            })
+            ->where(function ($q) {
+                $q->whereNull('status_reg')
+                  ->orWhere('status_reg', '!=', '16');
+            })
+            ->where(function ($q) {
+                $q->whereNull('desc_registrasi')
+                  ->orWhere('desc_registrasi', 'not like', '%SELESAI AKTIVASI%');
+            })
             ->whereNotNull('status_reg')
             ->distinct()
             ->get();
@@ -52,6 +64,18 @@ class PendaftaranController extends Controller
             ->select('nama_kota_pasang')
             ->where(function ($q) {
                 $q->where('hide', '0')->orWhereNull('hide');
+            })
+            ->where(function ($q) {
+                $q->whereNull('aktivasi_date_finish')
+                  ->orWhere('aktivasi_date_finish', '');
+            })
+            ->where(function ($q) {
+                $q->whereNull('status_reg')
+                  ->orWhere('status_reg', '!=', '16');
+            })
+            ->where(function ($q) {
+                $q->whereNull('desc_registrasi')
+                  ->orWhere('desc_registrasi', 'not like', '%SELESAI AKTIVASI%');
             })
             ->whereNotNull('nama_kota_pasang')
             ->where('nama_kota_pasang', '!=', '')
@@ -62,6 +86,18 @@ class PendaftaranController extends Controller
         $query = DB::table('view_batchjob')
             ->where(function ($q) {
                 $q->where('hide', '0')->orWhereNull('hide');
+            })
+            ->where(function ($q) {
+                $q->whereNull('aktivasi_date_finish')
+                  ->orWhere('aktivasi_date_finish', '');
+            })
+            ->where(function ($q) {
+                $q->whereNull('status_reg')
+                  ->orWhere('status_reg', '!=', '16');
+            })
+            ->where(function ($q) {
+                $q->whereNull('desc_registrasi')
+                  ->orWhere('desc_registrasi', 'not like', '%SELESAI AKTIVASI%');
             });
 
         if ($request->filled('layanan')) {
@@ -294,6 +330,18 @@ class PendaftaranController extends Controller
         $query = DB::table('view_batchjob')
             ->where(function ($q) {
                 $q->where('hide', '0')->orWhereNull('hide');
+            })
+            ->where(function ($q) {
+                $q->whereNull('aktivasi_date_finish')
+                  ->orWhere('aktivasi_date_finish', '');
+            })
+            ->where(function ($q) {
+                $q->whereNull('status_reg')
+                  ->orWhere('status_reg', '!=', '16');
+            })
+            ->where(function ($q) {
+                $q->whereNull('desc_registrasi')
+                  ->orWhere('desc_registrasi', 'not like', '%SELESAI AKTIVASI%');
             });
 
         if ($request->filled('layanan')) {
