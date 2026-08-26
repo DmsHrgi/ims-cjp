@@ -5,6 +5,12 @@
         /** @var array $sections */
         /** @var \Illuminate\Support\Collection $wilayahList */
         /** @var \Illuminate\Pagination\LengthAwarePaginator $customers */
+
+        $u = session('user', []);
+        $userLevel = strtoupper($u['level'] ?? '');
+        $kodeLevel = $u['kode_level'] ?? '';
+        $levelNum  = $u['level_num'] ?? null;
+        $isFinance = ($userLevel === 'FINANCE' || $kodeLevel === 'lv33501' || $levelNum == 6 || str_contains($userLevel, 'FINANCE') || str_contains($userLevel, 'KEUANGAN') || str_contains($userLevel, 'KASIR'));
         
         $tones = [
             'aktif'     => [
@@ -61,7 +67,7 @@
         <div class="flex items-center gap-2 text-xs text-gray-400 mb-1">
             <a href="{{ route('dashboard') }}" class="hover:text-blue-500 transition-colors">IMS</a>
             <i class="fa-solid fa-chevron-right text-[9px]"></i>
-            <span class="text-gray-600 font-medium">Pelanggan</span>
+            <span class="text-gray-600 font-medium">Pelanggan Aktif</span>
         </div>
     </div>
 
@@ -280,22 +286,24 @@
                                                 <i class="fa-solid fa-pen-to-square text-emerald-500 text-[11px]"></i>
                                                 <span>Edit</span>
                                             </a>
-                                            <button type="button" onclick="openModalTerminasi('{{ $c->nomor_internet }}', '{{ addslashes($c->nama_display) }}')" class="flex items-center gap-1.5 text-gray-700 hover:text-blue-600 transition-colors font-medium text-left cursor-pointer">
-                                                <i class="fa-solid fa-pen-to-square text-blue-500 text-[11px]"></i>
-                                                <span>Req. Terminasi</span>
-                                            </button>
-                                            <button type="button" onclick="openModalUpDowngrade('{{ $c->nomor_internet }}', '{{ addslashes($c->nama_display) }}')" class="flex items-center gap-1.5 text-gray-700 hover:text-blue-600 transition-colors font-medium text-left cursor-pointer">
-                                                <i class="fa-solid fa-pen-to-square text-blue-500 text-[11px]"></i>
-                                                <span>Req. Up/Downgrade</span>
-                                            </button>
-                                            <button type="button" onclick="openModalSuspend('{{ $c->nomor_internet }}', '{{ addslashes($c->nama_display) }}')" class="flex items-center gap-1.5 text-gray-700 hover:text-blue-600 transition-colors font-medium text-left cursor-pointer">
-                                                <i class="fa-solid fa-pen-to-square text-blue-500 text-[11px]"></i>
-                                                <span>Req. Suspend</span>
-                                            </button>
-                                            <button type="button" onclick="openModalAdjust('{{ $c->nomor_internet }}', '{{ addslashes($c->nama_display) }}')" class="flex items-center gap-1.5 text-gray-700 hover:text-blue-600 transition-colors font-medium text-left cursor-pointer">
-                                                <i class="fa-solid fa-pen-to-square text-blue-500 text-[11px]"></i>
-                                                <span>Adjust</span>
-                                            </button>
+                                            @if($isFinance)
+                                                <button type="button" onclick="openModalTerminasi('{{ $c->nomor_internet }}', '{{ addslashes($c->nama_display) }}')" class="flex items-center gap-1.5 text-gray-700 hover:text-blue-600 transition-colors font-medium text-left cursor-pointer">
+                                                    <i class="fa-solid fa-pen-to-square text-blue-500 text-[11px]"></i>
+                                                    <span>Req. Terminasi</span>
+                                                </button>
+                                                <button type="button" onclick="openModalUpDowngrade('{{ $c->nomor_internet }}', '{{ addslashes($c->nama_display) }}')" class="flex items-center gap-1.5 text-gray-700 hover:text-blue-600 transition-colors font-medium text-left cursor-pointer">
+                                                    <i class="fa-solid fa-pen-to-square text-blue-500 text-[11px]"></i>
+                                                    <span>Req. Up/Downgrade</span>
+                                                </button>
+                                                <button type="button" onclick="openModalSuspend('{{ $c->nomor_internet }}', '{{ addslashes($c->nama_display) }}')" class="flex items-center gap-1.5 text-gray-700 hover:text-blue-600 transition-colors font-medium text-left cursor-pointer">
+                                                    <i class="fa-solid fa-pen-to-square text-blue-500 text-[11px]"></i>
+                                                    <span>Req. Suspend</span>
+                                                </button>
+                                                <button type="button" onclick="openModalAdjust('{{ $c->nomor_internet }}', '{{ addslashes($c->nama_display) }}')" class="flex items-center gap-1.5 text-gray-700 hover:text-blue-600 transition-colors font-medium text-left cursor-pointer">
+                                                    <i class="fa-solid fa-pen-to-square text-blue-500 text-[11px]"></i>
+                                                    <span>Adjust</span>
+                                                </button>
+                                            @endif
                                             <button type="button" onclick="openModalHapus('{{ $c->nomor_internet }}', '{{ addslashes($c->nama_display) }}')" class="flex items-center gap-1.5 text-gray-700 hover:text-rose-600 transition-colors font-medium text-left cursor-pointer">
                                                 <i class="fa-solid fa-trash-can text-rose-500 text-[11px]"></i>
                                                 <span>Hapus</span>
