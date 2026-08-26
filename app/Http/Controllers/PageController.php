@@ -215,21 +215,41 @@ class PageController extends Controller
 
         $allTableRows = $tableQuery->orderByDesc('date_create')->get();
 
-        if ($request->filled('section')) {
-            $sec = $request->section;
-            if ($sec === 'aktif') {
-                $allTableRows = $allTableRows->filter(function ($r) {
-                    return in_array($this->sectionOf($r), ['aktif', 'suspend'], true);
-                });
-            } else {
-                $allTableRows = $allTableRows->filter(function ($r) use ($sec) {
-                    return $this->sectionOf($r) === $sec;
-                });
+        // Hitung total pelanggan per status untuk tab navigasi
+        $statusCounts = [
+            'semua'     => 0,
+            'aktif'     => 0,
+            'suspend'   => 0,
+            'terminasi' => 0,
+        ];
+
+        foreach ($allTableRows as $r) {
+            $sec = $this->sectionOf($r);
+            if (in_array($sec, ['aktif', 'suspend', 'terminasi'], true)) {
+                $statusCounts['semua']++;
+                if (isset($statusCounts[$sec])) {
+                    $statusCounts[$sec]++;
+                }
             }
-        } else {
-            // Default saat membuka menu Pelanggan: Tampilkan Pelanggan Aktif & Suspend (Pelanggan yang sudah selesai aktivasi)
+        }
+
+        $sec = strtolower(trim((string) ($request->input('section') ?? $request->input('status') ?? '')));
+        if ($sec === 'aktif') {
             $allTableRows = $allTableRows->filter(function ($r) {
-                return in_array($this->sectionOf($r), ['aktif', 'suspend'], true);
+                return $this->sectionOf($r) === 'aktif';
+            });
+        } elseif ($sec === 'suspend') {
+            $allTableRows = $allTableRows->filter(function ($r) {
+                return $this->sectionOf($r) === 'suspend';
+            });
+        } elseif ($sec === 'terminasi') {
+            $allTableRows = $allTableRows->filter(function ($r) {
+                return $this->sectionOf($r) === 'terminasi';
+            });
+        } else {
+            // Default: Tampilkan semua pelanggan yang sudah aktivasi (aktif, suspend, terminasi)
+            $allTableRows = $allTableRows->filter(function ($r) {
+                return in_array($this->sectionOf($r), ['aktif', 'suspend', 'terminasi'], true);
             });
         }
 
@@ -254,7 +274,7 @@ class PageController extends Controller
             ['path' => Paginator::resolveCurrentPath(), 'query' => $request->query()]
         );
 
-        return view('pelanggan', compact('sections', 'wilayahList', 'mediaAksesList', 'groupLayananList', 'customers', 'categories'));
+        return view('pelanggan', compact('sections', 'wilayahList', 'mediaAksesList', 'groupLayananList', 'customers', 'categories', 'statusCounts'));
     }
 
     public function pelangganDetail($nomorInternet)

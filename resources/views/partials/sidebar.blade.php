@@ -16,7 +16,7 @@
         ['route' => 'dashboard',   'icon' => 'fa-gauge-high',    'label' => 'Dashboard'],
         ['route' => 'tiket',       'icon' => 'fa-ticket',         'label' => 'Tiket'],
         ['route' => 'pendaftaran', 'icon' => 'fa-user-plus',      'label' => 'Pendaftaran'],
-        ['route' => 'pelanggan',   'icon' => 'fa-users',          'label' => 'Pelanggan Aktif'],
+        ['route' => 'pelanggan',   'icon' => 'fa-users',          'label' => 'Pelanggan'],
     ];
 
     $navItems = array_values(array_filter($allNavItems, function($item) use ($isNoc, $isFinance) {

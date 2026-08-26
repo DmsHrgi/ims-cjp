@@ -10,7 +10,9 @@
         $userLevel = strtoupper($u['level'] ?? '');
         $kodeLevel = $u['kode_level'] ?? '';
         $levelNum  = $u['level_num'] ?? null;
-        $isFinance = ($userLevel === 'FINANCE' || $kodeLevel === 'lv33501' || $levelNum == 6 || str_contains($userLevel, 'FINANCE') || str_contains($userLevel, 'KEUANGAN') || str_contains($userLevel, 'KASIR'));
+        $isAdmin   = ($userLevel === 'ADMIN' || $kodeLevel === 'lv00001' || ($u['username'] ?? '') === 'admin');
+        $isNoc     = !$isAdmin && ($userLevel === 'NOC' || $kodeLevel === 'lv68132');
+        $isFinance = !$isAdmin && ($userLevel === 'FINANCE' || $kodeLevel === 'lv33501' || $levelNum == 6 || str_contains($userLevel, 'FINANCE') || str_contains($userLevel, 'KEUANGAN') || str_contains($userLevel, 'KASIR'));
         
         $tones = [
             'aktif'     => [
@@ -67,7 +69,13 @@
         <div class="flex items-center gap-2 text-xs text-gray-400 mb-1">
             <a href="{{ route('dashboard') }}" class="hover:text-blue-500 transition-colors">IMS</a>
             <i class="fa-solid fa-chevron-right text-[9px]"></i>
-            <span class="text-gray-600 font-medium">Pelanggan Aktif</span>
+            <span class="text-gray-600 font-medium">Pelanggan</span>
+        </div>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <div>
+                <h1 class="text-xl font-bold text-gray-800">Data Pelanggan</h1>
+                <p class="text-xs text-gray-500">Kelola dan pantau seluruh data pelanggan aktif, suspend, dan terminasi</p>
+            </div>
         </div>
     </div>
 
@@ -97,17 +105,105 @@
         </div>
     @endif
 
+    <!-- Status Selection Tabs (Aktif, Suspend, Terminasi, Semua) -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+        @php
+            $currentSec = request('section', request('status', ''));
+        @endphp
+
+        <!-- Tab 1: Semua Pelanggan -->
+        @php $isAll = empty($currentSec) || $currentSec === 'semua'; @endphp
+        <a href="{{ route('pelanggan', array_merge(request()->except('page', 'section', 'status'), ['section' => 'semua'])) }}"
+           class="flex items-center justify-between p-4 rounded-2xl border transition-all duration-200 group {{ $isAll ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-500/20 scale-[1.01]' : 'bg-white text-gray-700 border-gray-100 hover:border-blue-300 hover:shadow-sm' }}">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm {{ $isAll ? 'bg-white/20 text-white' : 'bg-blue-50 text-blue-600 group-hover:scale-105' }} transition-transform">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wider {{ $isAll ? 'text-blue-100' : 'text-gray-500' }}">Semua Pelanggan</p>
+                    <p class="text-lg font-bold leading-none mt-0.5">{{ number_format($statusCounts['semua'] ?? 0) }}</p>
+                </div>
+            </div>
+            @if($isAll)
+                <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-md font-bold text-white uppercase tracking-wider">Dipilih</span>
+            @endif
+        </a>
+
+        <!-- Tab 2: Pelanggan Aktif -->
+        @php $isAktif = $currentSec === 'aktif'; @endphp
+        <a href="{{ route('pelanggan', array_merge(request()->except('page', 'section', 'status'), ['section' => 'aktif'])) }}"
+           class="flex items-center justify-between p-4 rounded-2xl border transition-all duration-200 group {{ $isAktif ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-500/20 scale-[1.01]' : 'bg-white text-gray-700 border-gray-100 hover:border-emerald-300 hover:shadow-sm' }}">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm {{ $isAktif ? 'bg-white/20 text-white' : 'bg-emerald-50 text-emerald-600 group-hover:scale-105' }} transition-transform">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wider {{ $isAktif ? 'text-emerald-100' : 'text-gray-500' }}">Pelanggan Aktif</p>
+                    <p class="text-lg font-bold leading-none mt-0.5">{{ number_format($statusCounts['aktif'] ?? 0) }}</p>
+                </div>
+            </div>
+            @if($isAktif)
+                <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-md font-bold text-white uppercase tracking-wider">Dipilih</span>
+            @endif
+        </a>
+
+        <!-- Tab 3: Pelanggan Suspend -->
+        @php $isSuspend = $currentSec === 'suspend'; @endphp
+        <a href="{{ route('pelanggan', array_merge(request()->except('page', 'section', 'status'), ['section' => 'suspend'])) }}"
+           class="flex items-center justify-between p-4 rounded-2xl border transition-all duration-200 group {{ $isSuspend ? 'bg-amber-500 text-white border-amber-500 shadow-md shadow-amber-500/20 scale-[1.01]' : 'bg-white text-gray-700 border-gray-100 hover:border-amber-300 hover:shadow-sm' }}">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm {{ $isSuspend ? 'bg-white/20 text-white' : 'bg-amber-50 text-amber-600 group-hover:scale-105' }} transition-transform">
+                    <i class="fa-solid fa-circle-pause"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wider {{ $isSuspend ? 'text-amber-100' : 'text-gray-500' }}">Pelanggan Suspend</p>
+                    <p class="text-lg font-bold leading-none mt-0.5">{{ number_format($statusCounts['suspend'] ?? 0) }}</p>
+                </div>
+            </div>
+            @if($isSuspend)
+                <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-md font-bold text-white uppercase tracking-wider">Dipilih</span>
+            @endif
+        </a>
+
+        <!-- Tab 4: Pelanggan Terminasi -->
+        @php $isTerminasi = $currentSec === 'terminasi'; @endphp
+        <a href="{{ route('pelanggan', array_merge(request()->except('page', 'section', 'status'), ['section' => 'terminasi'])) }}"
+           class="flex items-center justify-between p-4 rounded-2xl border transition-all duration-200 group {{ $isTerminasi ? 'bg-rose-600 text-white border-rose-600 shadow-md shadow-rose-500/20 scale-[1.01]' : 'bg-white text-gray-700 border-gray-100 hover:border-rose-300 hover:shadow-sm' }}">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm {{ $isTerminasi ? 'bg-white/20 text-white' : 'bg-rose-50 text-rose-600 group-hover:scale-105' }} transition-transform">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wider {{ $isTerminasi ? 'text-rose-100' : 'text-gray-500' }}">Pelanggan Terminasi</p>
+                    <p class="text-lg font-bold leading-none mt-0.5">{{ number_format($statusCounts['terminasi'] ?? 0) }}</p>
+                </div>
+            </div>
+            @if($isTerminasi)
+                <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-md font-bold text-white uppercase tracking-wider">Dipilih</span>
+            @endif
+        </a>
+    </div>
+
     <div>
     <div>
         <!-- Filter Bar Top (Matching Exact Layout) -->
         <form method="GET" action="{{ route('pelanggan') }}" class="bg-white rounded-2xl border border-gray-100 p-5 shadow-xs mb-8 space-y-4">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-center">
-                <!-- Row 1: Search Nama, Wilayah, Alamat, Reset & Export -->
+                <!-- Row 1: Status Pelanggan, Search Nama, Wilayah, Alamat, Reset & Export -->
+                <div class="lg:col-span-3">
+                    <select name="section" onchange="this.form.submit()" class="w-full bg-white border border-gray-200 focus:border-blue-500 text-gray-700 py-2 px-3 text-xs font-semibold uppercase rounded-lg outline-none cursor-pointer">
+                        <option value="" {{ empty(request('section')) || request('section') === 'semua' ? 'selected' : '' }}>SEMUA STATUS PELANGGAN</option>
+                        <option value="aktif" {{ request('section') === 'aktif' ? 'selected' : '' }}>PELANGGAN AKTIF</option>
+                        <option value="suspend" {{ request('section') === 'suspend' ? 'selected' : '' }}>PELANGGAN SUSPEND</option>
+                        <option value="terminasi" {{ request('section') === 'terminasi' ? 'selected' : '' }}>PELANGGAN TERMINASI</option>
+                    </select>
+                </div>
+
                 <div class="lg:col-span-3">
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="SEMUA NAMA / NOMOR LAYANAN" class="w-full bg-white border border-gray-200 focus:border-blue-500 text-gray-700 py-2 px-3 text-xs font-semibold uppercase rounded-lg outline-none placeholder-gray-400">
                 </div>
 
-                <div class="lg:col-span-3">
+                <div class="lg:col-span-2">
                     <select name="wilayah" onchange="this.form.submit()" class="w-full bg-white border border-gray-200 focus:border-blue-500 text-gray-700 py-2 px-3 text-xs font-semibold uppercase rounded-lg outline-none cursor-pointer">
                         <option value="">SEMUA WILAYAH</option>
                         @foreach($wilayahList as $w)
@@ -116,15 +212,15 @@
                     </select>
                 </div>
 
-                <div class="lg:col-span-3">
+                <div class="lg:col-span-2">
                     <input type="text" name="alamat" value="{{ request('alamat') }}" placeholder="SEMUA ALAMAT" class="w-full bg-white border border-gray-200 focus:border-blue-500 text-gray-700 py-2 px-3 text-xs font-semibold uppercase rounded-lg outline-none placeholder-gray-400">
                 </div>
 
-                <div class="lg:col-span-3 flex items-center justify-end gap-2">
-                    <a href="{{ route('pelanggan') }}" class="bg-rose-400 hover:bg-rose-500 text-white px-4 py-2 rounded-lg text-xs font-bold transition-all shadow-xs flex items-center gap-1.5">
+                <div class="lg:col-span-2 flex items-center justify-end gap-2">
+                    <a href="{{ route('pelanggan') }}" class="bg-rose-400 hover:bg-rose-500 text-white px-3 py-2 rounded-lg text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 flex-1 justify-center">
                         <i class="fa-solid fa-rotate-left text-[11px]"></i> Reset
                     </a>
-                    <a href="{{ route('pendaftaran.export') }}" class="bg-amber-400 hover:bg-amber-500 text-white px-4 py-2 rounded-lg text-xs font-bold transition-all shadow-xs flex items-center gap-1.5">
+                    <a href="{{ route('pendaftaran.export', request()->query()) }}" class="bg-amber-400 hover:bg-amber-500 text-white px-3 py-2 rounded-lg text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 flex-1 justify-center">
                         <i class="fa-solid fa-file-excel text-[11px]"></i> Export
                     </a>
                 </div>
@@ -282,32 +378,43 @@
                                     <!-- Col 5: Aksi -->
                                     <td class="py-4 px-6 align-top">
                                         <div class="flex flex-col gap-1.5 text-xs whitespace-nowrap">
-                                            <a href="{{ route('pendaftaran.edit', $c->nomor_internet) }}" class="flex items-center gap-1.5 text-gray-700 hover:text-emerald-600 transition-colors font-medium">
-                                                <i class="fa-solid fa-pen-to-square text-emerald-500 text-[11px]"></i>
-                                                <span>Edit</span>
+                                            {{-- Detail bisa dilihat oleh semua role --}}
+                                            <a href="{{ route('pelanggan.detail', $c->nomor_internet) }}" class="flex items-center gap-1.5 text-gray-700 hover:text-blue-600 transition-colors font-medium">
+                                                <i class="fa-solid fa-eye text-blue-500 text-[11px]"></i>
+                                                <span>Detail</span>
                                             </a>
-                                            @if($isFinance)
-                                                <button type="button" onclick="openModalTerminasi('{{ $c->nomor_internet }}', '{{ addslashes($c->nama_display) }}')" class="flex items-center gap-1.5 text-gray-700 hover:text-blue-600 transition-colors font-medium text-left cursor-pointer">
-                                                    <i class="fa-solid fa-pen-to-square text-blue-500 text-[11px]"></i>
+
+                                            {{-- Edit & Aksi Permintaan: Admin & Finance --}}
+                                            @if($isAdmin || $isFinance)
+                                                <a href="{{ route('pendaftaran.edit', $c->nomor_internet) }}" class="flex items-center gap-1.5 text-gray-700 hover:text-emerald-600 transition-colors font-medium">
+                                                    <i class="fa-solid fa-pen-to-square text-emerald-500 text-[11px]"></i>
+                                                    <span>Edit</span>
+                                                </a>
+                                                <button type="button" onclick="openModalTerminasi('{{ $c->nomor_internet }}', '{{ addslashes($c->nama_display) }}')" class="flex items-center gap-1.5 text-gray-700 hover:text-rose-600 transition-colors font-medium text-left cursor-pointer">
+                                                    <i class="fa-solid fa-file-contract text-rose-500 text-[11px]"></i>
                                                     <span>Req. Terminasi</span>
                                                 </button>
-                                                <button type="button" onclick="openModalUpDowngrade('{{ $c->nomor_internet }}', '{{ addslashes($c->nama_display) }}')" class="flex items-center gap-1.5 text-gray-700 hover:text-blue-600 transition-colors font-medium text-left cursor-pointer">
-                                                    <i class="fa-solid fa-pen-to-square text-blue-500 text-[11px]"></i>
+                                                <button type="button" onclick="openModalUpDowngrade('{{ $c->nomor_internet }}', '{{ addslashes($c->nama_display) }}')" class="flex items-center gap-1.5 text-gray-700 hover:text-purple-600 transition-colors font-medium text-left cursor-pointer">
+                                                    <i class="fa-solid fa-arrows-up-down text-purple-500 text-[11px]"></i>
                                                     <span>Req. Up/Downgrade</span>
                                                 </button>
-                                                <button type="button" onclick="openModalSuspend('{{ $c->nomor_internet }}', '{{ addslashes($c->nama_display) }}')" class="flex items-center gap-1.5 text-gray-700 hover:text-blue-600 transition-colors font-medium text-left cursor-pointer">
-                                                    <i class="fa-solid fa-pen-to-square text-blue-500 text-[11px]"></i>
+                                                <button type="button" onclick="openModalSuspend('{{ $c->nomor_internet }}', '{{ addslashes($c->nama_display) }}')" class="flex items-center gap-1.5 text-gray-700 hover:text-amber-600 transition-colors font-medium text-left cursor-pointer">
+                                                    <i class="fa-solid fa-circle-pause text-amber-500 text-[11px]"></i>
                                                     <span>Req. Suspend</span>
                                                 </button>
-                                                <button type="button" onclick="openModalAdjust('{{ $c->nomor_internet }}', '{{ addslashes($c->nama_display) }}')" class="flex items-center gap-1.5 text-gray-700 hover:text-blue-600 transition-colors font-medium text-left cursor-pointer">
-                                                    <i class="fa-solid fa-pen-to-square text-blue-500 text-[11px]"></i>
+                                                <button type="button" onclick="openModalAdjust('{{ $c->nomor_internet }}', '{{ addslashes($c->nama_display) }}')" class="flex items-center gap-1.5 text-gray-700 hover:text-cyan-600 transition-colors font-medium text-left cursor-pointer">
+                                                    <i class="fa-solid fa-sliders text-cyan-500 text-[11px]"></i>
                                                     <span>Adjust</span>
                                                 </button>
                                             @endif
-                                            <button type="button" onclick="openModalHapus('{{ $c->nomor_internet }}', '{{ addslashes($c->nama_display) }}')" class="flex items-center gap-1.5 text-gray-700 hover:text-rose-600 transition-colors font-medium text-left cursor-pointer">
-                                                <i class="fa-solid fa-trash-can text-rose-500 text-[11px]"></i>
-                                                <span>Hapus</span>
-                                            </button>
+
+                                            {{-- Hapus: Hanya Admin --}}
+                                            @if($isAdmin)
+                                                <button type="button" onclick="openModalHapus('{{ $c->nomor_internet }}', '{{ addslashes($c->nama_display) }}')" class="flex items-center gap-1.5 text-gray-700 hover:text-rose-600 transition-colors font-medium text-left cursor-pointer">
+                                                    <i class="fa-solid fa-trash-can text-rose-500 text-[11px]"></i>
+                                                    <span>Hapus</span>
+                                                </button>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
@@ -318,8 +425,8 @@
                                             <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 mb-3">
                                                 <i class="fa-solid fa-users-slash text-xl"></i>
                                             </div>
-                                            <p class="text-sm font-semibold text-gray-700">Tidak ada data pelanggan aktif ditemukan</p>
-                                            <p class="text-xs text-gray-400 mt-1">Hanya pelanggan yang telah selesai proses instalasi yang ditampilkan di sini.</p>
+                                            <p class="text-sm font-semibold text-gray-700">Tidak ada data pelanggan ditemukan</p>
+                                            <p class="text-xs text-gray-400 mt-1">Gunakan tab pilihan di atas atau ubah filter pencarian untuk menemukan data pelanggan.</p>
                                         </div>
                                     </td>
                                 </tr>
