@@ -134,7 +134,7 @@
                     <span class="text-blue-600 font-semibold">- {{ $data->nomor_internet }}</span>
                 </h2>
             </div>
-            <a href="{{ route('pendaftaran') }}"
+            <a href="{{ session('pendaftaran_last_url', route('pendaftaran')) }}"
                class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-all">
                 <i class="fa-solid fa-xmark text-sm"></i>
             </a>
@@ -576,7 +576,7 @@
 
             <!-- Footer Action Buttons -->
             <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
-                <a href="{{ route('pendaftaran') }}"
+                <a href="{{ session('pendaftaran_last_url', route('pendaftaran')) }}"
                    class="inline-flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-xl text-xs font-bold transition-all">
                     <i class="fa-solid fa-xmark text-xs"></i> Batal
                 </a>

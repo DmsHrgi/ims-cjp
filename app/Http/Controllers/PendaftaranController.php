@@ -145,6 +145,15 @@ class PendaftaranController extends Controller
             $query->where('nama_kota_pasang', $request->wilayah);
         }
 
+        if ($request->has('reset')) {
+            session()->forget(['pendaftaran_page', 'pendaftaran_query', 'pendaftaran_last_url']);
+        }
+
+        // Jika page tidak disertakan dalam query URL tapi tersimpan di session, arahkan ke page terakhir yang diklik
+        if (!$request->has('page') && !$request->has('reset') && session()->has('pendaftaran_page') && (int) session('pendaftaran_page') > 1) {
+            return redirect()->route('pendaftaran', array_merge($request->query(), ['page' => session('pendaftaran_page')]));
+        }
+
         $perPage = (int) $request->input('entries', 10);
         if (!in_array($perPage, [10, 25, 50, 100])) {
             $perPage = 10;
@@ -153,6 +162,18 @@ class PendaftaranController extends Controller
         $rows = $query->orderByDesc('date_create')
             ->paginate($perPage)
             ->withQueryString();
+
+        // Jika halaman yang diminta melebihi total halaman (misal setelah filter/hapus data), arahkan ke halaman terakhir yang tersedia
+        if ($rows->lastPage() > 0 && $rows->currentPage() > $rows->lastPage()) {
+            session(['pendaftaran_page' => $rows->lastPage()]);
+            return redirect()->route('pendaftaran', array_merge($request->query(), ['page' => $rows->lastPage()]));
+        }
+
+        session([
+            'pendaftaran_page' => $rows->currentPage(),
+            'pendaftaran_query' => $request->query(),
+            'pendaftaran_last_url' => $request->fullUrl(),
+        ]);
 
         $rows->getCollection()->transform(function ($r) {
             if (empty($r->alamat_p)) {
@@ -792,6 +813,8 @@ class PendaftaranController extends Controller
 
             DB::commit();
 
+            session(['pendaftaran_page' => 1]);
+
             return redirect()->route('pendaftaran')
                 ->with('success', "Registrasi perusahaan berhasil! Nomor Internet: {$nomorInternet}");
 
@@ -879,8 +902,7 @@ class PendaftaranController extends Controller
             ->first();
 
         if (!$data) {
-            return redirect()->route('pendaftaran')
-                ->withErrors(['error' => 'Data pendaftaran tidak ditemukan.']);
+            return $this->redirectBackToPendaftaran('Data pendaftaran tidak ditemukan.', 'error');
         }
 
         $reg = DB::table('trx_batchjob_register')->where('nomor_internet', $nomorInternet)->first();
@@ -1024,7 +1046,7 @@ class PendaftaranController extends Controller
 
             $customer = DB::table('trx_batchjob_register')->where('nomor_internet', $nomorInternet)->first();
             if (!$customer) {
-                return redirect()->route('pendaftaran')->withErrors(['error' => 'Data pendaftaran tidak ditemukan.']);
+                return $this->redirectBackToPendaftaran('Data pendaftaran tidak ditemukan.', 'error');
             }
 
             // Ambil NAMA jenis bangunan pemasangan (Section 3)
@@ -1232,8 +1254,7 @@ class PendaftaranController extends Controller
 
             DB::commit();
 
-            return redirect()->route('pendaftaran')
-                ->with('success', "Data registrasi perusahaan {$nomorInternet} berhasil diperbarui.");
+            return $this->redirectBackToPendaftaran("Data registrasi perusahaan {$nomorInternet} berhasil diperbarui.");
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -1280,8 +1301,7 @@ class PendaftaranController extends Controller
 
             DB::commit();
 
-            return redirect()->route('pendaftaran')
-                ->with('success', "Pendaftaran {$nomorInternet} telah dibatalkan.");
+            return $this->redirectBackToPendaftaran("Pendaftaran {$nomorInternet} telah dibatalkan.");
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -1378,8 +1398,7 @@ class PendaftaranController extends Controller
             DB::statement('SET FOREIGN_KEY_CHECKS=1');
             DB::commit();
 
-            return redirect()->back()
-                ->with('success', "Data pendaftaran {$nomorInternet} beserta file foto/dokumen fisiknya berhasil dihapus.");
+            return $this->redirectBackToPendaftaran("Data pendaftaran {$nomorInternet} beserta file foto/dokumen fisiknya berhasil dihapus.");
 
         } catch (\Exception $e) {
             DB::statement('SET FOREIGN_KEY_CHECKS=1');
@@ -1503,8 +1522,7 @@ class PendaftaranController extends Controller
             ->first();
 
         if (!$customer) {
-            return redirect()->route('pendaftaran')
-                ->withErrors(['error' => 'Data pendaftaran tidak ditemukan.']);
+            return $this->redirectBackToPendaftaran('Data pendaftaran tidak ditemukan.', 'error');
         }
 
         // Ambil data instalasi existing
@@ -1637,7 +1655,7 @@ class PendaftaranController extends Controller
                 ->first();
 
             if (!$customer) {
-                return redirect()->route('pendaftaran')->withErrors(['error' => 'Data pendaftaran tidak ditemukan.']);
+                return $this->redirectBackToPendaftaran('Data pendaftaran tidak ditemukan.', 'error');
             }
 
             // Upload foto mapping jika ada
@@ -1775,8 +1793,7 @@ class PendaftaranController extends Controller
 
             DB::commit();
 
-            return redirect()->route('pendaftaran')
-                ->with('success', "Report Instalasi untuk {$nomorInternet} berhasil disimpan.");
+            return $this->redirectBackToPendaftaran("Report Instalasi untuk {$nomorInternet} berhasil disimpan.");
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -1820,7 +1837,7 @@ class PendaftaranController extends Controller
                 ->first();
 
             if (!$customer) {
-                return redirect()->route('pendaftaran')->withErrors(['error' => 'Data pendaftaran tidak ditemukan.']);
+                return $this->redirectBackToPendaftaran('Data pendaftaran tidak ditemukan.', 'error');
             }
 
             // Validasi: Aktivasi NOC hanya bisa diproses jika seluruh proses teknik (Report Instalasi) telah selesai
@@ -1977,12 +1994,11 @@ class PendaftaranController extends Controller
 
             DB::commit();
 
-            return redirect()->route('pendaftaran')
-                ->with('success', "Aktivasi untuk {$nomorInternet} berhasil disimpan.");
+            return $this->redirectBackToPendaftaran("Jadwal Aktivasi untuk {$customer->nama_pelanggan} ({$nomorInternet}) berhasil disimpan.");
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => self::formatDbErrorMessage($e, 'menyimpan jadwal aktivasi')]);
+            return back()->withInput()->withErrors(['error' => self::formatDbErrorMessage($e, 'menyimpan jadwal aktivasi')]);
         }
     }
 
@@ -2020,7 +2036,7 @@ class PendaftaranController extends Controller
                 ->first();
 
             if (!$customer) {
-                return redirect()->route('pendaftaran')->withErrors(['error' => 'Data pendaftaran tidak ditemukan.']);
+                return $this->redirectBackToPendaftaran('Data pendaftaran tidak ditemukan.', 'error');
             }
 
             $currentUser = strtoupper(session('user.nama_karyawan') ?? session('user.nama') ?? session('user.username') ?? 'SYSTEM');
@@ -2134,8 +2150,7 @@ class PendaftaranController extends Controller
 
             DB::commit();
 
-            return redirect()->route('pendaftaran')
-                ->with('success', "Jadwal Survey untuk {$customer->nama_pelanggan} ({$nomorInternet}) berhasil disimpan.");
+            return $this->redirectBackToPendaftaran("Jadwal Survey untuk {$customer->nama_pelanggan} ({$nomorInternet}) berhasil disimpan.");
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -2179,7 +2194,7 @@ class PendaftaranController extends Controller
                 ->first();
 
             if (!$customer) {
-                return redirect()->route('pendaftaran')->withErrors(['error' => 'Data pendaftaran tidak ditemukan.']);
+                return $this->redirectBackToPendaftaran('Data pendaftaran tidak ditemukan.', 'error');
             }
 
             $currentUser = strtoupper(session('user.nama_karyawan') ?? session('user.nama') ?? session('user.username') ?? 'SYSTEM');
@@ -2360,8 +2375,7 @@ class PendaftaranController extends Controller
 
             DB::commit();
 
-            return redirect()->route('pendaftaran')
-                ->with('success', "Report Survey untuk {$customer->nama_pelanggan} ({$nomorInternet}) berhasil disimpan.");
+            return $this->redirectBackToPendaftaran("Report Survey untuk {$customer->nama_pelanggan} ({$nomorInternet}) berhasil disimpan.");
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -2392,7 +2406,7 @@ class PendaftaranController extends Controller
                 ->first();
 
             if (!$customer) {
-                return redirect()->route('pendaftaran')->withErrors(['error' => 'Data pendaftaran tidak ditemukan.']);
+                return $this->redirectBackToPendaftaran('Data pendaftaran tidak ditemukan.', 'error');
             }
 
             $currentUser = strtoupper(session('user.nama_karyawan') ?? session('user.nama') ?? session('user.username') ?? 'SYSTEM');
@@ -2538,8 +2552,7 @@ class PendaftaranController extends Controller
 
             DB::commit();
 
-            return redirect()->route('pendaftaran')
-                ->with('success', "Jadwal Instalasi untuk {$customer->nama_pelanggan} ({$nomorInternet}) berhasil disimpan.");
+            return $this->redirectBackToPendaftaran("Jadwal Instalasi untuk {$customer->nama_pelanggan} ({$nomorInternet}) berhasil disimpan.");
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -2583,7 +2596,7 @@ class PendaftaranController extends Controller
                 ->first();
 
             if (!$customer) {
-                return redirect()->route('pendaftaran')->withErrors(['error' => 'Data pendaftaran tidak ditemukan.']);
+                return $this->redirectBackToPendaftaran('Data pendaftaran tidak ditemukan.', 'error');
             }
 
             $currentUser = strtoupper(session('user.nama_karyawan') ?? session('user.nama') ?? session('user.username') ?? 'SYSTEM');
@@ -2749,8 +2762,7 @@ class PendaftaranController extends Controller
 
             DB::commit();
 
-            return redirect()->route('pendaftaran')
-                ->with('success', "Report Aktivasi untuk {$customer->nama_pelanggan} ({$nomorInternet}) berhasil disimpan.");
+            return $this->redirectBackToPendaftaran("Report Aktivasi untuk {$customer->nama_pelanggan} ({$nomorInternet}) berhasil disimpan.");
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -3050,5 +3062,22 @@ class PendaftaranController extends Controller
         }
 
         return "Gagal {$action}: " . $msg;
+    }
+
+    /**
+     * Redirect kembali ke halaman pendaftaran terakhir (mempertahankan page & filter)
+     */
+    private function redirectBackToPendaftaran(?string $message = null, string $type = 'success')
+    {
+        $url = session('pendaftaran_last_url') ?: (session()->has('pendaftaran_page') ? route('pendaftaran', ['page' => session('pendaftaran_page')]) : route('pendaftaran'));
+        $redirect = redirect()->to($url);
+        if ($message) {
+            if ($type === 'error') {
+                $redirect->withErrors(['error' => $message]);
+            } else {
+                $redirect->with($type, $message);
+            }
+        }
+        return $redirect;
     }
 }

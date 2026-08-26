@@ -130,7 +130,7 @@
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-md shadow-blue-200/50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
                     <i class="fa-solid fa-magnifying-glass"></i>Cari
                 </button>
-                <a href="{{ route('pendaftaran') }}" class="bg-pink-400 hover:bg-pink-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-md shadow-pink-200/50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
+                <a href="{{ route('pendaftaran', ['reset' => 1]) }}" class="bg-pink-400 hover:bg-pink-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-md shadow-pink-200/50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
                     <i class="fa-solid fa-rotate"></i>Reset
                 </a>
                 <a href="{{ route('pendaftaran.export', request()->query()) }}" class="bg-amber-400 hover:bg-amber-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-md shadow-amber-200/50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">

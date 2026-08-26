@@ -21,7 +21,7 @@
             </p>
         </div>
 
-        <a href="{{ route('pendaftaran') }}" class="inline-flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium px-4 py-2 rounded-xl text-xs shadow-sm transition-all">
+        <a href="{{ session('pendaftaran_last_url', route('pendaftaran')) }}" class="inline-flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium px-4 py-2 rounded-xl text-xs shadow-sm transition-all">
             <i class="fa-solid fa-arrow-left text-gray-400"></i>
             <span>Kembali ke Pendaftaran</span>
         </a>
@@ -234,7 +234,7 @@
 
             <!-- Footer Action Buttons -->
             <div class="mt-8 pt-6 border-t border-gray-100 flex items-center justify-end gap-3">
-                <a href="{{ route('pendaftaran') }}" class="bg-cyan-400 hover:bg-cyan-500 text-white font-bold px-5 py-2.5 rounded-xl text-xs transition-all shadow-xs flex items-center gap-2">
+                <a href="{{ session('pendaftaran_last_url', route('pendaftaran')) }}" class="bg-cyan-400 hover:bg-cyan-500 text-white font-bold px-5 py-2.5 rounded-xl text-xs transition-all shadow-xs flex items-center gap-2">
                     <i class="fa-solid fa-xmark"></i>
                     <span>Batal</span>
                 </a>
