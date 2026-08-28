@@ -1217,16 +1217,7 @@
                                     </select>
                                 </div>
 
-                                <!-- 6. SN / Serial Nomor Modem ONT* (Always visible) -->
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-700 mb-1">
-                                        SN / Serial Nomor Modem ONT<span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="text" name="ont_us" id="aktivasiOntUs" required placeholder="Contoh: ZTEGC1234567 atau HUAWEI1234..."
-                                           class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-700 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none uppercase">
-                                </div>
-
-                                <!-- 7. FTTH Section (Server OLT & Index OLT) -->
+                                <!-- 6. FTTH Section (Server OLT & Index OLT) -->
                                 <div id="containerAktivasiFtth" class="hidden space-y-4">
                                     <!-- Pilih Server OLT (FTTH) -->
                                     <div>
@@ -1267,6 +1258,15 @@
                                         </div>
                                     </div>
                                     <input type="hidden" name="index_olt" id="aktivasiIndexOlt" value="">
+                                </div>
+
+                                <!-- 7. SN / Serial Nomor Modem ONT* (Always visible, above Catatan) -->
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                        SN / Serial Nomor Modem ONT<span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="text" name="ont_us" id="aktivasiOntUs" required placeholder="Contoh: ZTEGC1234567 atau HUAWEI1234..."
+                                           class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-700 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none uppercase">
                                 </div>
 
                                 <!-- 7. Catatan Proses Aktivasi* -->
@@ -2142,15 +2142,6 @@
                                     </div>
                                 </div>
 
-                                <!-- SN / Serial Nomor Modem ONT (Always visible) -->
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-700 mb-1">
-                                        SN / Serial Nomor Modem ONT<span class="text-rose-500">*</span>
-                                    </label>
-                                    <input type="text" name="ont_us" id="reportAktivasiOntUs" required placeholder="Contoh: ZTEGC1234567 atau HUAWEI1234..."
-                                           class="w-full bg-white border border-slate-200 focus:border-blue-500 text-slate-800 py-2 px-3 text-xs rounded-lg outline-none uppercase">
-                                </div>
-
                                 <!-- Dynamic FTTH Section for Report Aktivasi -->
                                 <div id="containerReportAktivasiFtth" class="hidden space-y-3">
                                     <div>
@@ -2191,6 +2182,15 @@
                                         </div>
                                     </div>
                                     <input type="hidden" name="index_olt" id="reportAktivasiIndexOlt" value="">
+                                </div>
+
+                                <!-- SN / Serial Nomor Modem ONT (Always visible) -->
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                        SN / Serial Nomor Modem ONT<span class="text-rose-500">*</span>
+                                    </label>
+                                    <input type="text" name="ont_us" id="reportAktivasiOntUs" required placeholder="Contoh: ZTEGC1234567 atau HUAWEI1234..."
+                                           class="w-full bg-white border border-slate-200 focus:border-blue-500 text-slate-800 py-2 px-3 text-xs rounded-lg outline-none uppercase">
                                 </div>
                             </div>
                         </div>
