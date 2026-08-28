@@ -713,6 +713,8 @@ class PendaftaranController extends Controller
             $rawHarga = $request->input('harga_paket');
             $parsedHarga = !empty($rawHarga) ? preg_replace('/[^0-9]/', '', $rawHarga) : null;
             $kodeBandwith = self::resolveOrCreateBandwith($validated['kode_bandwith'], $validated['kode_kategori'], $parsedHarga, $currentUser);
+            $bwData = DB::table('m_bandwith')->where('kode_bandwith', $kodeBandwith)->first();
+            $totalReg = (!empty($parsedHarga) && is_numeric($parsedHarga)) ? $parsedHarga : ($bwData->harga_bandwith ?? '300000');
 
             // Generate random 6-digit numeric PPPoE Password untuk pelanggan baru
             $pppoePassword = $request->filled('pppoe_password')
@@ -1080,6 +1082,8 @@ class PendaftaranController extends Controller
             $rawHarga = $request->input('harga_paket');
             $parsedHarga = !empty($rawHarga) ? preg_replace('/[^0-9]/', '', $rawHarga) : null;
             $kodeBandwith = self::resolveOrCreateBandwith($validated['kode_bandwith'], $validated['kode_kategori'], $parsedHarga, $currentUser);
+            $bwData = DB::table('m_bandwith')->where('kode_bandwith', $kodeBandwith)->first();
+            $totalReg = (!empty($parsedHarga) && is_numeric($parsedHarga)) ? $parsedHarga : ($bwData->harga_bandwith ?? '300000');
 
             // Upload foto PO
             $fotoPoUpdate = [];
