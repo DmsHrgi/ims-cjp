@@ -363,7 +363,9 @@
                                                              '{{ addslashes($r->index_olt ?? '') }}',
                                                              '{{ addslashes($r->aktivasi_note ?? '') }}',
                                                              {{ json_encode($rItems) }},
-                                                             '{{ $getPhotoUrl($r->foto_peta ?? null) }}'
+                                                             '{{ $getPhotoUrl($r->foto_peta ?? null) }}',
+                                                             '{{ addslashes($r->ont_us ?? '') }}',
+                                                             '{{ addslashes($r->olt ?? '') }}'
                                                          )" class="flex items-center gap-1.5 text-gray-700 hover:text-blue-600 transition-colors whitespace-nowrap">
                                                          <i class="fa-solid fa-pen-to-square text-blue-500"></i>
                                                          <span>Jadwal Aktivasi</span>
@@ -1215,34 +1217,57 @@
                                     </select>
                                 </div>
 
-                                <!-- 6. Dynamic Field based on Media Akses -->
-                                <!-- Container OLT Server (FTTH) -->
-                                <div id="containerAktivasiOlt" class="hidden">
-                                    <div class="flex items-center justify-between mb-1">
-                                        <label class="block text-xs font-semibold text-slate-700">
-                                            Pilih Server OLT (FTTH)<span class="text-red-500">*</span>
-                                        </label>
-                                        <span class="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">3 OLT Tersedia</span>
-                                    </div>
-                                    <select id="aktivasiOltSelect" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-700 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none">
-                                        <option value="" disabled selected>Pilih Server OLT (FTTH)</option>
-                                        <option value="OLT KAYU AGUNG (01)">OLT KAYU AGUNG (01)</option>
-                                        <option value="OLT BABAKAN TAROGONG (02)">OLT BABAKAN TAROGONG (02)</option>
-                                        <option value="OLT BBU (03)">OLT BBU (03)</option>
-                                    </select>
-                                </div>
-
-                                <!-- Container SN Modem ONT (PTP) -->
-                                <div id="containerAktivasiPtp" class="hidden">
+                                <!-- 6. SN / Serial Nomor Modem ONT* (Always visible) -->
+                                <div>
                                     <label class="block text-xs font-semibold text-slate-700 mb-1">
                                         SN / Serial Nomor Modem ONT<span class="text-red-500">*</span>
                                     </label>
-                                    <input type="text" id="aktivasiPtpInput" placeholder="Contoh: ZTEGC1234567 atau HUAWEI1234..."
-                                           class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-700 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none">
+                                    <input type="text" name="ont_us" id="aktivasiOntUs" required placeholder="Contoh: ZTEGC1234567 atau HUAWEI1234..."
+                                           class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-700 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none uppercase">
                                 </div>
 
-                                <!-- Hidden input for index_olt submission -->
-                                <input type="hidden" name="index_olt" id="aktivasiIndexOlt" value="">
+                                <!-- 7. FTTH Section (Server OLT & Index OLT) -->
+                                <div id="containerAktivasiFtth" class="hidden space-y-4">
+                                    <!-- Pilih Server OLT (FTTH) -->
+                                    <div>
+                                        <div class="flex items-center justify-between mb-1">
+                                            <label class="block text-xs font-semibold text-slate-700">
+                                                Pilih Server OLT (FTTH)<span class="text-red-500">*</span>
+                                            </label>
+                                            <span class="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">3 OLT Tersedia</span>
+                                        </div>
+                                        <select name="olt" id="aktivasiOltSelect" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-700 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none">
+                                            <option value="" disabled selected>Pilih Server OLT (FTTH)</option>
+                                            <option value="OLT KAYU AGUNG (01)">OLT KAYU AGUNG (01)</option>
+                                            <option value="OLT BABAKAN TAROGONG (02)">OLT BABAKAN TAROGONG (02)</option>
+                                            <option value="OLT BBU (03)">OLT BBU (03)</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Index OLT Selector Card -->
+                                    <div class="p-3.5 border border-slate-200 rounded-xl bg-slate-50/50 space-y-2.5">
+                                        <div class="flex items-center justify-between">
+                                            <label class="block text-xs font-semibold text-slate-700">
+                                                Index OLT<span class="text-red-500">*</span>
+                                            </label>
+                                            <span id="previewIndexOlt" class="font-mono text-xs font-semibold text-blue-600">gpon-onu_1/1/1:14</span>
+                                        </div>
+                                        
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label class="block text-[11px] font-medium text-slate-600 mb-1">Pilih Port GPON:</label>
+                                                <select id="aktivasiPortGpon" onchange="updateIndexOltOptions('aktivasi')" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 focus:border-cyan-400 outline-none">
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="block text-[11px] font-medium text-slate-600 mb-1">Pilih Index:</label>
+                                                <select id="aktivasiIndexOnu" onchange="onIndexOnuChanged('aktivasi')" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 focus:border-cyan-400 outline-none font-mono">
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="index_olt" id="aktivasiIndexOlt" value="">
+                                </div>
 
                                 <!-- 7. Catatan Proses Aktivasi* -->
                                 <div>
@@ -2117,31 +2142,56 @@
                                     </div>
                                 </div>
 
-                                <!-- Dynamic Field for Report Aktivasi -->
-                                <div id="containerReportAktivasiOlt" class="hidden">
-                                    <div class="flex items-center justify-between mb-1">
-                                        <label class="block text-xs font-semibold text-slate-700">
-                                            Pilih Server OLT (FTTH)<span class="text-rose-500">*</span>
-                                        </label>
-                                        <span class="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">3 OLT Tersedia</span>
-                                    </div>
-                                    <select id="reportAktivasiOltSelect" class="w-full bg-white border border-slate-200 focus:border-blue-500 text-slate-800 py-2 px-3 text-xs rounded-lg outline-none">
-                                        <option value="" disabled selected>Pilih Server OLT (FTTH)</option>
-                                        <option value="OLT KAYU AGUNG (01)">OLT KAYU AGUNG (01)</option>
-                                        <option value="OLT BABAKAN TAROGONG (02)">OLT BABAKAN TAROGONG (02)</option>
-                                        <option value="OLT BBU (03)">OLT BBU (03)</option>
-                                    </select>
-                                </div>
-
-                                <div id="containerReportAktivasiPtp" class="hidden">
+                                <!-- SN / Serial Nomor Modem ONT (Always visible) -->
+                                <div>
                                     <label class="block text-xs font-semibold text-slate-700 mb-1">
                                         SN / Serial Nomor Modem ONT<span class="text-rose-500">*</span>
                                     </label>
-                                    <input type="text" id="reportAktivasiPtpInput" placeholder="Contoh: ZTEGC1234567 atau HUAWEI1234..."
-                                           class="w-full bg-white border border-slate-200 focus:border-blue-500 text-slate-800 py-2 px-3 text-xs rounded-lg outline-none">
+                                    <input type="text" name="ont_us" id="reportAktivasiOntUs" required placeholder="Contoh: ZTEGC1234567 atau HUAWEI1234..."
+                                           class="w-full bg-white border border-slate-200 focus:border-blue-500 text-slate-800 py-2 px-3 text-xs rounded-lg outline-none uppercase">
                                 </div>
 
-                                <input type="hidden" name="index_olt" id="reportAktivasiIndexOlt" value="">
+                                <!-- Dynamic FTTH Section for Report Aktivasi -->
+                                <div id="containerReportAktivasiFtth" class="hidden space-y-3">
+                                    <div>
+                                        <div class="flex items-center justify-between mb-1">
+                                            <label class="block text-xs font-semibold text-slate-700">
+                                                Pilih Server OLT (FTTH)<span class="text-rose-500">*</span>
+                                            </label>
+                                            <span class="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">3 OLT Tersedia</span>
+                                        </div>
+                                        <select name="olt" id="reportAktivasiOltSelect" class="w-full bg-white border border-slate-200 focus:border-blue-500 text-slate-800 py-2 px-3 text-xs rounded-lg outline-none">
+                                            <option value="" disabled selected>Pilih Server OLT (FTTH)</option>
+                                            <option value="OLT KAYU AGUNG (01)">OLT KAYU AGUNG (01)</option>
+                                            <option value="OLT BABAKAN TAROGONG (02)">OLT BABAKAN TAROGONG (02)</option>
+                                            <option value="OLT BBU (03)">OLT BBU (03)</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Index OLT Selector Box -->
+                                    <div class="p-3.5 border border-slate-200 rounded-xl bg-slate-50/50 space-y-2.5">
+                                        <div class="flex items-center justify-between">
+                                            <label class="block text-xs font-semibold text-slate-700">
+                                                Index OLT<span class="text-rose-500">*</span>
+                                            </label>
+                                            <span id="reportPreviewIndexOlt" class="font-mono text-xs font-semibold text-blue-600">gpon-onu_1/1/1:14</span>
+                                        </div>
+                                        
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label class="block text-[11px] font-medium text-slate-600 mb-1">Pilih Port GPON:</label>
+                                                <select id="reportAktivasiPortGpon" onchange="updateIndexOltOptions('reportAktivasi')" class="w-full bg-white border border-slate-200 text-slate-800 py-1.5 px-2.5 text-xs rounded-lg outline-none">
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="block text-[11px] font-medium text-slate-600 mb-1">Pilih Index:</label>
+                                                <select id="reportAktivasiIndexOnu" onchange="onIndexOnuChanged('reportAktivasi')" class="w-full bg-white border border-slate-200 text-slate-800 py-1.5 px-2.5 text-xs rounded-lg outline-none font-mono">
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="index_olt" id="reportAktivasiIndexOlt" value="">
+                                </div>
                             </div>
                         </div>
 
@@ -2784,56 +2834,118 @@
         // ── Report Aktivasi Functions (Role NOC) ──
         let globalReportAktivasiItems = [];
 
-        function toggleReportMediaAksesFields(mediaVal, initialIndexOlt) {
-            var oltContainer = document.getElementById('containerReportAktivasiOlt');
-            var ptpContainer = document.getElementById('containerReportAktivasiPtp');
-            var oltSelect = document.getElementById('reportAktivasiOltSelect');
-            var ptpInput = document.getElementById('reportAktivasiPtpInput');
-            var indexOltHidden = document.getElementById('reportAktivasiIndexOlt');
+        const GPON_PORTS = [
+            { port: 'gpon-onu_1/1/1', label: 'gpon-onu_1/1/1 (110 Slot Sisa)' },
+            { port: 'gpon-onu_1/1/2', label: 'gpon-onu_1/1/2 (120 Slot Sisa)' },
+            { port: 'gpon-onu_1/1/3', label: 'gpon-onu_1/1/3 (125 Slot Sisa)' },
+            { port: 'gpon-onu_1/1/4', label: 'gpon-onu_1/1/4 (128 Slot Sisa)' },
+            { port: 'gpon-onu_1/1/5', label: 'gpon-onu_1/1/5 (128 Slot Sisa)' },
+            { port: 'gpon-onu_1/1/6', label: 'gpon-onu_1/1/6 (128 Slot Sisa)' },
+            { port: 'gpon-onu_1/1/7', label: 'gpon-onu_1/1/7 (128 Slot Sisa)' },
+            { port: 'gpon-onu_1/1/8', label: 'gpon-onu_1/1/8 (128 Slot Sisa)' },
+            { port: 'gpon-onu_1/1/9', label: 'gpon-onu_1/1/9 (128 Slot Sisa)' },
+            { port: 'gpon-onu_1/1/10', label: 'gpon-onu_1/1/10 (128 Slot Sisa)' },
+            { port: 'gpon-onu_1/1/11', label: 'gpon-onu_1/1/11 (128 Slot Sisa)' },
+            { port: 'gpon-onu_1/1/12', label: 'gpon-onu_1/1/12 (128 Slot Sisa)' },
+            { port: 'gpon-onu_1/1/13', label: 'gpon-onu_1/1/13 (128 Slot Sisa)' },
+            { port: 'gpon-onu_1/1/14', label: 'gpon-onu_1/1/14 (128 Slot Sisa)' },
+            { port: 'gpon-onu_1/1/15', label: 'gpon-onu_1/1/15 (128 Slot Sisa)' },
+            { port: 'gpon-onu_1/1/16', label: 'gpon-onu_1/1/16 (128 Slot Sisa)' },
+        ];
 
-            if (mediaVal === 'FTTH') {
-                if (oltContainer) oltContainer.classList.remove('hidden');
-                if (ptpContainer) ptpContainer.classList.add('hidden');
-                if (oltSelect) {
-                    oltSelect.required = true;
-                    if (initialIndexOlt !== undefined && initialIndexOlt !== '') {
-                        oltSelect.value = initialIndexOlt;
-                        if (initialIndexOlt && !Array.from(oltSelect.options).some(function(opt) { return opt.value === initialIndexOlt; })) {
-                            var match = Array.from(oltSelect.options).find(function(opt) { 
-                                return opt.value.toLowerCase().indexOf(initialIndexOlt.toLowerCase()) !== -1 || initialIndexOlt.toLowerCase().indexOf(opt.value.toLowerCase()) !== -1; 
-                            });
-                            if (match) {
-                                oltSelect.value = match.value;
-                            } else {
-                                var newOpt = new Option(initialIndexOlt, initialIndexOlt, true, true);
-                                oltSelect.add(newOpt);
-                            }
-                        }
-                    }
-                    if (indexOltHidden) indexOltHidden.value = oltSelect.value;
+        function initGponPortDropdown(prefix) {
+            const portSel = document.getElementById(prefix + 'PortGpon');
+            if (!portSel) return;
+            portSel.innerHTML = '';
+            GPON_PORTS.forEach(function(item) {
+                const opt = document.createElement('option');
+                opt.value = item.port;
+                opt.textContent = item.label;
+                portSel.appendChild(opt);
+            });
+        }
+
+        function updateIndexOltOptions(prefix, targetIndexVal) {
+            const portSel = document.getElementById(prefix + 'PortGpon');
+            const indexSel = document.getElementById(prefix + 'IndexOnu');
+            const previewSpan = document.getElementById(prefix === 'aktivasi' ? 'previewIndexOlt' : 'reportPreviewIndexOlt');
+            const hiddenInput = document.getElementById(prefix + 'IndexOlt');
+
+            if (!portSel || !indexSel) return;
+
+            const selectedPort = portSel.value || 'gpon-onu_1/1/1';
+            indexSel.innerHTML = '';
+
+            for (let i = 1; i <= 128; i++) {
+                const fullVal = selectedPort + ':' + i;
+                const opt = document.createElement('option');
+                opt.value = fullVal;
+                opt.textContent = '🟢 ' + fullVal;
+                indexSel.appendChild(opt);
+            }
+
+            if (targetIndexVal) {
+                if (Array.from(indexSel.options).some(function(o) { return o.value === targetIndexVal; })) {
+                    indexSel.value = targetIndexVal;
+                } else {
+                    const customOpt = new Option('🟢 ' + targetIndexVal, targetIndexVal, true, true);
+                    indexSel.add(customOpt);
                 }
-                if (ptpInput) ptpInput.required = false;
-            } else if (mediaVal === 'PTP') {
-                if (ptpContainer) ptpContainer.classList.remove('hidden');
-                if (oltContainer) oltContainer.classList.add('hidden');
-                if (ptpInput) {
-                    ptpInput.required = true;
-                    if (initialIndexOlt !== undefined && initialIndexOlt !== '') {
-                        ptpInput.value = initialIndexOlt;
-                    }
-                    if (indexOltHidden) indexOltHidden.value = ptpInput.value;
-                }
-                if (oltSelect) oltSelect.required = false;
-            } else {
-                if (oltContainer) oltContainer.classList.add('hidden');
-                if (ptpContainer) ptpContainer.classList.add('hidden');
-                if (oltSelect) oltSelect.required = false;
-                if (ptpInput) ptpInput.required = false;
-                if (indexOltHidden) indexOltHidden.value = '';
+            }
+
+            const currentVal = indexSel.value || (selectedPort + ':14');
+            if (previewSpan) previewSpan.textContent = currentVal;
+            if (hiddenInput) hiddenInput.value = currentVal;
+        }
+
+        function onIndexOnuChanged(prefix) {
+            const indexSel = document.getElementById(prefix + 'IndexOnu');
+            const previewSpan = document.getElementById(prefix === 'aktivasi' ? 'previewIndexOlt' : 'reportPreviewIndexOlt');
+            const hiddenInput = document.getElementById(prefix + 'IndexOlt');
+
+            if (indexSel) {
+                const val = indexSel.value;
+                if (previewSpan) previewSpan.textContent = val;
+                if (hiddenInput) hiddenInput.value = val;
             }
         }
 
-        function openReportAktivasiModal(nomorInternet, namaPelanggan, dateFinish, noteFinish, teamStr, kodePop, mediaAkses, indexOlt, existingItems) {
+        function toggleReportMediaAksesFields(mediaVal, initialOltVal, initialIndexOlt) {
+            var ftthContainer = document.getElementById('containerReportAktivasiFtth');
+            var oltSelect = document.getElementById('reportAktivasiOltSelect');
+            var portGpon = document.getElementById('reportAktivasiPortGpon');
+            var hiddenIndexOlt = document.getElementById('reportAktivasiIndexOlt');
+
+            if (mediaVal === 'FTTH') {
+                if (ftthContainer) ftthContainer.classList.remove('hidden');
+                if (oltSelect) {
+                    oltSelect.required = true;
+                    if (initialOltVal) {
+                        oltSelect.value = initialOltVal;
+                        if (!Array.from(oltSelect.options).some(function(o) { return o.value === initialOltVal; })) {
+                            oltSelect.add(new Option(initialOltVal, initialOltVal, true, true));
+                        }
+                    }
+                }
+
+                var targetPort = 'gpon-onu_1/1/1';
+                var targetIndex = initialIndexOlt || 'gpon-onu_1/1/1:14';
+                if (initialIndexOlt && initialIndexOlt.indexOf(':') !== -1) {
+                    targetPort = initialIndexOlt.split(':')[0];
+                }
+                if (portGpon) {
+                    initGponPortDropdown('reportAktivasi');
+                    portGpon.value = targetPort;
+                }
+                updateIndexOltOptions('reportAktivasi', targetIndex);
+            } else {
+                if (ftthContainer) ftthContainer.classList.add('hidden');
+                if (oltSelect) oltSelect.required = false;
+                if (hiddenIndexOlt) hiddenIndexOlt.value = '';
+            }
+        }
+
+        function openReportAktivasiModal(nomorInternet, namaPelanggan, dateFinish, noteFinish, teamStr, kodePop, mediaAkses, indexOlt, existingItems, ontUsVal, oltVal) {
             var form = document.getElementById('formReportAktivasi');
             form.action = '/pendaftaran/' + encodeURIComponent(nomorInternet) + '/report-aktivasi';
 
@@ -2855,7 +2967,12 @@
                 mediaSelect.value = mediaAkses || '';
             }
 
-            toggleReportMediaAksesFields(mediaAkses, indexOlt);
+            var ontInput = document.getElementById('reportAktivasiOntUs');
+            if (ontInput) {
+                ontInput.value = ontUsVal || '';
+            }
+
+            toggleReportMediaAksesFields(mediaAkses, oltVal, indexOlt);
 
             var rescheduleCb = document.getElementById('checkRescheduleAktivasi');
             rescheduleCb.checked = false;
@@ -2967,56 +3084,42 @@
         // ── NOC: Modal Jadwal Aktivasi ──
         let globalAktivasiItems = [];
 
-        function toggleMediaAksesFields(mediaVal, initialIndexOlt) {
-            const oltContainer = document.getElementById('containerAktivasiOlt');
-            const ptpContainer = document.getElementById('containerAktivasiPtp');
+        function toggleMediaAksesFields(mediaVal, initialOltVal, initialIndexOlt) {
+            const ftthContainer = document.getElementById('containerAktivasiFtth');
             const oltSelect = document.getElementById('aktivasiOltSelect');
-            const ptpInput = document.getElementById('aktivasiPtpInput');
-            const indexOltHidden = document.getElementById('aktivasiIndexOlt');
+            const portGpon = document.getElementById('aktivasiPortGpon');
+            const hiddenIndexOlt = document.getElementById('aktivasiIndexOlt');
 
             if (mediaVal === 'FTTH') {
-                if (oltContainer) oltContainer.classList.remove('hidden');
-                if (ptpContainer) ptpContainer.classList.add('hidden');
+                if (ftthContainer) ftthContainer.classList.remove('hidden');
                 if (oltSelect) {
                     oltSelect.required = true;
-                    if (initialIndexOlt !== undefined && initialIndexOlt !== '') {
-                        oltSelect.value = initialIndexOlt;
-                        if (initialIndexOlt && !Array.from(oltSelect.options).some(function(opt) { return opt.value === initialIndexOlt; })) {
-                            const match = Array.from(oltSelect.options).find(function(opt) { 
-                                return opt.value.toLowerCase().indexOf(initialIndexOlt.toLowerCase()) !== -1 || initialIndexOlt.toLowerCase().indexOf(opt.value.toLowerCase()) !== -1; 
-                            });
-                            if (match) {
-                                oltSelect.value = match.value;
-                            } else {
-                                const newOpt = new Option(initialIndexOlt, initialIndexOlt, true, true);
-                                oltSelect.add(newOpt);
-                            }
+                    if (initialOltVal) {
+                        oltSelect.value = initialOltVal;
+                        if (!Array.from(oltSelect.options).some(function(o) { return o.value === initialOltVal; })) {
+                            oltSelect.add(new Option(initialOltVal, initialOltVal, true, true));
                         }
                     }
-                    if (indexOltHidden) indexOltHidden.value = oltSelect.value;
                 }
-                if (ptpInput) ptpInput.required = false;
-            } else if (mediaVal === 'PTP') {
-                if (ptpContainer) ptpContainer.classList.remove('hidden');
-                if (oltContainer) oltContainer.classList.add('hidden');
-                if (ptpInput) {
-                    ptpInput.required = true;
-                    if (initialIndexOlt !== undefined && initialIndexOlt !== '') {
-                        ptpInput.value = initialIndexOlt;
-                    }
-                    if (indexOltHidden) indexOltHidden.value = ptpInput.value;
+
+                let targetPort = 'gpon-onu_1/1/1';
+                let targetIndex = initialIndexOlt || 'gpon-onu_1/1/1:14';
+                if (initialIndexOlt && initialIndexOlt.indexOf(':') !== -1) {
+                    targetPort = initialIndexOlt.split(':')[0];
                 }
-                if (oltSelect) oltSelect.required = false;
+                if (portGpon) {
+                    initGponPortDropdown('aktivasi');
+                    portGpon.value = targetPort;
+                }
+                updateIndexOltOptions('aktivasi', targetIndex);
             } else {
-                if (oltContainer) oltContainer.classList.add('hidden');
-                if (ptpContainer) ptpContainer.classList.add('hidden');
+                if (ftthContainer) ftthContainer.classList.add('hidden');
                 if (oltSelect) oltSelect.required = false;
-                if (ptpInput) ptpInput.required = false;
-                if (indexOltHidden) indexOltHidden.value = '';
+                if (hiddenIndexOlt) hiddenIndexOlt.value = '';
             }
         }
 
-        function openAktivasiModal(nomor, nama, dateVal, timeVal, teamVal, popVal, mediaAksesVal, indexOltVal, noteVal, existingItemsJson) {
+        function openAktivasiModal(nomor, nama, dateVal, timeVal, teamVal, popVal, mediaAksesVal, indexOltVal, noteVal, existingItemsJson, fotoPetaUrl, ontUsVal, oltVal) {
             const form = document.getElementById('formAktivasi');
             form.action = '/pendaftaran/' + encodeURIComponent(nomor) + '/jadwal-aktivasi';
 
@@ -3045,12 +3148,20 @@
                 }
             }
 
-            // Media Akses & Dynamic Field (FTTH OLT vs PTP SN Modem)
+            // Media Akses
             const mediaSelect = document.getElementById('aktivasiMediaAkses');
             if (mediaSelect) {
                 mediaSelect.value = mediaAksesVal || '';
             }
-            toggleMediaAksesFields(mediaAksesVal, indexOltVal);
+
+            // SN Modem ONT (Always visible)
+            const ontUsInput = document.getElementById('aktivasiOntUs');
+            if (ontUsInput) {
+                ontUsInput.value = ontUsVal || '';
+            }
+
+            // FTTH dynamic section (Server OLT & Index OLT)
+            toggleMediaAksesFields(mediaAksesVal, oltVal, indexOltVal);
 
             // Note
             const noteTextarea = document.getElementById('aktivasiNote');
@@ -3158,36 +3269,6 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            const oltSel = document.getElementById('aktivasiOltSelect');
-            if (oltSel) {
-                oltSel.addEventListener('change', function() {
-                    const hidden = document.getElementById('aktivasiIndexOlt');
-                    if (hidden) hidden.value = this.value;
-                });
-            }
-            const ptpInp = document.getElementById('aktivasiPtpInput');
-            if (ptpInp) {
-                ptpInp.addEventListener('input', function() {
-                    const hidden = document.getElementById('aktivasiIndexOlt');
-                    if (hidden) hidden.value = this.value;
-                });
-            }
-
-            const repOltSel = document.getElementById('reportAktivasiOltSelect');
-            if (repOltSel) {
-                repOltSel.addEventListener('change', function() {
-                    const hidden = document.getElementById('reportAktivasiIndexOlt');
-                    if (hidden) hidden.value = this.value;
-                });
-            }
-            const repPtpInp = document.getElementById('reportAktivasiPtpInput');
-            if (repPtpInp) {
-                repPtpInp.addEventListener('input', function() {
-                    const hidden = document.getElementById('reportAktivasiIndexOlt');
-                    if (hidden) hidden.value = this.value;
-                });
-            }
-
             const formAktivasi = document.getElementById('formAktivasi');
             if (formAktivasi) {
                 formAktivasi.addEventListener('submit', function() {
@@ -3195,9 +3276,9 @@
                     const hidden = document.getElementById('aktivasiIndexOlt');
                     if (hidden) {
                         if (mediaVal === 'FTTH') {
-                            hidden.value = document.getElementById('aktivasiOltSelect')?.value || '';
-                        } else if (mediaVal === 'PTP') {
-                            hidden.value = document.getElementById('aktivasiPtpInput')?.value || '';
+                            hidden.value = document.getElementById('aktivasiIndexOnu')?.value || '';
+                        } else {
+                            hidden.value = '';
                         }
                     }
                 });
@@ -3210,9 +3291,9 @@
                     const hidden = document.getElementById('reportAktivasiIndexOlt');
                     if (hidden) {
                         if (mediaVal === 'FTTH') {
-                            hidden.value = document.getElementById('reportAktivasiOltSelect')?.value || '';
-                        } else if (mediaVal === 'PTP') {
-                            hidden.value = document.getElementById('reportAktivasiPtpInput')?.value || '';
+                            hidden.value = document.getElementById('reportAktivasiIndexOnu')?.value || '';
+                        } else {
+                            hidden.value = '';
                         }
                     }
                 });

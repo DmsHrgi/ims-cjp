@@ -1840,7 +1840,9 @@ class PendaftaranController extends Controller
             'aktivasi_team' => 'nullable|array',
             'kode_pop' => 'nullable|string|max:50',
             'media_akses' => 'nullable|string|max:50',
-            'index_olt' => 'nullable|string|max:50',
+            'ont_us' => 'nullable|string|max:100',
+            'olt' => 'nullable|string|max:100',
+            'index_olt' => 'nullable|string|max:100',
             'aktivasi_note' => 'nullable|string|max:500',
             'items' => 'nullable|array',
             'items.*.kode_barang' => 'required|string',
@@ -1909,10 +1911,12 @@ class PendaftaranController extends Controller
             DB::table('trx_batchjob_register')
                 ->where('nomor_internet', $nomorInternet)
                 ->update([
-                    'status_reg' => '14',
-                    'kode_pop' => $kodePop,
+                    'status_reg'  => '14',
+                    'kode_pop'    => $kodePop,
                     'media_akses' => !empty($validated['media_akses']) ? $validated['media_akses'] : null,
-                    'index_olt' => !empty($validated['index_olt']) ? $validated['index_olt'] : null,
+                    'ont_us'      => !empty($validated['ont_us']) ? $validated['ont_us'] : null,
+                    'olt'         => !empty($validated['olt']) ? $validated['olt'] : null,
+                    'index_olt'   => !empty($validated['index_olt']) ? $validated['index_olt'] : null,
                     'user_update' => substr($currentUser, 0, 20),
                     'date_update' => now(),
                 ]);
@@ -2629,7 +2633,9 @@ class PendaftaranController extends Controller
                 'aktivasi_note_finish' => 'required|string',
                 'kode_pop'             => 'nullable|string',
                 'media_akses'          => 'nullable|string',
-                'index_olt'            => 'nullable|string',
+                'ont_us'               => 'nullable|string|max:100',
+                'olt'                  => 'nullable|string|max:100',
+                'index_olt'            => 'nullable|string|max:100',
                 'teams'                => 'nullable|array',
                 'items'                => 'nullable|array',
             ], [
@@ -2700,6 +2706,12 @@ class PendaftaranController extends Controller
                 }
                 if (array_key_exists('media_akses', $validated) && !empty($validated['media_akses'])) {
                     $regUpdate['media_akses'] = $validated['media_akses'];
+                }
+                if (array_key_exists('ont_us', $validated) && !empty($validated['ont_us'])) {
+                    $regUpdate['ont_us'] = $validated['ont_us'];
+                }
+                if (array_key_exists('olt', $validated) && !empty($validated['olt'])) {
+                    $regUpdate['olt'] = $validated['olt'];
                 }
                 if (array_key_exists('index_olt', $validated) && !empty($validated['index_olt'])) {
                     $regUpdate['index_olt'] = $validated['index_olt'];
