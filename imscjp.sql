@@ -259,7 +259,7 @@ CREATE TABLE `m_bandwith_kategori` (
 --
 
 INSERT INTO `m_bandwith_kategori` (`kode_kategori_bandwith`, `nama_kategori_bandwith`, `alias_nama_kategori`, `biaya_reg`, `ppn_reg`, `ppn_reg_nom`, `ppn_bill`, `ppn_bill_nom`, `disable`, `date_create`, `user_create`, `date_update`, `user_update`, `hide`) VALUES
-('KB09212', 'UP TO NEW', 'UP TO NEW', '100000', 2, '0.11', 1, '0.11', 0, '2025-11-19 15:46:24', 'ADMIN', '2025-11-19 15:46:32', '2025-11-19 15:46:37', '0'),
+('KB09212', 'LOCALLOOP', 'LOCALLOOP', '100000', 2, '0.11', 1, '0.11', 0, '2025-11-19 15:46:24', 'ADMIN', '2025-11-19 15:46:32', '2025-11-19 15:46:37', '0'),
 ('KB1682', 'SMALL OFFICE HOME OFFICE', 'UPTO SOHO', '500000', 2, '0.11', 1, '0.11', 0, '2022-03-08 10:02:56', 'ADMIN', '2022-03-08 10:03:02', '2022-03-08 10:03:04', '0'),
 ('KB22285', 'CORPORATE', 'CORPORATE', '1500000', 2, '0.11', 1, '0.11', 0, '2022-03-31 09:34:44', 'ADMIN', '2022-03-31 09:34:51', '2022-03-31 09:34:53', '0'),
 ('KB58163', 'LASTMILE', 'LASTMILE', '1500000', 2, '0.11', 1, '0.11', 0, '2022-03-31 09:33:33', 'ADMIN', '2022-03-31 09:33:37', '2022-03-31 09:33:42', '0'),
@@ -85984,7 +85984,7 @@ CREATE TABLE `trx_ubah_layanan_log` (
 --
 
 INSERT INTO `trx_ubah_layanan_log` (`kode_ubah_layanan_log`, `kode_trx_ubah_layanan`, `status_ubah_layanan`, `note_ubah_layanan`, `date_create`, `user_create`, `hide`) VALUES
-('L-UBAH-UBAH-20260814003-260817181217-260817181217', 'UBAH-20260814003-260817181217', '11', 'Request Ubah Layanan [UP TO NEW]: 100 MBPS (Rp 300.000)', '2026-08-17 18:12:17', 'ameliaagustina@ptmsn', '0'),
+('L-UBAH-UBAH-20260814003-260817181217-260817181217', 'UBAH-20260814003-260817181217', '11', 'Request Ubah Layanan [LOCALLOOP]: 100 MBPS (Rp 300.000)', '2026-08-17 18:12:17', 'ameliaagustina@ptmsn', '0'),
 ('L-UBAH-UBAH-20260814003-260817181217-260817181312', 'UBAH-20260814003-260817181217', '12', 'Schedule Update: 2016-08-17 | asas', '2026-08-17 18:13:12', 'RICKY SAHARA PUTRA', '0'),
 ('L-UBAH-UBAH-20260814003-260817181217-260817181354', 'UBAH-20260814003-260817181217', '14', 'Canceled Update: 2026-08-17 | sa', '2026-08-17 18:13:54', 'RICKY SAHARA PUTRA', '0'),
 ('L-UBAH-UBAH-20260814003-260817181502-260817181502', 'UBAH-20260814003-260817181502', '11', 'Request Ubah Layanan [SMALL OFFICE HOME OFFICE]: 130 MBPS (Rp 250.000)', '2026-08-17 18:15:02', 'ameliaagustina@ptmsn', '0'),
