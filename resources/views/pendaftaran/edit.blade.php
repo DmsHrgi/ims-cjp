@@ -543,20 +543,15 @@
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1.5">Kapasitas Layanan <span class="text-rose-500 font-bold">*</span></label>
-                        <input type="text" name="kode_bandwith" id="editInputPaket" list="listEditPaket" required placeholder="Ketik kapasitas layanan / bandwidth (misal: 100 Mbps)" value="{{ old('kode_bandwith', $valPaketLayanan) }}" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 px-3.5 text-sm rounded-xl outline-none transition-all placeholder-slate-400">
-                        <datalist id="listEditPaket">
-                            @foreach ($paketList ?? [] as $p)
-                                <option value="{{ $p->nominal_bandwith }} Mbps">
-                            @endforeach
-                        </datalist>
+                        <input type="text" name="kode_bandwith" id="editInputPaket" autocomplete="off" required placeholder="Ketik kapasitas layanan / bandwidth (misal: 100 Mbps)" value="{{ old('kode_bandwith', $valPaketLayanan) }}" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 px-3.5 text-sm rounded-xl outline-none transition-all placeholder-slate-400">
                     </div>
                 </div>
 
-                <!-- Harga Layanan (Manual Ketik) -->
+                <!-- Harga Layanan (Manual Ketik dengan format titik otomatis) -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1.5">Harga Layanan <span class="text-rose-500 font-bold">*</span></label>
-                        <input type="text" name="harga_paket" id="editHargaPaket" required placeholder="Ketik harga layanan (contoh: 500000 atau Rp 500.000)" value="{{ old('harga_paket', $valHargaPaket) }}" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 px-3.5 text-sm rounded-xl outline-none font-semibold transition-all placeholder-slate-400">
+                        <input type="text" name="harga_paket" id="editHargaPaket" autocomplete="off" required placeholder="Ketik harga layanan (contoh: 500.000)" value="{{ old('harga_paket', $valHargaPaket) }}" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 px-3.5 text-sm rounded-xl outline-none font-semibold transition-all placeholder-slate-400">
                     </div>
                 </div>
             </div>
@@ -792,6 +787,30 @@
                 });
             }
         });
+
+        // Format otomatis titik setiap 3 angka pada Harga Layanan
+        function formatRibuanString(val) {
+            const num = (val || '').toString().replace(/\D/g, '');
+            if (!num) return '';
+            return num.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+
+        const editHargaInput = document.getElementById('editHargaPaket');
+        if (editHargaInput) {
+            editHargaInput.addEventListener('input', function() {
+                const startPos = this.selectionStart;
+                const prevLen = this.value.length;
+                this.value = formatRibuanString(this.value);
+                const newLen = this.value.length;
+                const newPos = Math.max(0, startPos + (newLen - prevLen));
+                this.setSelectionRange(newPos, newPos);
+            });
+
+            if (editHargaInput.value) {
+                editHargaInput.value = formatRibuanString(editHargaInput.value);
+            }
+        }
+
         function generateEditPppoePassword() {
             const random6 = Math.floor(100000 + Math.random() * 900000);
             const pwdInput = document.getElementById('editPppoePassword');
