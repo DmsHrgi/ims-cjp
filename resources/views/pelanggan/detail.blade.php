@@ -1024,14 +1024,14 @@
                                         <i class="fa-solid fa-pen-to-square"></i> Ubah Akun
                                     </button>
                                 </div>
-                                <div class="space-y-1.5 text-xs font-semibold text-slate-700 pt-1">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-slate-400 font-normal">— Username :</span>
-                                        <span id="detailPppoeUser" class="font-mono font-bold text-blue-600 select-all">{{ $customer->pppoe_username ?? $customer->nomor_internet }}</span>
+                                <div class="space-y-2 text-sm font-semibold text-slate-700 pt-1">
+                                    <div class="flex items-center gap-2.5">
+                                        <span class="text-slate-400 font-medium text-sm">— Username :</span>
+                                        <span id="detailPppoeUser" class="font-mono font-bold text-base text-blue-600 select-all tracking-wide">{{ $customer->pppoe_username ?? $customer->nomor_internet }}</span>
                                     </div>
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-slate-400 font-normal">— Password :</span>
-                                        <span id="detailPppoePass" class="font-mono font-bold text-slate-800 select-all">{{ $customer->pppoe_password ?? '-' }}</span>
+                                    <div class="flex items-center gap-2.5">
+                                        <span class="text-slate-400 font-medium text-sm">— Password :</span>
+                                        <span id="detailPppoePass" class="font-mono font-bold text-base text-slate-800 select-all tracking-wide">{{ $customer->pppoe_password ?? '-' }}</span>
                                     </div>
                                 </div>
                             </div>
