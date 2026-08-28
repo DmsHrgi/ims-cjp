@@ -41,7 +41,7 @@
             </h1>
             <p class="text-xs text-gray-500 mt-0.5">
                 No. Internet: <span class="font-bold text-blue-600">{{ $customer->nomor_internet }}</span> | 
-                Layanan: <span class="font-medium text-gray-700">{{ $customer->nama_kategori_bandwith }} {{ $customer->nominal_bandwith }} Mbps</span>
+                Layanan: <span class="font-medium text-gray-700">{{ str_ireplace('UP TO NEW', 'LOCALLOOP', $customer->nama_kategori_bandwith ?? '') }} {{ $customer->nominal_bandwith }} Mbps</span>
             </p>
         </div>
 
