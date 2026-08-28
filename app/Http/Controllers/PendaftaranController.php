@@ -602,30 +602,30 @@ class PendaftaranController extends Controller
             $pelangganData = [
                 'id_perusahaan' => $idPerusahaan,
                 'nama_perusahaan' => strtoupper($validated['nama_perusahaan']),
-                'no_telp_perusahaan' => $validated['no_telp_perusahaan'],
-                'email_perusahaan' => $validated['email_perusahaan'],
-                'nama_pic_teknis' => $validated['nama_pic_teknis'] ?? null,
-                'no_telp_pic_teknis' => $validated['no_telp_pic_teknis'],
-                'email_pic_teknis' => $validated['email_pic_teknis'],
-                'nama_pic_keuangan' => $validated['nama_pic_keuangan'] ?? null,
-                'no_telp_pic_keuangan' => $validated['no_telp_pic_keuangan'],
-                'email_pic_keuangan' => $validated['email_pic_keuangan'],
-                'jenis_perusahaan' => $validated['jenis_perusahaan'],
+                'no_telp_perusahaan' => substr($validated['no_telp_perusahaan'], 0, 30),
+                'email_perusahaan' => substr($validated['email_perusahaan'], 0, 150),
+                'nama_pic_teknis' => !empty($validated['nama_pic_teknis']) ? substr($validated['nama_pic_teknis'], 0, 200) : null,
+                'no_telp_pic_teknis' => substr($validated['no_telp_pic_teknis'], 0, 30),
+                'email_pic_teknis' => substr($validated['email_pic_teknis'], 0, 150),
+                'nama_pic_keuangan' => !empty($validated['nama_pic_keuangan']) ? substr($validated['nama_pic_keuangan'], 0, 200) : null,
+                'no_telp_pic_keuangan' => substr($validated['no_telp_pic_keuangan'], 0, 30),
+                'email_pic_keuangan' => substr($validated['email_pic_keuangan'], 0, 150),
+                'jenis_perusahaan' => substr($validated['jenis_perusahaan'], 0, 100),
                 'tanggal_registrasi' => $validated['tanggal_registrasi'],
-                'jenis_bangunan' => $namaJenisBangunanCorp ?: $namaJenisBangunan,
-                'nomor_bangunan_perusahaan' => $validated['nomor_bangunan_perusahaan'] ?? null,
-                'lon_lat_perusahaan' => $validated['lon_lat_perusahaan'] ?? null,
-                'sharelock_perusahaan' => $validated['sharelock_perusahaan'] ?? null,
+                'jenis_bangunan' => substr($namaJenisBangunanCorp ?: $namaJenisBangunan, 0, 100),
+                'nomor_bangunan_perusahaan' => !empty($validated['nomor_bangunan_perusahaan']) ? substr($validated['nomor_bangunan_perusahaan'], 0, 50) : null,
+                'lon_lat_perusahaan' => !empty($validated['lon_lat_perusahaan']) ? substr($validated['lon_lat_perusahaan'], 0, 100) : null,
+                'sharelock_perusahaan' => !empty($validated['sharelock_perusahaan']) ? substr($validated['sharelock_perusahaan'], 0, 500) : null,
                 
                 // Compatibility mapping untuk legacy columns
                 'nama_penduduk' => strtoupper($validated['nama_perusahaan']),
-                'email' => $validated['email_perusahaan'],
-                'nomor_hp' => $validated['no_telp_perusahaan'],
-                'nomor_hp_2' => $validated['no_telp_pic_teknis'],
+                'email' => substr($validated['email_perusahaan'], 0, 100),
+                'nomor_hp' => substr($validated['no_telp_perusahaan'], 0, 20),
+                'nomor_hp_2' => substr($validated['no_telp_pic_teknis'], 0, 20),
                 'pic' => $validated['nama_pic_teknis'] ?? $validated['nama_pic_keuangan'] ?? null,
-                'kode_wilayah_kelurahan_ktp' => $validated['kelurahan_ktp'],
-                'rt_ktp' => $validated['rt_ktp'],
-                'rw_ktp' => $validated['rw_ktp'],
+                'kode_wilayah_kelurahan_ktp' => substr($validated['kelurahan_ktp'], 0, 20),
+                'rt_ktp' => substr($validated['rt_ktp'], 0, 3),
+                'rw_ktp' => substr($validated['rw_ktp'], 0, 3),
                 'alamat_ktp' => $validated['alamat_ktp'],
                 'hide' => '0',
             ];
@@ -637,12 +637,12 @@ class PendaftaranController extends Controller
                 DB::table('m_pelanggan')
                     ->where('id_perusahaan', $idPerusahaan)
                     ->update(array_merge($pelangganData, [
-                        'user_update' => $currentUser,
+                        'user_update' => substr($currentUser, 0, 20),
                         'date_update' => now(),
                     ]));
             } else {
                 DB::table('m_pelanggan')->insert(array_merge($pelangganData, [
-                    'user_create' => $currentUser,
+                    'user_create' => substr($currentUser, 0, 20),
                     'date_create' => now(),
                 ]));
             }
@@ -725,7 +725,8 @@ class PendaftaranController extends Controller
                 if ($existingBwByName) {
                     $kodeBandwith = $existingBwByName->kode_bandwith;
                 } else {
-                    $kategoriDefault = DB::table('m_bandwith_kategori')->value('kode_kategori_bandwith') ?? 'KB09212';
+                    $firstKat = DB::table('m_bandwith_kategori')->first();
+                    $kategoriDefault = $firstKat ? $firstKat->kode_kategori_bandwith : 'KB09212';
                     $newKodeBw = 'CUST-' . strtoupper(Str::slug(substr($validated['kode_bandwith'], 0, 15), ''));
                     if (strlen($newKodeBw) > 50) $newKodeBw = substr($newKodeBw, 0, 50);
 
@@ -758,37 +759,37 @@ class PendaftaranController extends Controller
                 'nomor_internet' => $nomorInternet,
                 'id_perusahaan' => $idPerusahaan,
                 'nama_pelanggan' => strtoupper($validated['nama_perusahaan']),
-                'rt_pasang' => $validated['rt_pasang'],
-                'rw_pasang' => $validated['rw_pasang'],
-                'nomor_bangunan' => $validated['nomor_bangunan'] ?? null,
+                'rt_pasang' => substr($validated['rt_pasang'], 0, 3),
+                'rw_pasang' => substr($validated['rw_pasang'], 0, 3),
+                'nomor_bangunan' => !empty($validated['nomor_bangunan']) ? substr($validated['nomor_bangunan'], 0, 10) : null,
                 'alamat_pasang' => $validated['alamat_pasang'],
                 'kode_wilayah_kelurahan_pasang' => $validated['kelurahan_pasang'],
-                'jenis_bangunan' => $namaJenisBangunan,
-                'lon_lat' => $validated['lon_lat'] ?? null,
-                'loc_maps' => $validated['sharelock'] ?? null,
-                'note_request' => $validated['permintaan_khusus'] ?? null,
+                'jenis_bangunan' => substr($namaJenisBangunan, 0, 50),
+                'lon_lat' => !empty($validated['lon_lat']) ? substr($validated['lon_lat'], 0, 100) : null,
+                'loc_maps' => !empty($validated['sharelock']) ? substr($validated['sharelock'], 0, 500) : null,
+                'note_request' => !empty($validated['permintaan_khusus']) ? substr($validated['permintaan_khusus'], 0, 50) : null,
                 'pppoe_password' => $pppoePassword,
                 'kode_bandwith' => $kodeBandwith,
                 'status_reg' => $initialStatus,
-                'group_layanan' => $groupLayanan,
-                'nama_sales' => $validated['nama_sales'],
+                'group_layanan' => substr($groupLayanan, 0, 50),
+                'nama_sales' => substr($validated['nama_sales'], 0, 50),
                 'foto_po' => $fotoPoPath ? 'storage/' . $fotoPoPath : null,
                 'foto_bangunan' => $fotoBangunanPath ? 'storage/' . $fotoBangunanPath : null,
                 'detail_alamat_perusahaan' => $validated['alamat_ktp'],
-                'nomor_bangunan_perusahaan' => $validated['nomor_bangunan_perusahaan'] ?? null,
-                'rt_perusahaan' => $validated['rt_ktp'],
-                'rw_perusahaan' => $validated['rw_ktp'],
+                'nomor_bangunan_perusahaan' => !empty($validated['nomor_bangunan_perusahaan']) ? substr($validated['nomor_bangunan_perusahaan'], 0, 50) : null,
+                'rt_perusahaan' => substr($validated['rt_ktp'], 0, 5),
+                'rw_perusahaan' => substr($validated['rw_ktp'], 0, 5),
                 'kode_wilayah_kelurahan_perusahaan' => $validated['kelurahan_ktp'],
-                'lon_lat_perusahaan' => $validated['lon_lat_perusahaan'] ?? null,
-                'sharelock_perusahaan' => $validated['sharelock_perusahaan'] ?? null,
-                'user_create' => $currentUser,
+                'lon_lat_perusahaan' => !empty($validated['lon_lat_perusahaan']) ? substr($validated['lon_lat_perusahaan'], 0, 100) : null,
+                'sharelock_perusahaan' => !empty($validated['sharelock_perusahaan']) ? substr($validated['sharelock_perusahaan'], 0, 500) : null,
+                'user_create' => substr($currentUser, 0, 20),
                 'date_create' => now(),
                 'hide' => '0',
             ]);
 
             // Insert ke trx_instalasi
             DB::table('trx_instalasi')->insert([
-                'kode_instalasi' => 'INST-' . now()->format('ymdHis'),
+                'kode_instalasi' => 'INST-' . $nomorInternet,
                 'nomor_internet' => $nomorInternet,
                 'foto_ktp'       => $fotoPoPath ? 'storage/' . $fotoPoPath : null,
                 'foto_rumah'     => $fotoBangunanPath ? 'storage/' . $fotoBangunanPath : null,
@@ -3071,7 +3072,11 @@ class PendaftaranController extends Controller
 
         // 6. Generic SQL/Database error
         if (str_contains($msg, 'SQLSTATE') || str_contains($msg, 'Connection: mysql')) {
-            return "Gagal {$action}: Terjadi ketidaksesuaian format data dengan database. Silakan periksa kembali isian formulir Anda.";
+            $cleanMsg = $msg;
+            if (preg_match('/SQLSTATE\[[A-Z0-9]+\]:\s*([^\(]+)/i', $msg, $matches)) {
+                $cleanMsg = trim($matches[1]);
+            }
+            return "Gagal {$action}: " . $cleanMsg;
         }
 
         return "Gagal {$action}: " . $msg;
