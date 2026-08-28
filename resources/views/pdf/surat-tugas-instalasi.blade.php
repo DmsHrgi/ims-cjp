@@ -24,6 +24,7 @@
             width: 100%;
             height: 100%;
             z-index: -1000;
+            opacity: 0.75;
         }
         .content-container {
             padding-top: 135px;
