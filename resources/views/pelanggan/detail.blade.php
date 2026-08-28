@@ -1017,16 +1017,21 @@
                             </div>
 
                             <!-- Card ID PPPoE (Sesuai Desain & Gambar) -->
-                            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2 border-l-4 border-l-blue-600">
-                                <h4 class="text-sm font-bold text-slate-800 uppercase tracking-wide">ID PPOE</h4>
+                            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-3 border-l-4 border-l-blue-600">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="text-sm font-bold text-slate-800 uppercase tracking-wide">ID PPOE</h4>
+                                    <button type="button" onclick="openEditPppoeModal()" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold rounded-lg transition-all">
+                                        <i class="fa-solid fa-pen-to-square"></i> Ubah Akun
+                                    </button>
+                                </div>
                                 <div class="space-y-1.5 text-xs font-semibold text-slate-700 pt-1">
                                     <div class="flex items-center gap-2">
                                         <span class="text-slate-400 font-normal">— Username :</span>
-                                        <span class="font-mono font-bold text-blue-600 select-all">{{ $customer->nomor_internet }}</span>
+                                        <span id="detailPppoeUser" class="font-mono font-bold text-blue-600 select-all">{{ $customer->pppoe_username ?? $customer->nomor_internet }}</span>
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <span class="text-slate-400 font-normal">— Password :</span>
-                                        <span class="font-mono font-bold text-slate-800 select-all">{{ $customer->pppoe_password ?? '-' }}</span>
+                                        <span id="detailPppoePass" class="font-mono font-bold text-slate-800 select-all">{{ $customer->pppoe_password ?? '-' }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -1305,4 +1310,72 @@
             </form>
         </div>
     </div>
+
+    <!-- Modal Edit Akun PPPoE -->
+    <div id="modalEditPppoe" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden" onclick="closeEditPppoeModal()">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 border border-slate-200" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm">
+                        <i class="fa-solid fa-key"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-800">Ubah Akun PPPoE</h3>
+                        <p class="text-xs text-slate-400">ID & Kredensial Akses Pelanggan</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeEditPppoeModal()" class="w-7 h-7 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            <form id="formEditPppoe" method="POST" action="{{ route('pelanggan.update-pppoe', $customer->nomor_internet) }}" class="space-y-4">
+                @csrf
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Username PPPoE <span class="text-rose-500">*</span></label>
+                    <input type="text" name="pppoe_username" id="modalPppoeUsername" required
+                           value="{{ old('pppoe_username', $customer->pppoe_username ?? $customer->nomor_internet) }}"
+                           class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 px-3.5 text-sm rounded-xl outline-none font-mono font-bold transition-all">
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="block text-xs font-semibold text-slate-700">Password PPPoE (6 Digit Angka) <span class="text-rose-500">*</span></label>
+                        <button type="button" onclick="generateModalPppoePassword()" class="text-[11px] text-blue-600 hover:text-blue-700 font-bold hover:underline">
+                            <i class="fa-solid fa-arrows-rotate"></i> Acak 6 Digit
+                        </button>
+                    </div>
+                    <input type="text" name="pppoe_password" id="modalPppoePassword" required
+                           value="{{ old('pppoe_password', $customer->pppoe_password ?? '') }}"
+                           placeholder="6 digit angka"
+                           class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 px-3.5 text-sm rounded-xl outline-none font-mono font-bold transition-all">
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                    <button type="button" onclick="closeEditPppoeModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition-colors">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-md shadow-blue-200 transition-colors">
+                        <i class="fa-solid fa-floppy-disk"></i> Simpan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openEditPppoeModal() {
+            document.getElementById('modalEditPppoe').classList.remove('hidden');
+        }
+        function closeEditPppoeModal() {
+            document.getElementById('modalEditPppoe').classList.add('hidden');
+        }
+        function generateModalPppoePassword() {
+            const random6 = Math.floor(100000 + Math.random() * 900000);
+            const pwdInput = document.getElementById('modalPppoePassword');
+            if (pwdInput) {
+                pwdInput.value = random6;
+            }
+        }
+    </script>
 @endsection

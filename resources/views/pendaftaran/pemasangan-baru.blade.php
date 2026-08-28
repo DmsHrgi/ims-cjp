@@ -1070,6 +1070,23 @@
                                 </datalist>
                             </div>
                         </div>
+
+                        <!-- Akun PPPoE Pelanggan -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-slate-100">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1.5">PPPoE Username (Opsional)</label>
+                                <input type="text" name="pppoe_username" id="inputPppoeUsername" placeholder="Otomatis mengikuti Nomor Pelanggan" value="{{ old('pppoe_username') }}" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 px-3.5 text-sm rounded-xl outline-none font-mono transition-all placeholder-slate-400">
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <label class="block text-xs font-semibold text-slate-700">PPPoE Password (6 Digit Angka)</label>
+                                    <button type="button" onclick="generateRegPppoePassword()" class="text-[11px] text-blue-600 hover:text-blue-700 font-bold hover:underline">
+                                        <i class="fa-solid fa-arrows-rotate"></i> Acak 6 Digit
+                                    </button>
+                                </div>
+                                <input type="text" name="pppoe_password" id="inputPppoePassword" placeholder="Otomatis 6 digit angka saat kosong" value="{{ old('pppoe_password') }}" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 px-3.5 text-sm rounded-xl outline-none font-mono transition-all placeholder-slate-400">
+                            </div>
+                        </div>
                     </div>
                     </div> <!-- End of Scrollable Form Container -->
 
@@ -4178,5 +4195,12 @@
                 if (typeof window.closeConfirmAutoFillModal === 'function') window.closeConfirmAutoFillModal();
             }
         });
+        function generateRegPppoePassword() {
+            const random6 = Math.floor(100000 + Math.random() * 900000);
+            const pwdInput = document.getElementById('inputPppoePassword');
+            if (pwdInput) {
+                pwdInput.value = random6;
+            }
+        }
     </script>
 @endsection

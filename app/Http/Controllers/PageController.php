@@ -302,10 +302,11 @@ class PageController extends Controller
         $customer->scan_dokumen_instalasi = $reg->scan_dokumen_instalasi ?? $customer->scan_dokumen_instalasi ?? null;
         $customer->scan_dokumen_aktivasi = $reg->scan_dokumen_aktivasi ?? $customer->scan_dokumen_aktivasi ?? null;
 
-        // PPPoE Password (Username = nomor_internet, Password = pppoe_password)
+        // PPPoE Username & Password (Username default = nomor_internet, Password = 6 digit angka)
+        $customer->pppoe_username = $reg->pppoe_username ?? ($pelanggan->pppoe_username ?? ($customer->pppoe_username ?? $customer->nomor_internet));
         $customer->pppoe_password = $reg->pppoe_password ?? ($pelanggan->pppoe_password ?? ($customer->pppoe_password ?? null));
         if (empty($customer->pppoe_password)) {
-            $customer->pppoe_password = substr(md5('pppoe_' . $customer->nomor_internet), 0, 8);
+            $customer->pppoe_password = (string) (100000 + (abs(crc32('pppoe_' . $customer->nomor_internet)) % 900000));
         }
 
         // Seksi 1: Informasi Pelanggan
@@ -1609,6 +1610,87 @@ class PageController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['success' => false, 'message' => 'Gagal menyimpan penyesuaian: ' . $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Update Akun PPPoE (Username & Password)
+     */
+    public function updatePppoe(Request $request, $nomorInternet)
+    {
+        if (!session()->has('user')) {
+            abort(401, 'Silakan login terlebih dahulu.');
+        }
+
+        $validated = $request->validate([
+            'pppoe_username' => 'required|string|max:50',
+            'pppoe_password' => 'required|string|max:50',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $currentUser = substr(session('user.username') ?? session('user.nama_karyawan') ?? 'ADMIN', 0, 20);
+
+            $updateData = [
+                'pppoe_password' => $validated['pppoe_password'],
+                'date_update'    => now(),
+                'user_update'    => $currentUser,
+            ];
+
+            if (\Illuminate\Support\Facades\Schema::hasColumn('trx_batchjob_register', 'pppoe_username')) {
+                $updateData['pppoe_username'] = $validated['pppoe_username'];
+            }
+
+            DB::table('trx_batchjob_register')
+                ->where('nomor_internet', $nomorInternet)
+                ->update($updateData);
+
+            $reg = DB::table('trx_batchjob_register')->where('nomor_internet', $nomorInternet)->first();
+            $targetId = $reg->id_perusahaan ?? $reg->nik_penduduk ?? null;
+            if ($targetId && \Illuminate\Support\Facades\Schema::hasTable('m_pelanggan')) {
+                $pelUpdateData = [
+                    'pppoe_password' => $validated['pppoe_password'],
+                    'date_update'    => now(),
+                    'user_update'    => $currentUser,
+                ];
+                if (\Illuminate\Support\Facades\Schema::hasColumn('m_pelanggan', 'pppoe_username')) {
+                    $pelUpdateData['pppoe_username'] = $validated['pppoe_username'];
+                }
+                DB::table('m_pelanggan')
+                    ->where('id_perusahaan', $targetId)
+                    ->update($pelUpdateData);
+            }
+
+            // Catat log update PPPoE
+            DB::table('trx_batchjob_register_log')->insert([
+                'kode_batchjob_register_log' => 'L-' . $nomorInternet . '-PPPOE-' . now()->format('ymdHis'),
+                'nomor_internet'             => $nomorInternet,
+                'status_reg'                 => $reg->status_reg ?? '16',
+                'note_schedule'              => "Update Akun PPPoE: Username {$validated['pppoe_username']}, Password {$validated['pppoe_password']}",
+                'user_create'                => substr($currentUser, 0, 50),
+                'date_create'                => now(),
+                'hide'                       => '0',
+            ]);
+
+            DB::commit();
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Akun PPPoE berhasil diperbarui!',
+                    'pppoe_username' => $validated['pppoe_username'],
+                    'pppoe_password' => $validated['pppoe_password'],
+                ]);
+            }
+
+            return back()->with('success', 'Akun PPPoE berhasil diperbarui!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => 'Gagal memperbarui Akun PPPoE: ' . $e->getMessage()], 500);
+            }
+            return back()->withErrors(['error' => 'Gagal memperbarui Akun PPPoE: ' . $e->getMessage()]);
         }
     }
 }

@@ -751,8 +751,14 @@ class PendaftaranController extends Controller
                 $kodeBandwith = $validated['kode_bandwith'];
             }
 
-            // Generate random PPPoE Password untuk pelanggan baru
-            $pppoePassword = Str::lower(Str::random(8));
+            // Generate random 6-digit numeric PPPoE Password untuk pelanggan baru
+            $pppoePassword = $request->filled('pppoe_password')
+                ? trim($request->input('pppoe_password'))
+                : (string) random_int(100000, 999999);
+
+            $pppoeUsername = $request->filled('pppoe_username')
+                ? trim($request->input('pppoe_username'))
+                : $nomorInternet;
 
             // Data insert ke trx_batchjob_register
             $regInsertData = [
@@ -787,12 +793,28 @@ class PendaftaranController extends Controller
             ];
 
             try {
+                if (\Illuminate\Support\Facades\Schema::hasColumn('trx_batchjob_register', 'pppoe_username')) {
+                    $regInsertData['pppoe_username'] = $pppoeUsername;
+                }
                 if (\Illuminate\Support\Facades\Schema::hasColumn('trx_batchjob_register', 'pppoe_password')) {
                     $regInsertData['pppoe_password'] = $pppoePassword;
                 }
             } catch (\Throwable $e) {}
 
             DB::table('trx_batchjob_register')->insert($regInsertData);
+
+            try {
+                $pelPppoeData = [];
+                if (\Illuminate\Support\Facades\Schema::hasColumn('m_pelanggan', 'pppoe_username')) {
+                    $pelPppoeData['pppoe_username'] = $pppoeUsername;
+                }
+                if (\Illuminate\Support\Facades\Schema::hasColumn('m_pelanggan', 'pppoe_password')) {
+                    $pelPppoeData['pppoe_password'] = $pppoePassword;
+                }
+                if (!empty($pelPppoeData)) {
+                    DB::table('m_pelanggan')->where('id_perusahaan', $idPerusahaan)->update($pelPppoeData);
+                }
+            } catch (\Throwable $e) {}
 
             // Insert ke trx_instalasi
             DB::table('trx_instalasi')->insert([
@@ -830,7 +852,7 @@ class PendaftaranController extends Controller
             session(['pendaftaran_page' => 1]);
 
             return redirect()->route('pendaftaran')
-                ->with('success', "Registrasi perusahaan berhasil! Nomor Internet: {$nomorInternet} | PPPoE Username: {$nomorInternet} | Password: {$pppoePassword}");
+                ->with('success', "Registrasi perusahaan berhasil! Nomor Internet: {$nomorInternet} | PPPoE Username: {$pppoeUsername} | Password: {$pppoePassword}");
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -1158,38 +1180,51 @@ class PendaftaranController extends Controller
             DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
             // Update m_pelanggan
+            $pelangganUpdate = [
+                'nama_perusahaan' => strtoupper($validated['nama_perusahaan']),
+                'id_perusahaan' => $validated['id_perusahaan'],
+                'no_telp_perusahaan' => $validated['no_telp_perusahaan'],
+                'email_perusahaan' => $validated['email_perusahaan'],
+                'nama_pic_teknis' => $validated['nama_pic_teknis'],
+                'no_telp_pic_teknis' => $validated['no_telp_pic_teknis'],
+                'email_pic_teknis' => $validated['email_pic_teknis'],
+                'nama_pic_keuangan' => $validated['nama_pic_keuangan'],
+                'no_telp_pic_keuangan' => $validated['no_telp_pic_keuangan'],
+                'email_pic_keuangan' => $validated['email_pic_keuangan'],
+                'jenis_perusahaan' => $validated['jenis_perusahaan'],
+                'tanggal_registrasi' => $validated['tanggal_registrasi'],
+                'jenis_bangunan' => $namaJenisBangunanCorp ?: $namaJenisBangunan,
+                'kode_wilayah_kelurahan_perusahaan' => $validated['kelurahan_ktp'],
+                'nomor_bangunan_perusahaan' => $validated['nomor_bangunan_perusahaan'] ?? null,
+                'detail_alamat_perusahaan' => $validated['alamat_ktp'],
+                'rt_perusahaan' => $validated['rt_ktp'],
+                'rw_perusahaan' => $validated['rw_ktp'],
+                'lon_lat_perusahaan' => $validated['lon_lat_perusahaan'] ?? null,
+                'sharelock_perusahaan' => $validated['sharelock_perusahaan'] ?? null,
+                'nama_penduduk' => strtoupper($validated['nama_perusahaan']),
+                'email' => $validated['email_perusahaan'],
+                'nomor_hp' => $validated['no_telp_perusahaan'],
+                'nomor_hp_2' => $validated['no_telp_pic_teknis'],
+                'pic' => $validated['nama_pic_teknis'] ?? $validated['nama_pic_keuangan'] ?? null,
+                'kode_wilayah_kelurahan_ktp' => $validated['kelurahan_ktp'],
+                'rt_ktp' => $validated['rt_ktp'],
+                'rw_ktp' => $validated['rw_ktp'],
+                'alamat_ktp' => $validated['alamat_ktp'],
+                'date_update' => now(),
+                'user_update' => $currentUser,
+            ];
+
+            if ($request->filled('pppoe_username') && \Illuminate\Support\Facades\Schema::hasColumn('m_pelanggan', 'pppoe_username')) {
+                $pelangganUpdate['pppoe_username'] = trim($request->input('pppoe_username'));
+            }
+            if ($request->filled('pppoe_password') && \Illuminate\Support\Facades\Schema::hasColumn('m_pelanggan', 'pppoe_password')) {
+                $pelangganUpdate['pppoe_password'] = trim($request->input('pppoe_password'));
+            }
+
             DB::table('m_pelanggan')
                 ->where('id_perusahaan', $targetId)
                 ->orWhere('id_perusahaan', $validated['id_perusahaan'])
-                ->update([
-                    'id_perusahaan' => $validated['id_perusahaan'],
-                    'nama_perusahaan' => strtoupper($validated['nama_perusahaan']),
-                    'no_telp_perusahaan' => $validated['no_telp_perusahaan'],
-                    'email_perusahaan' => $validated['email_perusahaan'],
-                    'nama_pic_teknis' => $validated['nama_pic_teknis'] ?? null,
-                    'no_telp_pic_teknis' => $validated['no_telp_pic_teknis'],
-                    'email_pic_teknis' => $validated['email_pic_teknis'],
-                    'nama_pic_keuangan' => $validated['nama_pic_keuangan'] ?? null,
-                    'no_telp_pic_keuangan' => $validated['no_telp_pic_keuangan'],
-                    'email_pic_keuangan' => $validated['email_pic_keuangan'],
-                    'jenis_perusahaan' => $validated['jenis_perusahaan'],
-                    'tanggal_registrasi' => $validated['tanggal_registrasi'],
-                    'jenis_bangunan' => $namaJenisBangunanCorp ?: $namaJenisBangunan,
-                    'nomor_bangunan_perusahaan' => $validated['nomor_bangunan_perusahaan'] ?? null,
-                    'lon_lat_perusahaan' => $validated['lon_lat_perusahaan'] ?? null,
-                    'sharelock_perusahaan' => $validated['sharelock_perusahaan'] ?? null,
-                    'nama_penduduk' => strtoupper($validated['nama_perusahaan']),
-                    'email' => $validated['email_perusahaan'],
-                    'nomor_hp' => $validated['no_telp_perusahaan'],
-                    'nomor_hp_2' => $validated['no_telp_pic_teknis'],
-                    'pic' => $validated['nama_pic_teknis'] ?? $validated['nama_pic_keuangan'] ?? null,
-                    'kode_wilayah_kelurahan_ktp' => $validated['kelurahan_ktp'],
-                    'rt_ktp' => $validated['rt_ktp'],
-                    'rw_ktp' => $validated['rw_ktp'],
-                    'alamat_ktp' => $validated['alamat_ktp'],
-                    'date_update' => now(),
-                    'user_update' => $currentUser,
-                ]);
+                ->update($pelangganUpdate);
 
             // Update trx_batchjob_register
             $batchjobUpdate = [
@@ -1217,6 +1252,13 @@ class PendaftaranController extends Controller
                 'date_update' => now(),
                 'user_update' => substr($currentUser, 0, 20),
             ];
+
+            if ($request->filled('pppoe_username') && \Illuminate\Support\Facades\Schema::hasColumn('trx_batchjob_register', 'pppoe_username')) {
+                $batchjobUpdate['pppoe_username'] = trim($request->input('pppoe_username'));
+            }
+            if ($request->filled('pppoe_password') && \Illuminate\Support\Facades\Schema::hasColumn('trx_batchjob_register', 'pppoe_password')) {
+                $batchjobUpdate['pppoe_password'] = trim($request->input('pppoe_password'));
+            }
 
             if (isset($fotoPoUpdate['foto_po'])) {
                 $batchjobUpdate['foto_po'] = $fotoPoUpdate['foto_po'];

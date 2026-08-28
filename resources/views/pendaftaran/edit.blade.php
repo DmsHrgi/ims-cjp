@@ -76,6 +76,13 @@
 
         // Seksi 5: Informasi Penugasan Sales & Sistem
         $valNamaSales = $reg->nama_sales ?? $data->nama_sales ?? '';
+
+        // PPPoE Credentials
+        $valPppoeUsername = $reg->pppoe_username ?? ($pelanggan->pppoe_username ?? ($data->pppoe_username ?? $data->nomor_internet));
+        $valPppoePassword = $reg->pppoe_password ?? ($pelanggan->pppoe_password ?? ($data->pppoe_password ?? ''));
+        if (empty($valPppoePassword)) {
+            $valPppoePassword = (string) (100000 + (abs(crc32('pppoe_' . $data->nomor_internet)) % 900000));
+        }
     @endphp
 
     <style>
@@ -580,6 +587,23 @@
                         </datalist>
                     </div>
                 </div>
+
+                <!-- Akun PPPoE Pelanggan -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-slate-100">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">PPPoE Username</label>
+                        <input type="text" name="pppoe_username" id="editPppoeUsername" placeholder="Username PPPoE" value="{{ old('pppoe_username', $valPppoeUsername) }}" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 px-3.5 text-sm rounded-xl outline-none font-mono font-semibold transition-all placeholder-slate-400">
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label class="block text-xs font-semibold text-slate-700">PPPoE Password (6 Digit Angka)</label>
+                            <button type="button" onclick="generateEditPppoePassword()" class="text-[11px] text-blue-600 hover:text-blue-700 font-bold hover:underline">
+                                <i class="fa-solid fa-arrows-rotate"></i> Acak 6 Digit
+                            </button>
+                        </div>
+                        <input type="text" name="pppoe_password" id="editPppoePassword" placeholder="6 digit angka (contoh: 123456)" value="{{ old('pppoe_password', $valPppoePassword) }}" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 px-3.5 text-sm rounded-xl outline-none font-mono font-semibold transition-all placeholder-slate-400">
+                    </div>
+                </div>
             </div>
 
             <!-- Footer Action Buttons -->
@@ -768,5 +792,12 @@
                 });
             }
         });
+        function generateEditPppoePassword() {
+            const random6 = Math.floor(100000 + Math.random() * 900000);
+            const pwdInput = document.getElementById('editPppoePassword');
+            if (pwdInput) {
+                pwdInput.value = random6;
+            }
+        }
     </script>
 @endsection
