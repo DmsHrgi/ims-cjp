@@ -1891,13 +1891,18 @@ class PendaftaranController extends Controller
                 ]
             );
 
-            // Validasi kode_pop jika ada
-            $kodePop = null;
-            if (!empty($validated['kode_pop'])) {
-                $popExists = DB::table('m_pop')->where('kode_pop', $validated['kode_pop'])->exists();
-                if ($popExists) {
-                    $kodePop = $validated['kode_pop'];
-                }
+            // Validasi & pastikan master m_pop terisi jika ada
+            $kodePop = !empty($validated['kode_pop']) ? $validated['kode_pop'] : null;
+            if ($kodePop) {
+                DB::table('m_pop')->updateOrInsert(
+                    ['kode_pop' => $kodePop],
+                    [
+                        'nama_pop'    => $kodePop,
+                        'date_create' => now(),
+                        'user_create' => 'SYSTEM',
+                        'hide'        => '0'
+                    ]
+                );
             }
 
             // Update status_reg = '14' dan data teknis di trx_batchjob_register
@@ -2683,6 +2688,15 @@ class PendaftaranController extends Controller
                 ];
                 if (array_key_exists('kode_pop', $validated) && !empty($validated['kode_pop'])) {
                     $regUpdate['kode_pop'] = $validated['kode_pop'];
+                    DB::table('m_pop')->updateOrInsert(
+                        ['kode_pop' => $validated['kode_pop']],
+                        [
+                            'nama_pop'    => $validated['kode_pop'],
+                            'date_create' => now(),
+                            'user_create' => 'SYSTEM',
+                            'hide'        => '0'
+                        ]
+                    );
                 }
                 if (array_key_exists('media_akses', $validated) && !empty($validated['media_akses'])) {
                     $regUpdate['media_akses'] = $validated['media_akses'];

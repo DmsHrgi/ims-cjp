@@ -1195,7 +1195,12 @@
                                     <label class="block text-xs font-semibold text-slate-700 mb-1">
                                         POP/ODN<span class="text-red-500">*</span>
                                     </label>
-                                    <input type="text" name="kode_pop" id="aktivasiPop" required placeholder="Masukkan POP / ODN" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-700 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none uppercase">
+                                    <select name="kode_pop" id="aktivasiPop" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-700 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none">
+                                        <option value="" disabled selected>Pilih POP / ODN</option>
+                                        <option value="POP MSN">POP MSN</option>
+                                        <option value="POP Babakan Tarogong">POP Babakan Tarogong</option>
+                                        <option value="POP Bojong Sayang">POP Bojong Sayang</option>
+                                    </select>
                                 </div>
 
                                 <!-- 5. Media Akses* -->
@@ -1203,21 +1208,41 @@
                                     <label class="block text-xs font-semibold text-slate-700 mb-1">
                                         Media Akses<span class="text-red-500">*</span>
                                     </label>
-                                    <select name="media_akses" id="aktivasiMediaAkses" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-700 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none">
+                                    <select name="media_akses" id="aktivasiMediaAkses" onchange="toggleMediaAksesFields(this.value)" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-700 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none">
                                         <option value="" disabled selected>Pilih Media Akses</option>
                                         <option value="FTTH">FTTH</option>
                                         <option value="PTP">PTP</option>
                                     </select>
                                 </div>
 
-                                <!-- 6. Index OLT* -->
-                                <div>
+                                <!-- 6. Dynamic Field based on Media Akses -->
+                                <!-- Container OLT Server (FTTH) -->
+                                <div id="containerAktivasiOlt" class="hidden">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <label class="block text-xs font-semibold text-slate-700">
+                                            Pilih Server OLT (FTTH)<span class="text-red-500">*</span>
+                                        </label>
+                                        <span class="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">3 OLT Tersedia</span>
+                                    </div>
+                                    <select id="aktivasiOltSelect" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-700 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none">
+                                        <option value="" disabled selected>Pilih Server OLT (FTTH)</option>
+                                        <option value="OLT KAYU AGUNG (01)">OLT KAYU AGUNG (01)</option>
+                                        <option value="OLT BABAKAN TAROGONG (02)">OLT BABAKAN TAROGONG (02)</option>
+                                        <option value="OLT BBU (03)">OLT BBU (03)</option>
+                                    </select>
+                                </div>
+
+                                <!-- Container SN Modem ONT (PTP) -->
+                                <div id="containerAktivasiPtp" class="hidden">
                                     <label class="block text-xs font-semibold text-slate-700 mb-1">
-                                        Index OLT<span class="text-red-500">*</span>
+                                        SN / Serial Nomor Modem ONT<span class="text-red-500">*</span>
                                     </label>
-                                    <input type="text" name="index_olt" id="aktivasiIndexOlt" placeholder=""
+                                    <input type="text" id="aktivasiPtpInput" placeholder="Contoh: ZTEGC1234567 atau HUAWEI1234..."
                                            class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-700 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none">
                                 </div>
+
+                                <!-- Hidden input for index_olt submission -->
+                                <input type="hidden" name="index_olt" id="aktivasiIndexOlt" value="">
 
                                 <!-- 7. Catatan Proses Aktivasi* -->
                                 <div>
@@ -2071,15 +2096,20 @@
                                     </div>
                                 </div>
 
-                                <!-- POP / ODN, Media Akses, Index OLT -->
+                                <!-- POP / ODN, Media Akses -->
                                 <div class="grid grid-cols-2 gap-3">
                                     <div>
                                         <label class="block text-xs font-semibold text-slate-700 mb-1">POP/ODN<span class="text-rose-500">*</span></label>
-                                        <input type="text" name="kode_pop" id="reportAktivasiPop" required placeholder="Masukkan POP / ODN" class="w-full bg-white border border-slate-200 focus:border-blue-500 text-slate-800 py-2 px-3 text-xs rounded-lg outline-none uppercase">
+                                        <select name="kode_pop" id="reportAktivasiPop" required class="w-full bg-white border border-slate-200 focus:border-blue-500 text-slate-800 py-2 px-3 text-xs rounded-lg outline-none">
+                                            <option value="" disabled selected>Pilih POP / ODN</option>
+                                            <option value="POP MSN">POP MSN</option>
+                                            <option value="POP Babakan Tarogong">POP Babakan Tarogong</option>
+                                            <option value="POP Bojong Sayang">POP Bojong Sayang</option>
+                                        </select>
                                     </div>
                                     <div>
                                         <label class="block text-xs font-semibold text-slate-700 mb-1">Media Akses<span class="text-rose-500">*</span></label>
-                                        <select name="media_akses" id="reportAktivasiMediaAkses" required class="w-full bg-white border border-slate-200 focus:border-blue-500 text-slate-800 py-2 px-3 text-xs rounded-lg outline-none">
+                                        <select name="media_akses" id="reportAktivasiMediaAkses" onchange="toggleReportMediaAksesFields(this.value)" required class="w-full bg-white border border-slate-200 focus:border-blue-500 text-slate-800 py-2 px-3 text-xs rounded-lg outline-none">
                                             <option value="" disabled selected>Pilih Media Akses</option>
                                             <option value="FTTH">FTTH</option>
                                             <option value="PTP">PTP</option>
@@ -2087,10 +2117,31 @@
                                     </div>
                                 </div>
 
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Index OLT<span class="text-rose-500">*</span></label>
-                                    <input type="text" name="index_olt" id="reportAktivasiIndexOlt" placeholder="TESTING" class="w-full bg-white border border-slate-200 focus:border-blue-500 text-slate-800 py-2 px-3 text-xs rounded-lg outline-none uppercase">
+                                <!-- Dynamic Field for Report Aktivasi -->
+                                <div id="containerReportAktivasiOlt" class="hidden">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <label class="block text-xs font-semibold text-slate-700">
+                                            Pilih Server OLT (FTTH)<span class="text-rose-500">*</span>
+                                        </label>
+                                        <span class="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">3 OLT Tersedia</span>
+                                    </div>
+                                    <select id="reportAktivasiOltSelect" class="w-full bg-white border border-slate-200 focus:border-blue-500 text-slate-800 py-2 px-3 text-xs rounded-lg outline-none">
+                                        <option value="" disabled selected>Pilih Server OLT (FTTH)</option>
+                                        <option value="OLT KAYU AGUNG (01)">OLT KAYU AGUNG (01)</option>
+                                        <option value="OLT BABAKAN TAROGONG (02)">OLT BABAKAN TAROGONG (02)</option>
+                                        <option value="OLT BBU (03)">OLT BBU (03)</option>
+                                    </select>
                                 </div>
+
+                                <div id="containerReportAktivasiPtp" class="hidden">
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                        SN / Serial Nomor Modem ONT<span class="text-rose-500">*</span>
+                                    </label>
+                                    <input type="text" id="reportAktivasiPtpInput" placeholder="Contoh: ZTEGC1234567 atau HUAWEI1234..."
+                                           class="w-full bg-white border border-slate-200 focus:border-blue-500 text-slate-800 py-2 px-3 text-xs rounded-lg outline-none">
+                                </div>
+
+                                <input type="hidden" name="index_olt" id="reportAktivasiIndexOlt" value="">
                             </div>
                         </div>
 
@@ -2733,6 +2784,55 @@
         // ── Report Aktivasi Functions (Role NOC) ──
         let globalReportAktivasiItems = [];
 
+        function toggleReportMediaAksesFields(mediaVal, initialIndexOlt) {
+            var oltContainer = document.getElementById('containerReportAktivasiOlt');
+            var ptpContainer = document.getElementById('containerReportAktivasiPtp');
+            var oltSelect = document.getElementById('reportAktivasiOltSelect');
+            var ptpInput = document.getElementById('reportAktivasiPtpInput');
+            var indexOltHidden = document.getElementById('reportAktivasiIndexOlt');
+
+            if (mediaVal === 'FTTH') {
+                if (oltContainer) oltContainer.classList.remove('hidden');
+                if (ptpContainer) ptpContainer.classList.add('hidden');
+                if (oltSelect) {
+                    oltSelect.required = true;
+                    if (initialIndexOlt !== undefined && initialIndexOlt !== '') {
+                        oltSelect.value = initialIndexOlt;
+                        if (initialIndexOlt && !Array.from(oltSelect.options).some(function(opt) { return opt.value === initialIndexOlt; })) {
+                            var match = Array.from(oltSelect.options).find(function(opt) { 
+                                return opt.value.toLowerCase().indexOf(initialIndexOlt.toLowerCase()) !== -1 || initialIndexOlt.toLowerCase().indexOf(opt.value.toLowerCase()) !== -1; 
+                            });
+                            if (match) {
+                                oltSelect.value = match.value;
+                            } else {
+                                var newOpt = new Option(initialIndexOlt, initialIndexOlt, true, true);
+                                oltSelect.add(newOpt);
+                            }
+                        }
+                    }
+                    if (indexOltHidden) indexOltHidden.value = oltSelect.value;
+                }
+                if (ptpInput) ptpInput.required = false;
+            } else if (mediaVal === 'PTP') {
+                if (ptpContainer) ptpContainer.classList.remove('hidden');
+                if (oltContainer) oltContainer.classList.add('hidden');
+                if (ptpInput) {
+                    ptpInput.required = true;
+                    if (initialIndexOlt !== undefined && initialIndexOlt !== '') {
+                        ptpInput.value = initialIndexOlt;
+                    }
+                    if (indexOltHidden) indexOltHidden.value = ptpInput.value;
+                }
+                if (oltSelect) oltSelect.required = false;
+            } else {
+                if (oltContainer) oltContainer.classList.add('hidden');
+                if (ptpContainer) ptpContainer.classList.add('hidden');
+                if (oltSelect) oltSelect.required = false;
+                if (ptpInput) ptpInput.required = false;
+                if (indexOltHidden) indexOltHidden.value = '';
+            }
+        }
+
         function openReportAktivasiModal(nomorInternet, namaPelanggan, dateFinish, noteFinish, teamStr, kodePop, mediaAkses, indexOlt, existingItems) {
             var form = document.getElementById('formReportAktivasi');
             form.action = '/pendaftaran/' + encodeURIComponent(nomorInternet) + '/report-aktivasi';
@@ -2740,9 +2840,22 @@
             document.getElementById('reportAktivasiModalTitle').textContent = 'Report aktivasi An/' + (namaPelanggan || '');
             document.getElementById('reportAktivasiDateFinish').value = dateFinish || new Date().toISOString().split('T')[0];
             document.getElementById('reportAktivasiNoteFinish').value = noteFinish || '';
-            document.getElementById('reportAktivasiPop').value = kodePop || '';
-            document.getElementById('reportAktivasiMediaAkses').value = mediaAkses || '';
-            document.getElementById('reportAktivasiIndexOlt').value = indexOlt || 'TESTING';
+            
+            var popSelect = document.getElementById('reportAktivasiPop');
+            if (popSelect) {
+                popSelect.value = kodePop || '';
+                if (kodePop && !Array.from(popSelect.options).some(function(opt) { return opt.value === kodePop; })) {
+                    var newPop = new Option(kodePop, kodePop, true, true);
+                    popSelect.add(newPop);
+                }
+            }
+
+            var mediaSelect = document.getElementById('reportAktivasiMediaAkses');
+            if (mediaSelect) {
+                mediaSelect.value = mediaAkses || '';
+            }
+
+            toggleReportMediaAksesFields(mediaAkses, indexOlt);
 
             var rescheduleCb = document.getElementById('checkRescheduleAktivasi');
             rescheduleCb.checked = false;
@@ -2854,6 +2967,55 @@
         // ── NOC: Modal Jadwal Aktivasi ──
         let globalAktivasiItems = [];
 
+        function toggleMediaAksesFields(mediaVal, initialIndexOlt) {
+            const oltContainer = document.getElementById('containerAktivasiOlt');
+            const ptpContainer = document.getElementById('containerAktivasiPtp');
+            const oltSelect = document.getElementById('aktivasiOltSelect');
+            const ptpInput = document.getElementById('aktivasiPtpInput');
+            const indexOltHidden = document.getElementById('aktivasiIndexOlt');
+
+            if (mediaVal === 'FTTH') {
+                if (oltContainer) oltContainer.classList.remove('hidden');
+                if (ptpContainer) ptpContainer.classList.add('hidden');
+                if (oltSelect) {
+                    oltSelect.required = true;
+                    if (initialIndexOlt !== undefined && initialIndexOlt !== '') {
+                        oltSelect.value = initialIndexOlt;
+                        if (initialIndexOlt && !Array.from(oltSelect.options).some(function(opt) { return opt.value === initialIndexOlt; })) {
+                            const match = Array.from(oltSelect.options).find(function(opt) { 
+                                return opt.value.toLowerCase().indexOf(initialIndexOlt.toLowerCase()) !== -1 || initialIndexOlt.toLowerCase().indexOf(opt.value.toLowerCase()) !== -1; 
+                            });
+                            if (match) {
+                                oltSelect.value = match.value;
+                            } else {
+                                const newOpt = new Option(initialIndexOlt, initialIndexOlt, true, true);
+                                oltSelect.add(newOpt);
+                            }
+                        }
+                    }
+                    if (indexOltHidden) indexOltHidden.value = oltSelect.value;
+                }
+                if (ptpInput) ptpInput.required = false;
+            } else if (mediaVal === 'PTP') {
+                if (ptpContainer) ptpContainer.classList.remove('hidden');
+                if (oltContainer) oltContainer.classList.add('hidden');
+                if (ptpInput) {
+                    ptpInput.required = true;
+                    if (initialIndexOlt !== undefined && initialIndexOlt !== '') {
+                        ptpInput.value = initialIndexOlt;
+                    }
+                    if (indexOltHidden) indexOltHidden.value = ptpInput.value;
+                }
+                if (oltSelect) oltSelect.required = false;
+            } else {
+                if (oltContainer) oltContainer.classList.add('hidden');
+                if (ptpContainer) ptpContainer.classList.add('hidden');
+                if (oltSelect) oltSelect.required = false;
+                if (ptpInput) ptpInput.required = false;
+                if (indexOltHidden) indexOltHidden.value = '';
+            }
+        }
+
         function openAktivasiModal(nomor, nama, dateVal, timeVal, teamVal, popVal, mediaAksesVal, indexOltVal, noteVal, existingItemsJson) {
             const form = document.getElementById('formAktivasi');
             form.action = '/pendaftaran/' + encodeURIComponent(nomor) + '/jadwal-aktivasi';
@@ -2875,15 +3037,20 @@
 
             // POP
             const popSelect = document.getElementById('aktivasiPop');
-            if (popSelect) popSelect.value = popVal || '';
+            if (popSelect) {
+                popSelect.value = popVal || '';
+                if (popVal && !Array.from(popSelect.options).some(function(opt) { return opt.value === popVal; })) {
+                    const newPopOpt = new Option(popVal, popVal, true, true);
+                    popSelect.add(newPopOpt);
+                }
+            }
 
-            // Media Akses
+            // Media Akses & Dynamic Field (FTTH OLT vs PTP SN Modem)
             const mediaSelect = document.getElementById('aktivasiMediaAkses');
-            if (mediaSelect) mediaSelect.value = mediaAksesVal || '';
-
-            // Index OLT
-            const indexOltInput = document.getElementById('aktivasiIndexOlt');
-            if (indexOltInput) indexOltInput.value = indexOltVal || '';
+            if (mediaSelect) {
+                mediaSelect.value = mediaAksesVal || '';
+            }
+            toggleMediaAksesFields(mediaAksesVal, indexOltVal);
 
             // Note
             const noteTextarea = document.getElementById('aktivasiNote');
@@ -2989,6 +3156,68 @@
                 `;
             });
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const oltSel = document.getElementById('aktivasiOltSelect');
+            if (oltSel) {
+                oltSel.addEventListener('change', function() {
+                    const hidden = document.getElementById('aktivasiIndexOlt');
+                    if (hidden) hidden.value = this.value;
+                });
+            }
+            const ptpInp = document.getElementById('aktivasiPtpInput');
+            if (ptpInp) {
+                ptpInp.addEventListener('input', function() {
+                    const hidden = document.getElementById('aktivasiIndexOlt');
+                    if (hidden) hidden.value = this.value;
+                });
+            }
+
+            const repOltSel = document.getElementById('reportAktivasiOltSelect');
+            if (repOltSel) {
+                repOltSel.addEventListener('change', function() {
+                    const hidden = document.getElementById('reportAktivasiIndexOlt');
+                    if (hidden) hidden.value = this.value;
+                });
+            }
+            const repPtpInp = document.getElementById('reportAktivasiPtpInput');
+            if (repPtpInp) {
+                repPtpInp.addEventListener('input', function() {
+                    const hidden = document.getElementById('reportAktivasiIndexOlt');
+                    if (hidden) hidden.value = this.value;
+                });
+            }
+
+            const formAktivasi = document.getElementById('formAktivasi');
+            if (formAktivasi) {
+                formAktivasi.addEventListener('submit', function() {
+                    const mediaVal = document.getElementById('aktivasiMediaAkses')?.value;
+                    const hidden = document.getElementById('aktivasiIndexOlt');
+                    if (hidden) {
+                        if (mediaVal === 'FTTH') {
+                            hidden.value = document.getElementById('aktivasiOltSelect')?.value || '';
+                        } else if (mediaVal === 'PTP') {
+                            hidden.value = document.getElementById('aktivasiPtpInput')?.value || '';
+                        }
+                    }
+                });
+            }
+
+            const formReportAktivasi = document.getElementById('formReportAktivasi');
+            if (formReportAktivasi) {
+                formReportAktivasi.addEventListener('submit', function() {
+                    const mediaVal = document.getElementById('reportAktivasiMediaAkses')?.value;
+                    const hidden = document.getElementById('reportAktivasiIndexOlt');
+                    if (hidden) {
+                        if (mediaVal === 'FTTH') {
+                            hidden.value = document.getElementById('reportAktivasiOltSelect')?.value || '';
+                        } else if (mediaVal === 'PTP') {
+                            hidden.value = document.getElementById('reportAktivasiPtpInput')?.value || '';
+                        }
+                    }
+                });
+            }
+        });
 
         // Stub functions so ESC handler doesn't break
         function openModal() {}
