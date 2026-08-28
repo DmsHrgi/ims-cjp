@@ -1958,7 +1958,7 @@ class PendaftaranController extends Controller
                     'media_akses' => !empty($validated['media_akses']) ? $validated['media_akses'] : null,
                     'ont_us'      => !empty($validated['ont_us']) ? $validated['ont_us'] : null,
                     'olt'         => !empty($validated['olt']) ? $validated['olt'] : null,
-                    'index_olt'   => !empty($validated['index_olt']) ? $validated['index_olt'] : null,
+                    'index_olt'   => !empty($validated['index_olt']) ? strtoupper($validated['index_olt']) : null,
                     'user_update' => substr($currentUser, 0, 20),
                     'date_update' => now(),
                 ]);
@@ -2756,7 +2756,7 @@ class PendaftaranController extends Controller
                     $regUpdate['olt'] = $validated['olt'];
                 }
                 if (array_key_exists('index_olt', $validated) && !empty($validated['index_olt'])) {
-                    $regUpdate['index_olt'] = $validated['index_olt'];
+                    $regUpdate['index_olt'] = strtoupper($validated['index_olt']);
                 }
 
                 DB::table('trx_batchjob_register')

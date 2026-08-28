@@ -1231,7 +1231,7 @@
                                             <label class="block text-xs font-semibold text-slate-700">
                                                 Index OLT<span class="text-red-500">*</span>
                                             </label>
-                                            <span id="previewIndexOlt" class="font-mono text-xs font-semibold text-blue-600">gpon-onu_1/1/1:14</span>
+                                            <span id="previewIndexOlt" class="font-mono text-xs font-semibold text-blue-600">GPON-ONU_1/1/1:14</span>
                                         </div>
                                         
                                         <div class="grid grid-cols-2 gap-3">
@@ -2155,7 +2155,7 @@
                                             <label class="block text-xs font-semibold text-slate-700">
                                                 Index OLT<span class="text-rose-500">*</span>
                                             </label>
-                                            <span id="reportPreviewIndexOlt" class="font-mono text-xs font-semibold text-blue-600">gpon-onu_1/1/1:14</span>
+                                            <span id="reportPreviewIndexOlt" class="font-mono text-xs font-semibold text-blue-600">GPON-ONU_1/1/1:14</span>
                                         </div>
                                         
                                         <div class="grid grid-cols-2 gap-3">
@@ -2825,22 +2825,22 @@
         let globalReportAktivasiItems = [];
 
         const GPON_PORTS = [
-            { port: 'gpon-onu_1/1/1', label: 'gpon-onu_1/1/1 (110 Slot Sisa)' },
-            { port: 'gpon-onu_1/1/2', label: 'gpon-onu_1/1/2 (120 Slot Sisa)' },
-            { port: 'gpon-onu_1/1/3', label: 'gpon-onu_1/1/3 (125 Slot Sisa)' },
-            { port: 'gpon-onu_1/1/4', label: 'gpon-onu_1/1/4 (128 Slot Sisa)' },
-            { port: 'gpon-onu_1/1/5', label: 'gpon-onu_1/1/5 (128 Slot Sisa)' },
-            { port: 'gpon-onu_1/1/6', label: 'gpon-onu_1/1/6 (128 Slot Sisa)' },
-            { port: 'gpon-onu_1/1/7', label: 'gpon-onu_1/1/7 (128 Slot Sisa)' },
-            { port: 'gpon-onu_1/1/8', label: 'gpon-onu_1/1/8 (128 Slot Sisa)' },
-            { port: 'gpon-onu_1/1/9', label: 'gpon-onu_1/1/9 (128 Slot Sisa)' },
-            { port: 'gpon-onu_1/1/10', label: 'gpon-onu_1/1/10 (128 Slot Sisa)' },
-            { port: 'gpon-onu_1/1/11', label: 'gpon-onu_1/1/11 (128 Slot Sisa)' },
-            { port: 'gpon-onu_1/1/12', label: 'gpon-onu_1/1/12 (128 Slot Sisa)' },
-            { port: 'gpon-onu_1/1/13', label: 'gpon-onu_1/1/13 (128 Slot Sisa)' },
-            { port: 'gpon-onu_1/1/14', label: 'gpon-onu_1/1/14 (128 Slot Sisa)' },
-            { port: 'gpon-onu_1/1/15', label: 'gpon-onu_1/1/15 (128 Slot Sisa)' },
-            { port: 'gpon-onu_1/1/16', label: 'gpon-onu_1/1/16 (128 Slot Sisa)' },
+            { port: 'GPON-ONU_1/1/1', label: 'GPON-ONU_1/1/1 (110 Slot Sisa)' },
+            { port: 'GPON-ONU_1/1/2', label: 'GPON-ONU_1/1/2 (120 Slot Sisa)' },
+            { port: 'GPON-ONU_1/1/3', label: 'GPON-ONU_1/1/3 (125 Slot Sisa)' },
+            { port: 'GPON-ONU_1/1/4', label: 'GPON-ONU_1/1/4 (128 Slot Sisa)' },
+            { port: 'GPON-ONU_1/1/5', label: 'GPON-ONU_1/1/5 (128 Slot Sisa)' },
+            { port: 'GPON-ONU_1/1/6', label: 'GPON-ONU_1/1/6 (128 Slot Sisa)' },
+            { port: 'GPON-ONU_1/1/7', label: 'GPON-ONU_1/1/7 (128 Slot Sisa)' },
+            { port: 'GPON-ONU_1/1/8', label: 'GPON-ONU_1/1/8 (128 Slot Sisa)' },
+            { port: 'GPON-ONU_1/1/9', label: 'GPON-ONU_1/1/9 (128 Slot Sisa)' },
+            { port: 'GPON-ONU_1/1/10', label: 'GPON-ONU_1/1/10 (128 Slot Sisa)' },
+            { port: 'GPON-ONU_1/1/11', label: 'GPON-ONU_1/1/11 (128 Slot Sisa)' },
+            { port: 'GPON-ONU_1/1/12', label: 'GPON-ONU_1/1/12 (128 Slot Sisa)' },
+            { port: 'GPON-ONU_1/1/13', label: 'GPON-ONU_1/1/13 (128 Slot Sisa)' },
+            { port: 'GPON-ONU_1/1/14', label: 'GPON-ONU_1/1/14 (128 Slot Sisa)' },
+            { port: 'GPON-ONU_1/1/15', label: 'GPON-ONU_1/1/15 (128 Slot Sisa)' },
+            { port: 'GPON-ONU_1/1/16', label: 'GPON-ONU_1/1/16 (128 Slot Sisa)' },
         ];
 
         function initGponPortDropdown(prefix) {
@@ -2863,7 +2863,7 @@
 
             if (!portSel || !indexSel) return;
 
-            const selectedPort = portSel.value || 'gpon-onu_1/1/1';
+            const selectedPort = (portSel.value || 'GPON-ONU_1/1/1').toUpperCase();
             indexSel.innerHTML = '';
 
             for (let i = 1; i <= 128; i++) {
@@ -2875,6 +2875,7 @@
             }
 
             if (targetIndexVal) {
+                targetIndexVal = targetIndexVal.toUpperCase();
                 if (Array.from(indexSel.options).some(function(o) { return o.value === targetIndexVal; })) {
                     indexSel.value = targetIndexVal;
                 } else {
@@ -2883,7 +2884,7 @@
                 }
             }
 
-            const currentVal = indexSel.value || (selectedPort + ':14');
+            const currentVal = (indexSel.value || (selectedPort + ':14')).toUpperCase();
             if (previewSpan) previewSpan.textContent = currentVal;
             if (hiddenInput) hiddenInput.value = currentVal;
         }
@@ -2894,7 +2895,7 @@
             const hiddenInput = document.getElementById(prefix + 'IndexOlt');
 
             if (indexSel) {
-                const val = indexSel.value;
+                const val = (indexSel.value || '').toUpperCase();
                 if (previewSpan) previewSpan.textContent = val;
                 if (hiddenInput) hiddenInput.value = val;
             }
@@ -2918,10 +2919,10 @@
                     }
                 }
 
-                var targetPort = 'gpon-onu_1/1/1';
-                var targetIndex = initialIndexOlt || 'gpon-onu_1/1/1:14';
+                var targetPort = 'GPON-ONU_1/1/1';
+                var targetIndex = (initialIndexOlt || 'GPON-ONU_1/1/1:14').toUpperCase();
                 if (initialIndexOlt && initialIndexOlt.indexOf(':') !== -1) {
-                    targetPort = initialIndexOlt.split(':')[0];
+                    targetPort = initialIndexOlt.split(':')[0].toUpperCase();
                 }
                 if (portGpon) {
                     initGponPortDropdown('reportAktivasi');
@@ -3092,10 +3093,10 @@
                     }
                 }
 
-                let targetPort = 'gpon-onu_1/1/1';
-                let targetIndex = initialIndexOlt || 'gpon-onu_1/1/1:14';
+                let targetPort = 'GPON-ONU_1/1/1';
+                let targetIndex = (initialIndexOlt || 'GPON-ONU_1/1/1:14').toUpperCase();
                 if (initialIndexOlt && initialIndexOlt.indexOf(':') !== -1) {
-                    targetPort = initialIndexOlt.split(':')[0];
+                    targetPort = initialIndexOlt.split(':')[0].toUpperCase();
                 }
                 if (portGpon) {
                     initGponPortDropdown('aktivasi');
