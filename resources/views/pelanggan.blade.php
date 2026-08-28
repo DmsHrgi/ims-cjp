@@ -630,27 +630,21 @@
                                 <label class="block text-[11px] font-bold text-gray-700 mb-1">
                                     Kategori Layanan <span class="text-rose-500">*</span>
                                 </label>
-                                <input type="text" id="updown-kategori-input" name="kode_kategori" list="listUpdownKategori" required placeholder="KETIK KATEGORI LAYANAN (MISAL: BROADBAND, DEDICATED)" class="w-full bg-white border border-gray-200 focus:border-blue-500 text-gray-700 py-2 px-3 text-xs font-medium rounded-lg outline-none uppercase placeholder-gray-400">
-                                <datalist id="listUpdownKategori">
-                                    @foreach ($categories as $cat)
-                                        <option value="{{ $cat }}">
-                                    @endforeach
-                                </datalist>
+                                <input type="text" id="updown-kategori-input" name="kode_kategori" autocomplete="off" required placeholder="KETIK KATEGORI LAYANAN (MISAL: BROADBAND, DEDICATED)" class="w-full bg-white border border-gray-200 focus:border-blue-500 text-gray-700 py-2 px-3 text-xs font-medium rounded-lg outline-none uppercase placeholder-gray-400">
                             </div>
 
                             <div>
                                 <label class="block text-[11px] font-bold text-gray-700 mb-1">
                                     Kapasitas Layanan <span class="text-rose-500">*</span>
                                 </label>
-                                <input type="text" id="updown-paket-input" name="kode_bandwith_baru" list="listUpdownPaket" required placeholder="KETIK KAPASITAS LAYANAN / BANDWIDTH (MISAL: 100 MBPS)" class="w-full bg-white border border-gray-200 focus:border-blue-500 text-gray-700 py-2 px-3 text-xs font-medium rounded-lg outline-none placeholder-gray-400">
-                                <datalist id="listUpdownPaket"></datalist>
+                                <input type="text" id="updown-paket-input" name="kode_bandwith_baru" autocomplete="off" required placeholder="KETIK KAPASITAS LAYANAN / BANDWIDTH (MISAL: 100 MBPS)" class="w-full bg-white border border-gray-200 focus:border-blue-500 text-gray-700 py-2 px-3 text-xs font-medium rounded-lg outline-none placeholder-gray-400">
                             </div>
 
                             <div>
                                 <label class="block text-[11px] font-bold text-gray-700 mb-1">
                                     Harga Layanan <span class="text-rose-500">*</span>
                                 </label>
-                                <input type="text" id="updown-harga-input" name="harga_paket" required placeholder="KETIK HARGA LAYANAN (CONTOH: 500000 ATAU RP 500.000)" class="w-full bg-white border border-gray-200 focus:border-blue-500 text-gray-700 py-2 px-3 text-xs font-semibold rounded-lg outline-none placeholder-gray-400">
+                                <input type="text" id="updown-harga-input" name="harga_paket" autocomplete="off" required placeholder="KETIK HARGA LAYANAN (CONTOH: 500.000)" class="w-full bg-white border border-gray-200 focus:border-blue-500 text-gray-700 py-2 px-3 text-xs font-semibold rounded-lg outline-none placeholder-gray-400">
                             </div>
                         </div>
                     </div>
@@ -1356,12 +1350,24 @@
             }
 
             if (hrgInput) {
-                hrgInput.addEventListener('blur', function() {
-                    const raw = this.value.replace(/[^0-9]/g, '');
-                    if (raw) {
-                        this.value = 'Rp ' + parseInt(raw).toLocaleString('id-ID');
-                    }
+                function formatRibuanPelanggan(val) {
+                    const num = (val || '').toString().replace(/\D/g, '');
+                    if (!num) return '';
+                    return num.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                }
+
+                hrgInput.addEventListener('input', function() {
+                    const startPos = this.selectionStart;
+                    const prevLen = this.value.length;
+                    this.value = formatRibuanPelanggan(this.value);
+                    const newLen = this.value.length;
+                    const newPos = Math.max(0, startPos + (newLen - prevLen));
+                    this.setSelectionRange(newPos, newPos);
                 });
+
+                if (hrgInput.value) {
+                    hrgInput.value = formatRibuanPelanggan(hrgInput.value);
+                }
             }
 
             var els = document.querySelectorAll('.reveal');

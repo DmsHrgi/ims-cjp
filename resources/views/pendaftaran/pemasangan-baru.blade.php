@@ -839,7 +839,7 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-700 mb-1.5">Jenis Bangunan <span class="text-rose-500 font-bold">*</span></label>
-                                <input type="text" name="jenis_bangunan_perusahaan" id="jenisBangunanPerusahaan" list="listBangunan" required placeholder="Contoh: RUMAH, RUKO, GEDUNG" value="{{ old('jenis_bangunan_perusahaan') }}" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 px-3.5 text-sm rounded-xl outline-none transition-all placeholder-slate-400">
+                                <input type="text" name="jenis_bangunan_perusahaan" id="jenisBangunanPerusahaan" autocomplete="off" required placeholder="Contoh: RUMAH, RUKO, GEDUNG" value="{{ old('jenis_bangunan_perusahaan') }}" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 px-3.5 text-sm rounded-xl outline-none transition-all placeholder-slate-400">
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-700 mb-1.5">No / Blok Bangunan <span class="text-rose-500 font-bold">*</span></label>
@@ -964,7 +964,7 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-700 mb-1.5">Jenis Bangunan <span class="text-rose-500 font-bold">*</span></label>
-                                <input type="text" name="jenis_bangunan" id="jenisBangunanPasang" list="listBangunan" required placeholder="Contoh: RUMAH, RUKO, GEDUNG" value="{{ old('jenis_bangunan') }}" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 px-3.5 text-sm rounded-xl outline-none transition-all placeholder-slate-400">
+                                <input type="text" name="jenis_bangunan" id="jenisBangunanPasang" autocomplete="off" required placeholder="Contoh: RUMAH, RUKO, GEDUNG" value="{{ old('jenis_bangunan') }}" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 px-3.5 text-sm rounded-xl outline-none transition-all placeholder-slate-400">
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-700 mb-1.5">No / Blok Bangunan <span class="text-rose-500 font-bold">*</span></label>
