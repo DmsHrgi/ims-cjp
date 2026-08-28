@@ -754,8 +754,8 @@ class PendaftaranController extends Controller
             // Generate random PPPoE Password untuk pelanggan baru
             $pppoePassword = Str::lower(Str::random(8));
 
-            // Insert ke trx_batchjob_register
-            DB::table('trx_batchjob_register')->insert([
+            // Data insert ke trx_batchjob_register
+            $regInsertData = [
                 'nomor_internet' => $nomorInternet,
                 'id_perusahaan' => $idPerusahaan,
                 'nama_pelanggan' => strtoupper($validated['nama_perusahaan']),
@@ -768,7 +768,6 @@ class PendaftaranController extends Controller
                 'lon_lat' => !empty($validated['lon_lat']) ? substr($validated['lon_lat'], 0, 100) : null,
                 'loc_maps' => !empty($validated['sharelock']) ? substr($validated['sharelock'], 0, 500) : null,
                 'note_request' => !empty($validated['permintaan_khusus']) ? substr($validated['permintaan_khusus'], 0, 50) : null,
-                'pppoe_password' => $pppoePassword,
                 'kode_bandwith' => $kodeBandwith,
                 'status_reg' => $initialStatus,
                 'group_layanan' => substr($groupLayanan, 0, 50),
@@ -785,7 +784,15 @@ class PendaftaranController extends Controller
                 'user_create' => substr($currentUser, 0, 20),
                 'date_create' => now(),
                 'hide' => '0',
-            ]);
+            ];
+
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasColumn('trx_batchjob_register', 'pppoe_password')) {
+                    $regInsertData['pppoe_password'] = $pppoePassword;
+                }
+            } catch (\Throwable $e) {}
+
+            DB::table('trx_batchjob_register')->insert($regInsertData);
 
             // Insert ke trx_instalasi
             DB::table('trx_instalasi')->insert([
