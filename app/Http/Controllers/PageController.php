@@ -1162,7 +1162,7 @@ class PageController extends Controller
                 ->leftJoin('m_bandwith_kategori as k', 'k.kode_kategori_bandwith', '=', 'b.kode_kategori_bandwith')
                 ->where('b.kode_bandwith', $reg->kode_bandwith ?? '')
                 ->first();
-            $currentPack = $bw ? trim(($bw->nama_kategori_bandwith ?? '') . ' ' . ($bw->nominal_bandwith ?? '') . ' Mbps') : 'UP TO NEW 15 Mbps';
+            $currentPack = $bw ? trim(($bw->nama_kategori_bandwith ?? '') . ' ' . ($bw->nominal_bandwith ?? '') . ' Mbps') : 'LOCALLOOP 15 Mbps';
         }
 
         // 1. Riwayat Pending Tagihan (Terminasi)

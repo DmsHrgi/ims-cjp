@@ -164,7 +164,7 @@
                                     <span class="underline decoration-gray-300">{{ $row->nomor_internet }}</span> / {{ strtoupper($row->nama_pelanggan ?: ($row->nama_penduduk ?: 'PELANGGAN')) }} {{ $jkStr }}
                                 </p>
                                 <p class="text-[11px] text-gray-400 font-medium tracking-wide mt-0.5">
-                                    {{ strtoupper($row->nama_kategori_bandwith ?: 'UP TO NEW') }} {{ $row->nominal_bandwith ? $row->nominal_bandwith.' Mbps' : '' }}
+                                    {{ strtoupper($row->nama_kategori_bandwith ?: 'LOCALLOOP') }} {{ $row->nominal_bandwith ? $row->nominal_bandwith.' Mbps' : '' }}
                                 </p>
                             </td>
 
