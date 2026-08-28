@@ -316,9 +316,10 @@
                                     <a href="{{ route('pelanggan.detail', $c->nomor_internet) }}" class="text-[11px] font-semibold text-blue-600 hover:underline block">
                                         {{ $c->paket }}
                                     </a>
-                                    <div class="text-[11px] text-gray-400 mt-1">
+                                    {{-- Group Layanan (Hide Dulu) --}}
+                                    {{-- <div class="text-[11px] text-gray-400 mt-1">
                                         Group Layanan : <span class="font-semibold text-gray-700 uppercase">{{ $c->group_layanan ?: 'MEDIANET' }}</span>
-                                    </div>
+                                    </div> --}}
                                 </td>
 
                                 <!-- Col 2: Lokasi Pemasangan -->

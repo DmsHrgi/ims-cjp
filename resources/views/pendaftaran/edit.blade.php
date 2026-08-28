@@ -525,12 +525,14 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1.5">Kategori Layanan <span class="text-rose-500 font-bold">*</span></label>
-                        <input type="text" name="kode_kategori" id="editInputKategori" list="listEditKategori" required placeholder="Ketik kategori layanan (misal: BROADBAND, DEDICATED)" value="{{ old('kode_kategori', $valKategoriLayanan) }}" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 px-3.5 text-sm rounded-xl outline-none transition-all placeholder-slate-400">
-                        <datalist id="listEditKategori">
-                            @foreach ($kategori as $k)
-                                <option value="{{ $k->nama_kategori_bandwith }}">
-                            @endforeach
-                        </datalist>
+                        <div class="relative">
+                            <select name="kode_kategori" id="editInputKategori" required class="w-full appearance-none bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 pl-3.5 pr-9 text-sm rounded-xl outline-none transition-all cursor-pointer font-medium">
+                                <option value="">-- PILIH KATEGORI LAYANAN --</option>
+                                <option value="LOCALLOOP" {{ old('kode_kategori', $valKategoriLayanan) == 'LOCALLOOP' ? 'selected' : '' }}>LOCALLOOP</option>
+                                <option value="METRO E" {{ old('kode_kategori', $valKategoriLayanan) == 'METRO E' ? 'selected' : '' }}>METRO E</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400"><i class="fa-solid fa-chevron-down text-xs"></i></div>
+                        </div>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1.5">Kapasitas Layanan <span class="text-rose-500 font-bold">*</span></label>
