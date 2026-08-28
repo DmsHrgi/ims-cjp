@@ -1057,12 +1057,7 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-700 mb-1.5">Nama Sales <span class="text-rose-500 font-bold">*</span></label>
-                                <input type="text" name="nama_sales" id="inputSales" list="listSales" required placeholder="Ketik nama sales" value="{{ old('nama_sales') }}" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 px-3.5 text-sm rounded-xl outline-none transition-all placeholder-slate-400">
-                                <datalist id="listSales">
-                                    @foreach ($sales as $s)
-                                        <option value="{{ $s->nama_karyawan }}">
-                                    @endforeach
-                                </datalist>
+                                <input type="text" name="nama_sales" id="inputSales" autocomplete="off" required placeholder="Ketik nama sales" value="{{ old('nama_sales') }}" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 px-3.5 text-sm rounded-xl outline-none transition-all placeholder-slate-400">
                             </div>
                         </div>
                     </div>
