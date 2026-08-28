@@ -2824,24 +2824,10 @@
         // ── Report Aktivasi Functions (Role NOC) ──
         let globalReportAktivasiItems = [];
 
-        const GPON_PORTS = [
-            { port: 'GPON-ONU_1/1/1', label: 'GPON-ONU_1/1/1 (110 Slot Sisa)' },
-            { port: 'GPON-ONU_1/1/2', label: 'GPON-ONU_1/1/2 (120 Slot Sisa)' },
-            { port: 'GPON-ONU_1/1/3', label: 'GPON-ONU_1/1/3 (125 Slot Sisa)' },
-            { port: 'GPON-ONU_1/1/4', label: 'GPON-ONU_1/1/4 (128 Slot Sisa)' },
-            { port: 'GPON-ONU_1/1/5', label: 'GPON-ONU_1/1/5 (128 Slot Sisa)' },
-            { port: 'GPON-ONU_1/1/6', label: 'GPON-ONU_1/1/6 (128 Slot Sisa)' },
-            { port: 'GPON-ONU_1/1/7', label: 'GPON-ONU_1/1/7 (128 Slot Sisa)' },
-            { port: 'GPON-ONU_1/1/8', label: 'GPON-ONU_1/1/8 (128 Slot Sisa)' },
-            { port: 'GPON-ONU_1/1/9', label: 'GPON-ONU_1/1/9 (128 Slot Sisa)' },
-            { port: 'GPON-ONU_1/1/10', label: 'GPON-ONU_1/1/10 (128 Slot Sisa)' },
-            { port: 'GPON-ONU_1/1/11', label: 'GPON-ONU_1/1/11 (128 Slot Sisa)' },
-            { port: 'GPON-ONU_1/1/12', label: 'GPON-ONU_1/1/12 (128 Slot Sisa)' },
-            { port: 'GPON-ONU_1/1/13', label: 'GPON-ONU_1/1/13 (128 Slot Sisa)' },
-            { port: 'GPON-ONU_1/1/14', label: 'GPON-ONU_1/1/14 (128 Slot Sisa)' },
-            { port: 'GPON-ONU_1/1/15', label: 'GPON-ONU_1/1/15 (128 Slot Sisa)' },
-            { port: 'GPON-ONU_1/1/16', label: 'GPON-ONU_1/1/16 (128 Slot Sisa)' },
-        ];
+        const GPON_PORTS = [];
+        for (let i = 1; i <= 16; i++) {
+            GPON_PORTS.push({ port: 'GPON-ONU_1/1/' + i, label: 'GPON-ONU_1/1/' + i });
+        }
 
         function initGponPortDropdown(prefix) {
             const portSel = document.getElementById(prefix + 'PortGpon');
