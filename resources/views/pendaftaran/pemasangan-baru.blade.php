@@ -4177,5 +4177,6 @@
                 if (typeof closeAktivasiModal === 'function') closeAktivasiModal();
                 if (typeof window.closeConfirmAutoFillModal === 'function') window.closeConfirmAutoFillModal();
             }
+        });
     </script>
 @endsection
