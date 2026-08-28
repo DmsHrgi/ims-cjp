@@ -783,6 +783,40 @@
             }
         });
 
+        // Format otomatis ' Mbps' pada Kapasitas Layanan
+        const editInputPaketEl = document.getElementById('editInputPaket');
+        if (editInputPaketEl) {
+            editInputPaketEl.addEventListener('input', function() {
+                const cursor = this.selectionStart;
+                const digits = this.value.replace(/\D/g, '');
+                if (!digits) {
+                    this.value = '';
+                    return;
+                }
+                this.value = digits + ' Mbps';
+                const digitsLen = digits.length;
+                if (cursor <= digitsLen) {
+                    this.setSelectionRange(cursor, cursor);
+                } else {
+                    this.setSelectionRange(digitsLen, digitsLen);
+                }
+            });
+
+            editInputPaketEl.addEventListener('keydown', function(e) {
+                const digits = this.value.replace(/\D/g, '');
+                if (e.key === 'Backspace' && digits.length > 0) {
+                    const cursor = this.selectionStart;
+                    if (cursor > digits.length) {
+                        e.preventDefault();
+                        const newDigits = digits.slice(0, -1);
+                        this.value = newDigits ? newDigits + ' Mbps' : '';
+                        const newPos = newDigits.length;
+                        this.setSelectionRange(newPos, newPos);
+                    }
+                }
+            });
+        }
+
         // Format otomatis titik setiap 3 angka pada Harga Layanan
         function formatRibuanString(val) {
             const num = (val || '').toString().replace(/\D/g, '');
