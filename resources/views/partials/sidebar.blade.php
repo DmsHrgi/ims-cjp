@@ -15,7 +15,7 @@
     $allNavItems = [
         ['route' => 'dashboard',   'icon' => 'fa-gauge-high',    'label' => 'Dashboard'],
         ['route' => 'tiket',       'icon' => 'fa-ticket',         'label' => 'Tiket'],
-        ['route' => 'pendaftaran', 'icon' => 'fa-user-plus',      'label' => 'Pendaftaran'],
+        ['route' => 'pendaftaran', 'icon' => 'fa-user-plus',      'label' => 'Registrasi'],
         ['route' => 'pelanggan',   'icon' => 'fa-users',          'label' => 'Pelanggan'],
     ];
 
