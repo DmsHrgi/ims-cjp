@@ -1412,45 +1412,7 @@ class PageController extends Controller
             $bandwithBaruInput = trim(substr($validated['kode_bandwith_baru'], 0, 50));
             $kategoriInput = trim($request->input('kode_kategori', ''));
 
-            // Match m_bandwith
-            $bwMatch = DB::table('m_bandwith')->where('kode_bandwith', $bandwithBaruInput)->first();
-            if (!$bwMatch) {
-                // Check if matches nominal_bandwith
-                $nominalDigits = preg_replace('/[^0-9]/', '', $bandwithBaruInput);
-                $bwMatch = DB::table('m_bandwith')
-                    ->where('nominal_bandwith', $bandwithBaruInput)
-                    ->orWhere('nominal_bandwith', $nominalDigits)
-                    ->first();
-            }
-
-            if ($bwMatch) {
-                $finalKodeBaru = $bwMatch->kode_bandwith;
-            } else {
-                // Buat atau sesuaikan kode_bandwith jika custom
-                $kategoriDefault = DB::table('m_bandwith_kategori')
-                    ->where('nama_kategori_bandwith', $kategoriInput)
-                    ->value('kode_kategori_bandwith') ?? 'KB09212';
-
-                $nominalDigits = preg_replace('/[^0-9]/', '', $bandwithBaruInput);
-                $nominalStr = !empty($nominalDigits) ? substr($nominalDigits, 0, 5) : '10';
-
-                $newKodeBw = 'CUST-' . strtoupper(Str::slug(substr($bandwithBaruInput, 0, 15), ''));
-                if (strlen($newKodeBw) > 50) $newKodeBw = substr($newKodeBw, 0, 50);
-
-                $checkBw = DB::table('m_bandwith')->where('kode_bandwith', $newKodeBw)->first();
-                if (!$checkBw) {
-                    DB::table('m_bandwith')->insert([
-                        'kode_bandwith'          => $newKodeBw,
-                        'nominal_bandwith'       => $nominalStr,
-                        'harga_bandwith'         => substr((string)($parsedHarga ?: '300000'), 0, 15),
-                        'kode_kategori_bandwith' => $kategoriDefault,
-                        'user_create'            => substr($currentUser, 0, 20),
-                        'date_create'            => now(),
-                        'hide'                   => '0'
-                    ]);
-                }
-                $finalKodeBaru = $newKodeBw;
-            }
+            $finalKodeBaru = \App\Http\Controllers\PendaftaranController::resolveOrCreateBandwith($bandwithBaruInput, $kategoriInput, $parsedHarga, $currentUser);
 
             // Pastikan master status ubahlayanan 11 ada
             DB::table('m_status_ubahlayanan')->updateOrInsert(

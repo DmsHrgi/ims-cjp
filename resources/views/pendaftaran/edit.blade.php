@@ -69,8 +69,11 @@
         $valJenisBangunanCorp = $pelanggan->jenis_bangunan ?? $data->jenis_bangunan ?? '';
         $valJenisBangunanPasang = $reg->jenis_bangunan ?? $data->jenis_bangunan ?? '';
         $valJenisBangunan = $valJenisBangunanPasang;
-        $valKategoriLayanan = $data->nama_kategori_bandwith ?? $data->kode_kategori_bandwith ?? '';
         $valGroupLayanan = $reg->group_layanan ?? $data->group_layanan ?? '';
+        $valKategoriLayanan = $data->nama_kategori_bandwith ?? $data->kode_kategori_bandwith ?? $valGroupLayanan;
+        if (str_contains(strtoupper((string)$valKategoriLayanan), 'UP TO NEW')) {
+            $valKategoriLayanan = 'LOCALLOOP';
+        }
         $valPaketLayanan = $data->nominal_bandwith ? ($data->nominal_bandwith . ' Mbps') : ($reg->kode_bandwith ?? $data->kode_bandwith ?? '');
         $valHargaPaket = $data->harga_bandwith ?? $reg->total_registrasi ?? '';
 

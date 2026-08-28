@@ -712,44 +712,7 @@ class PendaftaranController extends Controller
             // Handle parsing harga paket manual
             $rawHarga = $request->input('harga_paket');
             $parsedHarga = !empty($rawHarga) ? preg_replace('/[^0-9]/', '', $rawHarga) : null;
-            $bwData = DB::table('m_bandwith')->where('kode_bandwith', $validated['kode_bandwith'])->first();
-            $totalReg = (!empty($parsedHarga) && is_numeric($parsedHarga)) ? $parsedHarga : ($bwData->harga_bandwith ?? '300000');
-
-            // Handle ketersediaan kode_bandwith di m_bandwith (mencegah Foreign Key error jika user mengetik custom text)
-            if (!$bwData) {
-                $existingBwByName = DB::table('m_bandwith')
-                    ->where('nominal_bandwith', $validated['kode_bandwith'])
-                    ->orWhere('kode_bandwith', 'like', '%' . $validated['kode_bandwith'] . '%')
-                    ->first();
-
-                if ($existingBwByName) {
-                    $kodeBandwith = $existingBwByName->kode_bandwith;
-                } else {
-                    $firstKat = DB::table('m_bandwith_kategori')->first();
-                    $kategoriDefault = $firstKat ? $firstKat->kode_kategori_bandwith : 'KB09212';
-                    $newKodeBw = 'CUST-' . strtoupper(Str::slug(substr($validated['kode_bandwith'], 0, 15), ''));
-                    if (strlen($newKodeBw) > 50) $newKodeBw = substr($newKodeBw, 0, 50);
-
-                    $nominalDigits = preg_replace('/[^0-9]/', '', $validated['kode_bandwith']);
-                    $nominalStr = !empty($nominalDigits) ? substr($nominalDigits, 0, 5) : '10';
-
-                    $checkBw = DB::table('m_bandwith')->where('kode_bandwith', $newKodeBw)->first();
-                    if (!$checkBw) {
-                        DB::table('m_bandwith')->insert([
-                            'kode_bandwith' => $newKodeBw,
-                            'nominal_bandwith' => $nominalStr,
-                            'harga_bandwith' => substr((string)$totalReg, 0, 15),
-                            'kode_kategori_bandwith' => $kategoriDefault,
-                            'user_create' => substr($currentUser, 0, 20),
-                            'date_create' => now(),
-                            'hide' => '0'
-                        ]);
-                    }
-                    $kodeBandwith = $newKodeBw;
-                }
-            } else {
-                $kodeBandwith = $validated['kode_bandwith'];
-            }
+            $kodeBandwith = self::resolveOrCreateBandwith($validated['kode_bandwith'], $validated['kode_kategori'], $parsedHarga, $currentUser);
 
             // Generate random 6-digit numeric PPPoE Password untuk pelanggan baru
             $pppoePassword = $request->filled('pppoe_password')
@@ -1116,43 +1079,7 @@ class PendaftaranController extends Controller
             // Handle parsing harga paket manual
             $rawHarga = $request->input('harga_paket');
             $parsedHarga = !empty($rawHarga) ? preg_replace('/[^0-9]/', '', $rawHarga) : null;
-            $bwData = DB::table('m_bandwith')->where('kode_bandwith', $validated['kode_bandwith'])->first();
-            $totalReg = (!empty($parsedHarga) && is_numeric($parsedHarga)) ? $parsedHarga : ($bwData->harga_bandwith ?? '300000');
-
-            // Handle kode_bandwith
-            $kodeBandwith = $validated['kode_bandwith'];
-            if (!$bwData) {
-                $existingBwByName = DB::table('m_bandwith')
-                    ->where('nominal_bandwith', $validated['kode_bandwith'])
-                    ->orWhere('kode_bandwith', 'like', '%' . $validated['kode_bandwith'] . '%')
-                    ->first();
-
-                if ($existingBwByName) {
-                    $kodeBandwith = $existingBwByName->kode_bandwith;
-                } else {
-                    $kategoriDefault = DB::table('m_bandwith_kategori')->value('kode_kategori_bandwith') ?? 'KB09212';
-                    $newKodeBw = 'CUST-' . strtoupper(Str::slug(substr($validated['kode_bandwith'], 0, 15), ''));
-                    if (strlen($newKodeBw) > 50) $newKodeBw = substr($newKodeBw, 0, 50);
-
-                    $nominalDigits = preg_replace('/[^0-9]/', '', $validated['kode_bandwith']);
-                    $nominalStr = !empty($nominalDigits) ? substr($nominalDigits, 0, 5) : '10';
-
-                    $checkBw = DB::table('m_bandwith')->where('kode_bandwith', $newKodeBw)->first();
-                    if (!$checkBw) {
-                        DB::table('m_bandwith')->insert([
-                            'kode_bandwith' => $newKodeBw,
-                            'nominal_bandwith' => $nominalStr,
-                            'harga_bandwith' => $totalReg,
-                            'kode_kategori_bandwith' => $kategoriDefault,
-                            'date_create' => now(),
-                            'user_create' => 'SYSTEM',
-                            'hide' => '0',
-                            'disable' => '0'
-                        ]);
-                    }
-                    $kodeBandwith = $newKodeBw;
-                }
-            }
+            $kodeBandwith = self::resolveOrCreateBandwith($validated['kode_bandwith'], $validated['kode_kategori'], $parsedHarga, $currentUser);
 
             // Upload foto PO
             $fotoPoUpdate = [];
@@ -3183,6 +3110,111 @@ class PendaftaranController extends Controller
         }
 
         return "Gagal {$action}: " . $msg;
+    }
+
+    /**
+     * Resolve or create appropriate m_bandwith record matching category and nominal bandwidth
+     */
+    public static function resolveOrCreateBandwith($inputBandwith, $inputKategori, $harga = null, $user = 'SYSTEM')
+    {
+        $inputKategori = trim($inputKategori ?? '');
+        $inputBandwith = trim($inputBandwith ?? '');
+        $nominalDigits = preg_replace('/[^0-9]/', '', $inputBandwith);
+        $nominalStr = !empty($nominalDigits) ? substr($nominalDigits, 0, 5) : '10';
+        $hargaVal = (!empty($harga) && is_numeric($harga)) ? substr((string)$harga, 0, 15) : '300000';
+
+        // 1. Resolve or create category in m_bandwith_kategori
+        $kategoriRow = null;
+        if (!empty($inputKategori)) {
+            $kategoriRow = DB::table('m_bandwith_kategori')
+                ->where(function ($q) use ($inputKategori) {
+                    $q->where('kode_kategori_bandwith', $inputKategori)
+                      ->orWhere('nama_kategori_bandwith', $inputKategori)
+                      ->orWhere('alias_nama_kategori', $inputKategori);
+                })
+                ->first();
+        }
+
+        if (!$kategoriRow) {
+            if (!empty($inputKategori)) {
+                $kodeKat = 'KB-' . strtoupper(Str::slug($inputKategori, ''));
+                if (strlen($kodeKat) > 20) $kodeKat = substr($kodeKat, 0, 20);
+
+                $existingKat = DB::table('m_bandwith_kategori')->where('kode_kategori_bandwith', $kodeKat)->first();
+                if ($existingKat) {
+                    $kodeKat = substr($kodeKat, 0, 16) . rand(1000, 9999);
+                }
+
+                DB::table('m_bandwith_kategori')->insert([
+                    'kode_kategori_bandwith' => $kodeKat,
+                    'nama_kategori_bandwith' => strtoupper($inputKategori),
+                    'alias_nama_kategori'    => strtoupper($inputKategori),
+                    'biaya_reg'              => '100000',
+                    'ppn_reg'                => 2,
+                    'ppn_reg_nom'            => '0.11',
+                    'ppn_bill'               => 1,
+                    'ppn_bill_nom'           => '0.11',
+                    'disable'                => 0,
+                    'hide'                   => '0',
+                    'date_create'            => now(),
+                    'user_create'            => substr($user, 0, 20),
+                ]);
+
+                $kategoriKode = $kodeKat;
+            } else {
+                $firstKat = DB::table('m_bandwith_kategori')->first();
+                $kategoriKode = $firstKat ? $firstKat->kode_kategori_bandwith : 'KB09212';
+            }
+        } else {
+            $kategoriKode = $kategoriRow->kode_kategori_bandwith;
+        }
+
+        // 2. Find existing m_bandwith that matches this exact category AND exact code / nominal
+        $existingBw = DB::table('m_bandwith')
+            ->where('kode_kategori_bandwith', $kategoriKode)
+            ->where(function ($q) use ($inputBandwith, $nominalStr) {
+                $q->where('kode_bandwith', $inputBandwith)
+                  ->orWhere('nominal_bandwith', $inputBandwith)
+                  ->orWhere('nominal_bandwith', $nominalStr);
+            })
+            ->first();
+
+        if ($existingBw) {
+            return $existingBw->kode_bandwith;
+        }
+
+        // Check if direct exact match on kode_bandwith exists and belongs to this category
+        $directMatch = DB::table('m_bandwith')->where('kode_bandwith', $inputBandwith)->first();
+        if ($directMatch && $directMatch->kode_kategori_bandwith === $kategoriKode) {
+            return $directMatch->kode_bandwith;
+        }
+
+        // 3. Create new custom bandwidth for this category
+        $slugKat = Str::slug($inputKategori ?: 'BW', '');
+        $slugNom = Str::slug($nominalStr . 'M', '');
+        $newKodeBw = 'CUST-' . strtoupper(substr($slugKat . '-' . $slugNom, 0, 40));
+        if (strlen($newKodeBw) > 50) $newKodeBw = substr($newKodeBw, 0, 50);
+
+        $checkBw = DB::table('m_bandwith')->where('kode_bandwith', $newKodeBw)->first();
+        if ($checkBw) {
+            if ($checkBw->kode_kategori_bandwith === $kategoriKode) {
+                return $newKodeBw;
+            }
+            $newKodeBw = substr($newKodeBw, 0, 44) . '-' . rand(10, 99);
+        }
+
+        DB::table('m_bandwith')->insert([
+            'kode_bandwith'          => $newKodeBw,
+            'nominal_bandwith'       => $nominalStr,
+            'harga_bandwith'         => $hargaVal,
+            'kode_kategori_bandwith' => $kategoriKode,
+            'user_create'            => substr($user, 0, 20),
+            'date_create'            => now(),
+            'hide'                   => '0',
+            'disable'                => '0'
+        ]);
+
+        return $newKodeBw;
     }
 
     /**
