@@ -373,7 +373,14 @@ class PageController extends Controller
         }
 
         // Seksi 4 & 5: Paket, Penugasan & Financial
-        $customer->group_layanan = $reg->group_layanan ?? $customer->group_layanan ?? null;
+        $rawGroup = $reg->group_layanan ?? $customer->group_layanan ?? null;
+        if (!empty($rawGroup) && str_contains(strtoupper($rawGroup), 'UP TO NEW')) {
+            $rawGroup = str_ireplace('UP TO NEW', 'LOCALLOOP', $rawGroup);
+        }
+        $customer->group_layanan = $rawGroup;
+        if (!empty($customer->nama_kategori_bandwith) && str_contains(strtoupper($customer->nama_kategori_bandwith), 'UP TO NEW')) {
+            $customer->nama_kategori_bandwith = str_ireplace('UP TO NEW', 'LOCALLOOP', $customer->nama_kategori_bandwith);
+        }
         $customer->nama_sales = $reg->nama_sales ?? $customer->nama_sales ?? null;
         $customer->lon_lat = $customer->lon_lat_pasang;
         $customer->loc_maps = $customer->sharelock_pasang;
@@ -692,7 +699,14 @@ class PageController extends Controller
         }
 
         // Seksi 4 & 5: Paket, Penugasan & Financial
-        $customer->group_layanan = $reg->group_layanan ?? $customer->group_layanan ?? null;
+        $rawGroup = $reg->group_layanan ?? $customer->group_layanan ?? null;
+        if (!empty($rawGroup) && str_contains(strtoupper($rawGroup), 'UP TO NEW')) {
+            $rawGroup = str_ireplace('UP TO NEW', 'LOCALLOOP', $rawGroup);
+        }
+        $customer->group_layanan = $rawGroup;
+        if (!empty($customer->nama_kategori_bandwith) && str_contains(strtoupper($customer->nama_kategori_bandwith), 'UP TO NEW')) {
+            $customer->nama_kategori_bandwith = str_ireplace('UP TO NEW', 'LOCALLOOP', $customer->nama_kategori_bandwith);
+        }
         $customer->nama_sales = $reg->nama_sales ?? $customer->nama_sales ?? null;
         $customer->lon_lat = $customer->lon_lat_pasang;
         $customer->loc_maps = $customer->sharelock_pasang;
@@ -1115,7 +1129,11 @@ class PageController extends Controller
         $jk = $r->jenis_kelamin == 1 ? '(L)' : ($r->jenis_kelamin == 2 ? '(P)' : '');
         $nama = $r->nama_penduduk ?? $r->nama_pelanggan ?? null;
         $r->nama_display = trim(($nama ?? '') . ' ' . $jk);
-        $r->paket = trim(preg_replace('/\s+/', ' ', ($r->nama_kategori_bandwith ?? '') . ' ' . ($r->nominal_bandwith ?? '') . ' Mbps'));
+        $kat = $r->nama_kategori_bandwith ?? '';
+        if (str_contains(strtoupper($kat), 'UP TO NEW')) {
+            $kat = str_ireplace('UP TO NEW', 'LOCALLOOP', $kat);
+        }
+        $r->paket = trim(preg_replace('/\s+/', ' ', $kat . ' ' . ($r->nominal_bandwith ?? '') . ' Mbps'));
         return $r;
     }
 
