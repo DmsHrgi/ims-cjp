@@ -1874,6 +1874,8 @@ class PendaftaranController extends Controller
 
             $currentUser = strtoupper(session('user.nama_karyawan') ?? session('user.nama') ?? session('user.username') ?? 'SYSTEM');
 
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+
             // Susun string team
             $teamsArr = $validated['aktivasi_team'] ?? [];
             $teamString = !empty($teamsArr) ? implode(',', $teamsArr) : null;
@@ -1889,15 +1891,24 @@ class PendaftaranController extends Controller
                 ]
             );
 
+            // Validasi kode_pop jika ada
+            $kodePop = null;
+            if (!empty($validated['kode_pop'])) {
+                $popExists = DB::table('m_pop')->where('kode_pop', $validated['kode_pop'])->exists();
+                if ($popExists) {
+                    $kodePop = $validated['kode_pop'];
+                }
+            }
+
             // Update status_reg = '14' dan data teknis di trx_batchjob_register
             DB::table('trx_batchjob_register')
                 ->where('nomor_internet', $nomorInternet)
                 ->update([
                     'status_reg' => '14',
-                    'kode_pop' => $validated['kode_pop'] ?? null,
-                    'media_akses' => $validated['media_akses'] ?? null,
-                    'index_olt' => $validated['index_olt'] ?? null,
-                    'user_update' => $currentUser,
+                    'kode_pop' => $kodePop,
+                    'media_akses' => !empty($validated['media_akses']) ? $validated['media_akses'] : null,
+                    'index_olt' => !empty($validated['index_olt']) ? $validated['index_olt'] : null,
+                    'user_update' => substr($currentUser, 0, 20),
                     'date_update' => now(),
                 ]);
 
@@ -1909,7 +1920,7 @@ class PendaftaranController extends Controller
                 'aktivasi_time' => $validated['aktivasi_time'] ?? null,
                 'aktivasi_team' => $teamString,
                 'aktivasi_note' => $validated['aktivasi_note'] ?? null,
-                'user_update' => $currentUser,
+                'user_update' => substr($currentUser, 0, 20),
                 'date_update' => now(),
             ];
 
@@ -1919,9 +1930,9 @@ class PendaftaranController extends Controller
                     ->update($instalasiData);
             } else {
                 DB::table('trx_instalasi')->insert(array_merge($instalasiData, [
-                    'kode_instalasi' => 'INST-' . now()->format('ymdHis'),
+                    'kode_instalasi' => 'INST-' . $nomorInternet,
                     'nomor_internet' => $nomorInternet,
-                    'user_create' => $currentUser,
+                    'user_create' => substr($currentUser, 0, 20),
                     'date_create' => now(),
                     'hide' => '0',
                 ]));
@@ -1934,6 +1945,11 @@ class PendaftaranController extends Controller
                 ->delete();
 
             if (!empty($teamsArr)) {
+                DB::table('m_kat_team')->updateOrInsert(
+                    ['kat_team' => '11'],
+                    ['desc_kat_team' => 'Team Aktivasi NOC', 'date_create' => now(), 'user_create' => 'SYSTEM', 'hide' => '0']
+                );
+
                 $uniqueTeams = array_unique($teamsArr);
                 $karyawanData = DB::table('tb_m_karyawan')
                     ->whereIn('nama_karyawan', $uniqueTeams)
@@ -1948,12 +1964,12 @@ class PendaftaranController extends Controller
                         [
                             'nomor_internet' => $nomorInternet,
                             'kat_team' => '11',
-                            'kode_karyawan' => $kr ? $kr->kode_karyawan : '',
+                            'kode_karyawan' => $kr ? $kr->kode_karyawan : null,
                             'nama_karyawan' => $tmName,
-                            'user_create' => $currentUser,
+                            'user_create' => substr($currentUser, 0, 20),
                             'date_create' => now(),
                             'date_update' => now(),
-                            'user_update' => $currentUser,
+                            'user_update' => substr($currentUser, 0, 20),
                             'hide' => '0',
                         ]
                     );
@@ -1964,6 +1980,11 @@ class PendaftaranController extends Controller
             DB::table('trx_instalasi_barang')
                 ->where('nomor_internet', $nomorInternet)
                 ->delete();
+
+            DB::table('m_status_instalasi_barang')->updateOrInsert(
+                ['status_instalasi_barang' => '11'],
+                ['desc_status_instalasi_barang' => 'Terpasang', 'date_create' => now(), 'user_create' => 'SYSTEM', 'hide' => '0']
+            );
 
             $items = $request->input('items', []);
             $processedItems = [];
@@ -1980,6 +2001,9 @@ class PendaftaranController extends Controller
             }
 
             foreach ($processedItems as $kBarang => $jml) {
+                $bExists = DB::table('m_barang')->where('kode_barang', $kBarang)->exists();
+                if (!$bExists) continue;
+
                 $kodeInstBarang = $nomorInternet . '-' . $kBarang;
                 DB::table('trx_instalasi_barang')->updateOrInsert(
                     ['kode_inst_barang' => $kodeInstBarang],
@@ -1989,10 +2013,10 @@ class PendaftaranController extends Controller
                         'jumlah_barang' => $jml,
                         'status_instalasi_barang' => '11',
                         'note_instalasi_barang' => $validated['aktivasi_note'] ?? 'Aktivasi NOC',
-                        'user_create' => $currentUser,
+                        'user_create' => substr($currentUser, 0, 20),
                         'date_create' => now(),
                         'date_update' => now(),
-                        'user_update' => $currentUser,
+                        'user_update' => substr($currentUser, 0, 20),
                         'hide' => '0',
                     ]
                 );
@@ -2008,7 +2032,7 @@ class PendaftaranController extends Controller
                     . ($validated['aktivasi_time'] ? ' ' . $validated['aktivasi_time'] : '')
                     . ($teamString ? ' | Tim: ' . $teamString : '')
                     . (!empty($validated['aktivasi_note']) ? ' | ' . $validated['aktivasi_note'] : ''),
-                'user_create' => $currentUser,
+                'user_create' => substr($currentUser, 0, 20),
                 'date_create' => now(),
                 'hide' => '0',
             ]);
@@ -3069,7 +3093,11 @@ class PendaftaranController extends Controller
 
         // 4. Foreign key constraint fails (SQLSTATE 23000 / Error 1452)
         if (str_contains($msg, 'foreign key constraint fails') || str_contains($msg, 'a foreign key constraint')) {
-            return "Gagal {$action}: Data referensi yang dipilih (seperti wilayah, paket layanan, atau pelanggan) tidak valid atau sudah tidak tersedia di database.";
+            $detail = '';
+            if (preg_match('/CONSTRAINT `([^`]+)` FOREIGN KEY \(`([^`]+)`\) REFERENCES `([^`]+)`/i', $msg, $matches)) {
+                $detail = " (Kolom '{$matches[2]}' tidak cocok dengan tabel '{$matches[3]}')";
+            }
+            return "Gagal {$action}: Data referensi yang dipilih tidak valid atau belum terdaftar di database{$detail}.";
         }
 
         // 5. Out of range value
