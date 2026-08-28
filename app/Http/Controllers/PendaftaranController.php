@@ -211,6 +211,8 @@ class PendaftaranController extends Controller
             'M Ryan Septiadi',
             'Sandi',
             'Dudi',
+            'Dandi',
+            'Reza Apriant',
         ];
 
         $existingTeknis = DB::table('tb_m_karyawan')
@@ -748,6 +750,9 @@ class PendaftaranController extends Controller
                 $kodeBandwith = $validated['kode_bandwith'];
             }
 
+            // Generate random PPPoE Password untuk pelanggan baru
+            $pppoePassword = Str::lower(Str::random(8));
+
             // Insert ke trx_batchjob_register
             DB::table('trx_batchjob_register')->insert([
                 'nomor_internet' => $nomorInternet,
@@ -762,6 +767,7 @@ class PendaftaranController extends Controller
                 'lon_lat' => $validated['lon_lat'] ?? null,
                 'loc_maps' => $validated['sharelock'] ?? null,
                 'note_request' => $validated['permintaan_khusus'] ?? null,
+                'pppoe_password' => $pppoePassword,
                 'kode_bandwith' => $kodeBandwith,
                 'status_reg' => $initialStatus,
                 'group_layanan' => $groupLayanan,
@@ -816,7 +822,7 @@ class PendaftaranController extends Controller
             session(['pendaftaran_page' => 1]);
 
             return redirect()->route('pendaftaran')
-                ->with('success', "Registrasi perusahaan berhasil! Nomor Internet: {$nomorInternet}");
+                ->with('success', "Registrasi perusahaan berhasil! Nomor Internet: {$nomorInternet} | PPPoE Username: {$nomorInternet} | Password: {$pppoePassword}");
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -897,6 +903,11 @@ class PendaftaranController extends Controller
     // ============================================
     public function edit($nomorInternet)
     {
+        $referer = request()->headers->get('referer');
+        if ($referer && (str_contains($referer, '/pelanggan') || str_contains($referer, '/pendaftaran'))) {
+            session(['pendaftaran_last_url' => $referer]);
+        }
+
         $data = DB::table('view_batchjob')
             ->where('nomor_internet', $nomorInternet)
             ->first();
@@ -1542,6 +1553,8 @@ class PendaftaranController extends Controller
             'M Ryan Septiadi',
             'Sandi',
             'Dudi',
+            'Dandi',
+            'Reza Apriant',
         ];
 
         $existingTeknis = DB::table('tb_m_karyawan')

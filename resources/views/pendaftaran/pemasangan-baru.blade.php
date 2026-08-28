@@ -1193,12 +1193,7 @@
                                     <label class="block text-xs font-semibold text-slate-700 mb-1">
                                         POP/ODN<span class="text-red-500">*</span>
                                     </label>
-                                    <select name="kode_pop" id="aktivasiPop" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-700 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none">
-                                        <option value="">Select a State</option>
-                                        @foreach($popList ?? [] as $pop)
-                                            <option value="{{ $pop->kode_pop }}">{{ strtoupper($pop->nama_pop) }}</option>
-                                        @endforeach
-                                    </select>
+                                    <input type="text" name="kode_pop" id="aktivasiPop" required placeholder="Masukkan POP / ODN" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-700 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none uppercase">
                                 </div>
 
                                 <!-- 5. Media Akses* -->
@@ -1206,11 +1201,10 @@
                                     <label class="block text-xs font-semibold text-slate-700 mb-1">
                                         Media Akses<span class="text-red-500">*</span>
                                     </label>
-                                    <select name="media_akses" id="aktivasiMediaAkses" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-700 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none">
-                                        <option value="">Select a State</option>
-                                        @foreach($mediaAksesList ?? [] as $ma)
-                                            <option value="{{ $ma->nama_media_akses }}">{{ strtoupper($ma->nama_media_akses) }}</option>
-                                        @endforeach
+                                    <select name="media_akses" id="aktivasiMediaAkses" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-700 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none">
+                                        <option value="" disabled selected>Pilih Media Akses</option>
+                                        <option value="FTTH">FTTH</option>
+                                        <option value="PTP">PTP</option>
                                     </select>
                                 </div>
 
@@ -2079,20 +2073,14 @@
                                 <div class="grid grid-cols-2 gap-3">
                                     <div>
                                         <label class="block text-xs font-semibold text-slate-700 mb-1">POP/ODN<span class="text-rose-500">*</span></label>
-                                        <select name="kode_pop" id="reportAktivasiPop" class="w-full bg-white border border-slate-200 focus:border-blue-500 text-slate-800 py-2 px-3 text-xs rounded-lg outline-none">
-                                            <option value="">Lastmile Goesar</option>
-                                            @foreach($popList as $p)
-                                                <option value="{{ $p->kode_pop }}">{{ $p->nama_pop }}</option>
-                                            @endforeach
-                                        </select>
+                                        <input type="text" name="kode_pop" id="reportAktivasiPop" required placeholder="Masukkan POP / ODN" class="w-full bg-white border border-slate-200 focus:border-blue-500 text-slate-800 py-2 px-3 text-xs rounded-lg outline-none uppercase">
                                     </div>
                                     <div>
                                         <label class="block text-xs font-semibold text-slate-700 mb-1">Media Akses<span class="text-rose-500">*</span></label>
-                                        <select name="media_akses" id="reportAktivasiMediaAkses" class="w-full bg-white border border-slate-200 focus:border-blue-500 text-slate-800 py-2 px-3 text-xs rounded-lg outline-none">
-                                            <option value="">MEDIANET</option>
-                                            @foreach($mediaAksesList as $m)
-                                                <option value="{{ $m->nama_media_akses }}">{{ $m->nama_media_akses }}</option>
-                                            @endforeach
+                                        <select name="media_akses" id="reportAktivasiMediaAkses" required class="w-full bg-white border border-slate-200 focus:border-blue-500 text-slate-800 py-2 px-3 text-xs rounded-lg outline-none">
+                                            <option value="" disabled selected>Pilih Media Akses</option>
+                                            <option value="FTTH">FTTH</option>
+                                            <option value="PTP">PTP</option>
                                         </select>
                                     </div>
                                 </div>

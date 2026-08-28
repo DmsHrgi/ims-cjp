@@ -1008,10 +1008,27 @@
                         </div>
 
                         <!-- TAB 7: PERANGKAT DSB -->
-                        <div id="tab-content-perangkat" class="tab-content hidden space-y-4">
-                            <div class="pb-3 border-b border-gray-100">
-                                <h3 class="text-sm font-bold text-gray-800">Perangkat & Material Terpasang</h3>
-                                <p class="text-xs text-gray-400 mt-0.5">Rincian hardware (ONU/ONT, STB, kabel) di lokasi pelanggan</p>
+                        <div id="tab-content-perangkat" class="tab-content hidden space-y-5">
+                            <div class="pb-3 border-b border-gray-100 flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-sm font-bold text-gray-800">Perangkat & Kredensial Akses</h3>
+                                    <p class="text-xs text-gray-400 mt-0.5">Rincian hardware (ONU/ONT, STB, kabel) dan akun PPPoE pelanggan</p>
+                                </div>
+                            </div>
+
+                            <!-- Card ID PPPoE (Sesuai Desain & Gambar) -->
+                            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2 border-l-4 border-l-blue-600">
+                                <h4 class="text-sm font-bold text-slate-800 uppercase tracking-wide">ID PPOE</h4>
+                                <div class="space-y-1.5 text-xs font-semibold text-slate-700 pt-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-slate-400 font-normal">— Username :</span>
+                                        <span class="font-mono font-bold text-blue-600 select-all">{{ $customer->nomor_internet }}</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-slate-400 font-normal">— Password :</span>
+                                        <span class="font-mono font-bold text-slate-800 select-all">{{ $customer->pppoe_password ?? '-' }}</span>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="overflow-x-auto rounded-xl border border-gray-100">

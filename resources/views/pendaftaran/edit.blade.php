@@ -99,11 +99,17 @@
         }
     </style>
 
+    @php
+        $backUrl = session('pendaftaran_last_url', route('pendaftaran'));
+        $isFromPelanggan = str_contains($backUrl, '/pelanggan');
+        $parentName = $isFromPelanggan ? 'Pelanggan' : 'Pendaftaran';
+    @endphp
+
     <div class="mb-6">
         <div class="flex items-center gap-2 text-xs text-slate-400 mb-1">
-            <a href="{{ route('pendaftaran') }}" class="hover:text-blue-500 transition-colors">IMS</a>
+            <a href="{{ route('dashboard') }}" class="hover:text-blue-500 transition-colors">IMS</a>
             <i class="fa-solid fa-chevron-right text-[9px]"></i>
-            <a href="{{ route('pendaftaran') }}" class="hover:text-blue-500 transition-colors">Pendaftaran</a>
+            <a href="{{ $backUrl }}" class="hover:text-blue-500 transition-colors">{{ $parentName }}</a>
             <i class="fa-solid fa-chevron-right text-[9px]"></i>
             <span class="text-slate-600 font-medium">Ubah Data Registrasi</span>
         </div>

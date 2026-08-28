@@ -274,6 +274,10 @@ class PageController extends Controller
             ['path' => Paginator::resolveCurrentPath(), 'query' => $request->query()]
         );
 
+        session([
+            'pendaftaran_last_url' => $request->fullUrl(),
+        ]);
+
         return view('pelanggan', compact('sections', 'wilayahList', 'mediaAksesList', 'groupLayananList', 'customers', 'categories', 'statusCounts'));
     }
 
@@ -297,6 +301,12 @@ class PageController extends Controller
         $customer->scan_dokumen_survey = $reg->scan_dokumen_survey ?? $customer->scan_dokumen_survey ?? null;
         $customer->scan_dokumen_instalasi = $reg->scan_dokumen_instalasi ?? $customer->scan_dokumen_instalasi ?? null;
         $customer->scan_dokumen_aktivasi = $reg->scan_dokumen_aktivasi ?? $customer->scan_dokumen_aktivasi ?? null;
+
+        // PPPoE Password (Username = nomor_internet, Password = pppoe_password)
+        $customer->pppoe_password = $reg->pppoe_password ?? ($pelanggan->pppoe_password ?? ($customer->pppoe_password ?? null));
+        if (empty($customer->pppoe_password)) {
+            $customer->pppoe_password = substr(md5('pppoe_' . $customer->nomor_internet), 0, 8);
+        }
 
         // Seksi 1: Informasi Pelanggan
         $customer->nama_perusahaan = $pelanggan->nama_perusahaan ?? $reg->nama_pelanggan ?? $customer->nama_perusahaan ?? $customer->nama_pelanggan ?? $customer->nama_penduduk ?? null;

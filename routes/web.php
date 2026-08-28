@@ -64,6 +64,8 @@ Route::get('/fix-database-schema', function () {
         "ALTER TABLE `trx_batchjob_register` ADD `scan_dokumen_survey` VARCHAR(255) NULL DEFAULT NULL AFTER `scan_dokumen`",
         "ALTER TABLE `trx_batchjob_register` ADD `scan_dokumen_instalasi` VARCHAR(255) NULL DEFAULT NULL AFTER `scan_dokumen_survey`",
         "ALTER TABLE `trx_batchjob_register` ADD `scan_dokumen_aktivasi` VARCHAR(255) NULL DEFAULT NULL AFTER `scan_dokumen_instalasi`",
+        "ALTER TABLE `trx_batchjob_register` ADD `pppoe_password` VARCHAR(50) NULL DEFAULT NULL",
+        "ALTER TABLE `m_pelanggan` ADD `pppoe_password` VARCHAR(50) NULL DEFAULT NULL",
     ];
 
     foreach ($queries as $q) {
