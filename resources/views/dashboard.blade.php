@@ -258,11 +258,6 @@
                                         <i class="fa-solid fa-id-badge text-[9px] text-gray-400"></i>
                                         {{ $corp['id_perusahaan'] }}
                                     </span>
-                                    @if ($hasMulti)
-                                        <span class="text-[10px] font-semibold bg-indigo-50 text-indigo-600 border border-indigo-200/60 px-2 py-0.5 rounded-md">
-                                            <i class="fa-solid fa-layer-group text-[9px]"></i> Multi-Site ({{ $corp['total_pelanggan'] }})
-                                        </span>
-                                    @endif
                                 </div>
 
                                 {{-- Locations & Categories pills --}}
