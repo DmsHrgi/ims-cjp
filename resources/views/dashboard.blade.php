@@ -87,33 +87,20 @@
          ========================================================= --}}
     <div id="company-visualization-section" class="space-y-6">
         {{-- Section Header --}}
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 pb-2 border-b border-gray-200/70">
-            <div>
-                <div class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shadow-xs">
-                        <i class="fa-solid fa-building-user text-base"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-                            Distribusi Perusahaan & ID Pelanggan
-                            <span class="text-[11px] font-semibold text-indigo-600 bg-indigo-50 border border-indigo-200/60 px-2.5 py-0.5 rounded-full">
-                                {{ $totalPerusahaan }} Perusahaan
-                            </span>
-                        </h2>
-                        <p class="text-xs text-gray-500 mt-0.5">Pemetaan relasi nama perusahaan terhadap seluruh ID Pelanggan (Nomor Internet / Layanan) yang terdaftar.</p>
-                    </div>
+        <div class="pb-2 border-b border-gray-200/70">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shadow-xs">
+                    <i class="fa-solid fa-building-user text-base"></i>
                 </div>
-            </div>
-
-            <div class="flex items-center gap-2">
-                <button type="button" onclick="toggleAllCompanyCards(true)" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 rounded-xl transition shadow-xs">
-                    <i class="fa-solid fa-angles-down text-[10px] text-gray-400"></i>
-                    Buka Semua
-                </button>
-                <button type="button" onclick="toggleAllCompanyCards(false)" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 rounded-xl transition shadow-xs">
-                    <i class="fa-solid fa-angles-up text-[10px] text-gray-400"></i>
-                    Tutup Semua
-                </button>
+                <div>
+                    <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                        Distribusi Perusahaan & ID Pelanggan
+                        <span class="text-[11px] font-semibold text-indigo-600 bg-indigo-50 border border-indigo-200/60 px-2.5 py-0.5 rounded-full">
+                            {{ $totalPerusahaan }} Perusahaan
+                        </span>
+                    </h2>
+                    <p class="text-xs text-gray-500 mt-0.5">Pemetaan relasi nama perusahaan terhadap seluruh ID Pelanggan (Nomor Internet / Layanan) yang terdaftar.</p>
+                </div>
             </div>
         </div>
 
@@ -203,9 +190,9 @@
 
         {{-- Filter & Search Toolbar --}}
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <div class="flex items-center justify-between gap-3">
                 {{-- Search Box --}}
-                <div class="relative flex-1 max-w-lg">
+                <div class="relative flex-1">
                     <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 text-xs">
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </span>
@@ -219,22 +206,6 @@
                             onclick="clearCompanySearch()"
                             class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-300 hover:text-gray-500 hidden">
                         <i class="fa-solid fa-circle-xmark text-xs"></i>
-                    </button>
-                </div>
-
-                {{-- Status Pills --}}
-                <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none text-xs">
-                    <button type="button" onclick="setCompanyFilter('all')" data-company-filter="all" class="company-filter-btn px-3 py-1.5 rounded-xl font-semibold bg-indigo-600 text-white shadow-xs transition-all">
-                        Semua ({{ $totalPerusahaan }})
-                    </button>
-                    <button type="button" onclick="setCompanyFilter('multisite')" data-company-filter="multisite" class="company-filter-btn px-3 py-1.5 rounded-xl font-medium bg-gray-50 text-gray-600 hover:bg-gray-100 transition-all">
-                        Multi-Site ({{ $totalMultiSite }})
-                    </button>
-                    <button type="button" onclick="setCompanyFilter('aktif')" data-company-filter="aktif" class="company-filter-btn px-3 py-1.5 rounded-xl font-medium bg-gray-50 text-gray-600 hover:bg-gray-100 transition-all">
-                        Ada Aktif
-                    </button>
-                    <button type="button" onclick="setCompanyFilter('suspend')" data-company-filter="suspend" class="company-filter-btn px-3 py-1.5 rounded-xl font-medium bg-gray-50 text-gray-600 hover:bg-gray-100 transition-all">
-                        Ada Suspend
                     </button>
                 </div>
             </div>
@@ -505,8 +476,6 @@
 
     {{-- JavaScript for Company Visualization Interactivity --}}
     <script>
-        let currentCompanyFilter = 'all';
-
         function toggleCompanyCard(key) {
             const body = document.getElementById('body-' + key);
             const chevron = document.getElementById('chevron-' + key);
@@ -556,21 +525,6 @@
             }
         }
 
-        function setCompanyFilter(filter) {
-            currentCompanyFilter = filter;
-
-            // Update UI buttons
-            document.querySelectorAll('.company-filter-btn').forEach(btn => {
-                if (btn.getAttribute('data-company-filter') === filter) {
-                    btn.className = 'company-filter-btn px-3 py-1.5 rounded-xl font-semibold bg-indigo-600 text-white shadow-xs transition-all';
-                } else {
-                    btn.className = 'company-filter-btn px-3 py-1.5 rounded-xl font-medium bg-gray-50 text-gray-600 hover:bg-gray-100 transition-all';
-                }
-            });
-
-            filterCompanyVisualization();
-        }
-
         function filterCompanyVisualization() {
             const input = document.getElementById('companySearchInput');
             const clearBtn = document.getElementById('clearCompanySearchBtn');
@@ -587,20 +541,11 @@
 
             cards.forEach(card => {
                 const searchText = card.getAttribute('data-search-text') || '';
-                const hasMultisite = card.getAttribute('data-has-multisite') === '1';
-                const hasAktif = card.getAttribute('data-has-aktif') === '1';
-                const hasSuspend = card.getAttribute('data-has-suspend') === '1';
 
                 // Check text query
                 const matchesQuery = query === '' || searchText.includes(query);
 
-                // Check category filter
-                let matchesFilter = true;
-                if (currentCompanyFilter === 'multisite') matchesFilter = hasMultisite;
-                else if (currentCompanyFilter === 'aktif') matchesFilter = hasAktif;
-                else if (currentCompanyFilter === 'suspend') matchesFilter = hasSuspend;
-
-                if (matchesQuery && matchesFilter) {
+                if (matchesQuery) {
                     card.classList.remove('hidden');
                     visibleCount++;
                     // If searching specifically, auto-expand matching card
@@ -632,14 +577,6 @@
             if (input) {
                 input.value = '';
             }
-            currentCompanyFilter = 'all';
-            document.querySelectorAll('.company-filter-btn').forEach(btn => {
-                if (btn.getAttribute('data-company-filter') === 'all') {
-                    btn.className = 'company-filter-btn px-3 py-1.5 rounded-xl font-semibold bg-indigo-600 text-white shadow-xs transition-all';
-                } else {
-                    btn.className = 'company-filter-btn px-3 py-1.5 rounded-xl font-medium bg-gray-50 text-gray-600 hover:bg-gray-100 transition-all';
-                }
-            });
             filterCompanyVisualization();
         }
 
