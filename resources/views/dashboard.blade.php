@@ -260,19 +260,12 @@
                                     </span>
                                 </div>
 
-                                {{-- Locations & Categories pills --}}
+                                {{-- Locations pill --}}
                                 <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-400">
                                     @if (!empty($corp['cities']))
                                         <span class="flex items-center gap-1">
                                             <i class="fa-solid fa-location-dot text-gray-400 text-[10px]"></i>
                                             {{ implode(', ', array_slice($corp['cities'], 0, 3)) }}{{ count($corp['cities']) > 3 ? ' +' . (count($corp['cities']) - 3) . ' kota' : '' }}
-                                        </span>
-                                    @endif
-                                    @if (!empty($corp['categories']))
-                                        <span class="hidden sm:inline text-gray-300">•</span>
-                                        <span class="flex items-center gap-1">
-                                            <i class="fa-solid fa-boxes-stacked text-gray-400 text-[10px]"></i>
-                                            {{ implode(', ', array_slice($corp['categories'], 0, 2)) }}
                                         </span>
                                     @endif
                                 </div>
@@ -337,7 +330,6 @@
                                     <tr class="bg-gray-50/80 text-gray-500 font-semibold border-b border-gray-200 text-[11px] uppercase tracking-wider">
                                         <th class="py-2.5 px-3.5">ID Pelanggan (Nomor Internet)</th>
                                         <th class="py-2.5 px-3.5">Nama Site / Lokasi</th>
-                                        <th class="py-2.5 px-3.5">Paket & Bandwidth</th>
                                         <th class="py-2.5 px-3.5">Kota / Lokasi</th>
                                         <th class="py-2.5 px-3.5 text-center">Status</th>
                                         <th class="py-2.5 px-3.5 text-right">Aksi</th>
@@ -372,17 +364,6 @@
                                                 <div class="text-[10px] text-gray-400 truncate max-w-xs" title="{{ $pel['alamat'] }}">
                                                     {{ $pel['alamat'] }}
                                                 </div>
-                                            </td>
-
-                                            {{-- Bandwidth & Package --}}
-                                            <td class="py-2.5 px-3.5 whitespace-nowrap">
-                                                <div class="font-medium text-gray-700 flex items-center gap-1">
-                                                    <i class="fa-solid fa-gauge-high text-[10px] text-indigo-500"></i>
-                                                    {{ $pel['kategori_bandwith'] }}
-                                                </div>
-                                                <span class="text-[10px] font-semibold text-indigo-600 bg-indigo-50 px-1.5 py-0.2 rounded">
-                                                    {{ $pel['nominal_bandwith'] }}
-                                                </span>
                                             </td>
 
                                             {{-- City --}}
