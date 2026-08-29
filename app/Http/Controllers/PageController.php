@@ -34,7 +34,143 @@ class PageController extends Controller
         $c3 = $this->cardStat('trx_suspend',           'date_create'); // Suspend
         $c4 = $this->cardStat('trx_terminasi',         'date_create'); // Terminasi
 
-        return view('dashboard', compact('chart', 'maxChart', 'c1', 'c2', 'c3', 'c4'));
+        // =========================================================
+        //  VISUALISASI PERUSAHAAN & ID PELANGGAN
+        // =========================================================
+        $batchRows = DB::table('view_batchjob')
+            ->where(function ($q) {
+                $q->where('hide', '0')->orWhereNull('hide');
+            })
+            ->select(
+                'nomor_internet',
+                'id_perusahaan',
+                'nama_perusahaan',
+                'nama_pelanggan',
+                'nama_penduduk',
+                'nama_kategori_bandwith',
+                'nominal_bandwith',
+                'nama_kota_pasang',
+                'alamat_pasang',
+                'alamat_p',
+                'status_reg',
+                'desc_registrasi',
+                'is_suspend',
+                'is_termin',
+                'aktivasi_date_finish',
+                'date_create'
+            )
+            ->orderBy('date_create', 'desc')
+            ->get();
+
+        $companiesMap = [];
+        $totalAktifServices = 0;
+        $totalSuspendServices = 0;
+        $totalTerminasiServices = 0;
+        $totalProsesServices = 0;
+
+        foreach ($batchRows as $r) {
+            $corpKey = !empty($r->id_perusahaan) ? trim($r->id_perusahaan) : (!empty($r->nama_perusahaan) ? trim(strtolower($r->nama_perusahaan)) : trim(strtolower($r->nama_pelanggan ?? 'unknown')));
+            $corpName = !empty($r->nama_perusahaan) ? trim($r->nama_perusahaan) : (!empty($r->nama_pelanggan) ? trim($r->nama_pelanggan) : 'Tanpa Nama');
+            $corpId = !empty($r->id_perusahaan) ? trim($r->id_perusahaan) : '-';
+
+            $sec = $this->sectionOf($r);
+
+            if ($sec === 'aktif') {
+                $totalAktifServices++;
+                $statusLabel = 'Aktif';
+                $statusColor = 'emerald';
+            } elseif ($sec === 'suspend') {
+                $totalSuspendServices++;
+                $statusLabel = 'Suspend';
+                $statusColor = 'amber';
+            } elseif ($sec === 'terminasi') {
+                $totalTerminasiServices++;
+                $statusLabel = 'Terminasi';
+                $statusColor = 'rose';
+            } elseif ($sec === 'gagal') {
+                $statusLabel = 'Gagal Pasang';
+                $statusColor = 'slate';
+            } else {
+                $totalProsesServices++;
+                $statusLabel = !empty($r->desc_registrasi) ? $r->desc_registrasi : 'Dalam Proses';
+                $statusColor = 'blue';
+            }
+
+            if (!isset($companiesMap[$corpKey])) {
+                $companiesMap[$corpKey] = [
+                    'key'               => $corpKey,
+                    'id_perusahaan'     => $corpId,
+                    'nama_perusahaan'   => $corpName,
+                    'pelanggan_list'    => [],
+                    'total_pelanggan'   => 0,
+                    'count_aktif'       => 0,
+                    'count_suspend'     => 0,
+                    'count_terminasi'   => 0,
+                    'count_proses'      => 0,
+                    'cities'            => [],
+                    'categories'        => [],
+                ];
+            }
+
+            $companiesMap[$corpKey]['total_pelanggan']++;
+            if ($sec === 'aktif') {
+                $companiesMap[$corpKey]['count_aktif']++;
+            } elseif ($sec === 'suspend') {
+                $companiesMap[$corpKey]['count_suspend']++;
+            } elseif ($sec === 'terminasi') {
+                $companiesMap[$corpKey]['count_terminasi']++;
+            } else {
+                $companiesMap[$corpKey]['count_proses']++;
+            }
+
+            if (!empty($r->nama_kota_pasang) && !in_array($r->nama_kota_pasang, $companiesMap[$corpKey]['cities'])) {
+                $companiesMap[$corpKey]['cities'][] = $r->nama_kota_pasang;
+            }
+
+            if (!empty($r->nama_kategori_bandwith) && !in_array($r->nama_kategori_bandwith, $companiesMap[$corpKey]['categories'])) {
+                $companiesMap[$corpKey]['categories'][] = $r->nama_kategori_bandwith;
+            }
+
+            $companiesMap[$corpKey]['pelanggan_list'][] = [
+                'nomor_internet'    => $r->nomor_internet ?: '-',
+                'nama_pelanggan'    => $r->nama_pelanggan ?: ($r->nama_penduduk ?: '-'),
+                'kategori_bandwith' => $r->nama_kategori_bandwith ?: '-',
+                'nominal_bandwith'  => $r->nominal_bandwith ?: '-',
+                'kota'              => $r->nama_kota_pasang ?: '-',
+                'alamat'            => $r->alamat_p ?: ($r->alamat_pasang ?: '-'),
+                'status_sec'        => $sec,
+                'status_label'      => $statusLabel,
+                'status_color'      => $statusColor,
+                'desc_registrasi'   => $r->desc_registrasi ?: '-',
+                'date_create'       => $r->date_create ? date('d/m/Y', strtotime($r->date_create)) : '-',
+            ];
+        }
+
+        // Urutkan perusahaan berdasarkan total ID pelanggan terbanyak lalu nama perusahaan
+        $companyList = collect(array_values($companiesMap))
+            ->sort(function ($a, $b) {
+                if ($b['total_pelanggan'] === $a['total_pelanggan']) {
+                    return strcasecmp($a['nama_perusahaan'], $b['nama_perusahaan']);
+                }
+                return $b['total_pelanggan'] <=> $a['total_pelanggan'];
+            })
+            ->values();
+
+        $totalPerusahaan = $companyList->count();
+        $totalSemuaLayanan = $batchRows->count();
+        $totalMultiSite = $companyList->where('total_pelanggan', '>=', 2)->count();
+        $avgLayananPerPerusahaan = $totalPerusahaan > 0 ? round($totalSemuaLayanan / $totalPerusahaan, 1) : 0;
+
+        // Top 6 Perusahaan untuk Grafik Distribusi
+        $topCompanies = $companyList->take(6)->values();
+        $maxTopCount = $topCompanies->max('total_pelanggan') ?: 1;
+
+        return view('dashboard', compact(
+            'chart', 'maxChart', 'c1', 'c2', 'c3', 'c4',
+            'companyList', 'topCompanies', 'maxTopCount',
+            'totalPerusahaan', 'totalSemuaLayanan', 'totalMultiSite', 'avgLayananPerPerusahaan',
+            'totalAktifServices', 'totalSuspendServices', 'totalTerminasiServices', 'totalProsesServices'
+        ));
     }
 
     /* =========================================================
