@@ -315,7 +315,7 @@
                     </div>
 
                     {{-- Card Body: ID Pelanggan List Table / Grid --}}
-                    <div id="body-{{ $corp['key'] }}" class="company-card-body border-t border-gray-100 bg-gray-50/40 p-4 sm:p-5">
+                    <div id="body-{{ $corp['key'] }}" class="company-card-body hidden border-t border-gray-100 bg-gray-50/40 p-4 sm:p-5">
                         <div class="mb-3 flex items-center justify-between">
                             <span class="text-xs font-bold text-gray-700 flex items-center gap-1.5">
                                 <i class="fa-solid fa-list-check text-indigo-500"></i>
@@ -586,25 +586,5 @@
                 console.error('Failed to copy: ', err);
             });
         }
-
-        // Initialize: Set all accordion bodies open or closed by default
-        document.addEventListener('DOMContentLoaded', () => {
-            // Keep top 3 open by default, collapse remaining for optimal performance and clean view
-            const cards = document.querySelectorAll('.company-card');
-            cards.forEach((card, index) => {
-                const key = card.getAttribute('data-company-key');
-                const body = document.getElementById('body-' + key);
-                const chevron = document.getElementById('chevron-' + key);
-                if (body && chevron) {
-                    if (index < 3) {
-                        body.classList.remove('hidden');
-                        chevron.classList.add('rotate-180');
-                    } else {
-                        body.classList.add('hidden');
-                        chevron.classList.remove('rotate-180');
-                    }
-                }
-            });
-        });
     </script>
 @endsection
