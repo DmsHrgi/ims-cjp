@@ -8,6 +8,14 @@
     @php /** @var \Illuminate\Support\Collection $sales */ @endphp
     @php /** @var \Illuminate\Support\Collection $provinsi */ @endphp
     @php
+        $u = session('user', []);
+        $userLevel = strtoupper($u['level'] ?? '');
+        $kodeLevel = $u['kode_level'] ?? '';
+        $levelNum  = $u['level_num'] ?? null;
+        $isAdminUser = ($isAdmin ?? false) || ($userLevel === 'ADMIN' || $kodeLevel === 'lv00001' || ($u['username'] ?? '') === 'admin');
+        $isNocUser = ($isNoc ?? false) || (!$isAdminUser && ($userLevel === 'NOC' || $kodeLevel === 'lv68132'));
+        $isFinanceUser = ($isFinance ?? false) || (!$isAdminUser && ($userLevel === 'FINANCE' || $kodeLevel === 'lv33501' || $levelNum == 6 || str_contains($userLevel, 'FINANCE') || str_contains($userLevel, 'KEUANGAN') || str_contains($userLevel, 'KASIR'));
+
         $getPhotoUrl = function($path) {
             if (empty($path)) return '';
             if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) return $path;
@@ -54,7 +62,7 @@
             <span class="mx-2 text-gray-300">></span>
             <span class="text-gray-700 font-medium">Registration</span>
         </nav>
-        @if(!($isNoc ?? false))
+        @if(!$isNocUser && !$isFinanceUser)
         <button onclick="openModal()" class="mt-3 md:mt-0 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-md shadow-blue-200/50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
             <i class="fa-solid fa-user-plus"></i> Registrasi Baru
         </button>
@@ -315,16 +323,8 @@
                                               </button>
                                           </div>
                                       @elseif($isFinanceUser)
-                                          {{-- Role Finance: Hanya Batal Pasang, Edit, Hapus --}}
+                                          {{-- Role Finance: Hanya Edit dan Hapus --}}
                                           <div class="flex flex-col items-start gap-1.5 text-xs font-medium whitespace-nowrap">
-                                              <form method="POST" action="{{ route('pendaftaran.batal-pasang', $r->nomor_internet) }}" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pendaftaran ini?')" class="inline">
-                                                  @csrf
-                                                  @method('PUT')
-                                                  <button type="submit" class="flex items-center gap-1.5 text-gray-700 hover:text-rose-600 transition-colors whitespace-nowrap">
-                                                      <i class="fa-solid fa-xmark text-slate-400"></i>
-                                                      <span>Batal Pasang</span>
-                                                  </button>
-                                              </form>
                                               <a href="{{ route('pendaftaran.edit', $r->nomor_internet) }}" class="flex items-center gap-1.5 text-gray-700 hover:text-emerald-600 transition-colors whitespace-nowrap">
                                                   <i class="fa-solid fa-pen-to-square text-emerald-500"></i>
                                                   <span>Edit</span>

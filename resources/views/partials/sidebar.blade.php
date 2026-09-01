@@ -23,11 +23,8 @@
         $allNavItems[] = ['route' => 'users.index', 'icon' => 'fa-user-gear', 'label' => 'Manajemen User'];
     }
 
-    $navItems = array_values(array_filter($allNavItems, function($item) use ($isNoc, $isFinance) {
+    $navItems = array_values(array_filter($allNavItems, function($item) use ($isNoc) {
         if ($isNoc && $item['route'] === 'pendaftaran') {
-            return false;
-        }
-        if ($isFinance && $item['route'] === 'pendaftaran') {
             return false;
         }
         return true;
