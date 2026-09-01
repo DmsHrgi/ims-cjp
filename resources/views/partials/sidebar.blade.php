@@ -59,11 +59,10 @@
         {{-- Content --}}
         <div class="relative flex items-center gap-3 px-3.5 py-3">
             {{-- Logo bubble --}}
-            <div class="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center"
-                 style="background: rgba(255,255,255,0.97); box-shadow: 0 2px 12px rgba(0,0,0,0.25);">
-                <img src="{{ asset('img/logo.png') }}"
+            <div class="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center bg-white/10 border border-white/15 backdrop-blur-md shadow-inner">
+                <img src="{{ asset('img/logo-white.png') }}"
                      alt="Logo Connecti Jelajah"
-                     class="w-9 h-9 object-contain">
+                     class="w-7 h-7 object-contain drop-shadow-sm">
             </div>
 
             {{-- Brand text --}}
