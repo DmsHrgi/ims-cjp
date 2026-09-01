@@ -62,7 +62,7 @@
             <span class="mx-2 text-gray-300">></span>
             <span class="text-gray-700 font-medium">Registration</span>
         </nav>
-        @if(!$isNocUser && !$isFinanceUser)
+        @if(!$isNocUser)
         <button onclick="openModal()" class="mt-3 md:mt-0 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-md shadow-blue-200/50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
             <i class="fa-solid fa-user-plus"></i> Registrasi Baru
         </button>
@@ -310,20 +310,8 @@
                                           $isAdminUser = ($isAdmin ?? false) || ($userLevel === 'ADMIN' || $kodeLevel === 'lv00001' || ($u['username'] ?? '') === 'admin');
                                           $isFinanceUser = ($isFinance ?? false) || ($userLevel === 'FINANCE' || $kodeLevel === 'lv33501' || $levelNum == 6 || str_contains($userLevel, 'FINANCE') || str_contains($userLevel, 'KEUANGAN') || str_contains($userLevel, 'KASIR'));
                                       @endphp
-                                      @if($isAdminUser)
-                                          {{-- Role Admin: Hanya Edit dan Hapus --}}
-                                          <div class="flex flex-col items-start gap-1.5 text-xs font-medium whitespace-nowrap">
-                                              <a href="{{ route('pendaftaran.edit', $r->nomor_internet) }}" class="flex items-center gap-1.5 text-gray-700 hover:text-emerald-600 transition-colors whitespace-nowrap">
-                                                  <i class="fa-solid fa-pen-to-square text-emerald-500"></i>
-                                                  <span>Edit</span>
-                                              </a>
-                                              <button type="button" onclick="konfirmasiHapus('{{ $r->nomor_internet }}')" class="flex items-center gap-1.5 text-gray-700 hover:text-rose-600 transition-colors whitespace-nowrap">
-                                                  <i class="fa-solid fa-trash-can text-rose-500"></i>
-                                                  <span>Hapus</span>
-                                              </button>
-                                          </div>
-                                      @elseif($isFinanceUser)
-                                          {{-- Role Finance: Hanya Edit dan Hapus --}}
+                                      @if($isAdminUser || $isFinanceUser)
+                                          {{-- Role Admin & Finance: Hanya Edit dan Hapus --}}
                                           <div class="flex flex-col items-start gap-1.5 text-xs font-medium whitespace-nowrap">
                                               <a href="{{ route('pendaftaran.edit', $r->nomor_internet) }}" class="flex items-center gap-1.5 text-gray-700 hover:text-emerald-600 transition-colors whitespace-nowrap">
                                                   <i class="fa-solid fa-pen-to-square text-emerald-500"></i>
