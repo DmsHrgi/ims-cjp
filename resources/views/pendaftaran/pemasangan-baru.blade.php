@@ -14,7 +14,7 @@
         $levelNum  = $u['level_num'] ?? null;
         $isAdminUser = ($isAdmin ?? false) || ($userLevel === 'ADMIN' || $kodeLevel === 'lv00001' || ($u['username'] ?? '') === 'admin');
         $isNocUser = ($isNoc ?? false) || (!$isAdminUser && ($userLevel === 'NOC' || $kodeLevel === 'lv68132'));
-        $isFinanceUser = ($isFinance ?? false) || (!$isAdminUser && ($userLevel === 'FINANCE' || $kodeLevel === 'lv33501' || $levelNum == 6 || str_contains($userLevel, 'FINANCE') || str_contains($userLevel, 'KEUANGAN') || str_contains($userLevel, 'KASIR'));
+        $isFinanceUser = ($isFinance ?? false) || (!$isAdminUser && ($userLevel === 'FINANCE' || $kodeLevel === 'lv33501' || $levelNum == 6 || str_contains($userLevel, 'FINANCE') || str_contains($userLevel, 'KEUANGAN') || str_contains($userLevel, 'KASIR')));
 
         $getPhotoUrl = function($path) {
             if (empty($path)) return '';
