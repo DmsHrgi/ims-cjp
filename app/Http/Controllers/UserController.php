@@ -136,14 +136,21 @@ class UserController extends Controller
 
             // 3. Simpan ke tb_m_karyawan
             DB::table('tb_m_karyawan')->insert([
-                'kode_karyawan' => $kodeKaryawan,
-                'nama_karyawan' => strtoupper($validated['nama_karyawan']),
-                'kode_jabatan'  => $validated['kode_jabatan'] ?? 'Staff',
-                'cuti'          => 0,
-                'uid'           => 'system',
-                'status_aktif'  => $validated['status_aktif'] == '1' ? '01' : '02',
-                'date_create'   => $now,
-                'user_create'   => substr($currentUser, 0, 20),
+                'kode_karyawan'  => $kodeKaryawan,
+                'nama_karyawan'  => strtoupper($validated['nama_karyawan']),
+                'kode_jabatan'   => $validated['kode_jabatan'] ?? 'Staff',
+                'cuti'           => 0,
+                'uid'            => 'system',
+                'tinggi'         => '170',
+                'berat'          => '65',
+                'status_kontrak' => 1,
+                'kendaraan'      => '-',
+                'sim'            => '-',
+                'status_rumah'   => '-',
+                'kantor'         => 'PUSAT',
+                'status_aktif'   => $validated['status_aktif'] == '1' ? '01' : '02',
+                'date_create'    => $now,
+                'user_create'    => substr($currentUser, 0, 20),
             ]);
 
             // Cek apakah level sales/marketing
@@ -236,14 +243,21 @@ class UserController extends Controller
                 } while (DB::table('tb_m_karyawan')->where('kode_karyawan', $newKodeKaryawan)->exists());
 
                 DB::table('tb_m_karyawan')->insert([
-                    'kode_karyawan' => $newKodeKaryawan,
-                    'nama_karyawan' => strtoupper($validated['nama_karyawan']),
-                    'kode_jabatan'  => $validated['kode_jabatan'] ?? 'Staff',
-                    'cuti'          => 0,
-                    'uid'           => 'system',
-                    'status_aktif'  => $validated['status_aktif'] == '1' ? '01' : '02',
-                    'date_create'   => $now,
-                    'user_create'   => substr($currentUser, 0, 20),
+                    'kode_karyawan'  => $newKodeKaryawan,
+                    'nama_karyawan'  => strtoupper($validated['nama_karyawan']),
+                    'kode_jabatan'   => $validated['kode_jabatan'] ?? 'Staff',
+                    'cuti'           => 0,
+                    'uid'            => 'system',
+                    'tinggi'         => '170',
+                    'berat'          => '65',
+                    'status_kontrak' => 1,
+                    'kendaraan'      => '-',
+                    'sim'            => '-',
+                    'status_rumah'   => '-',
+                    'kantor'         => 'PUSAT',
+                    'status_aktif'   => $validated['status_aktif'] == '1' ? '01' : '02',
+                    'date_create'    => $now,
+                    'user_create'    => substr($currentUser, 0, 20),
                 ]);
 
                 DB::table('tb_pengguna')
