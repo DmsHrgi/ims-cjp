@@ -630,8 +630,12 @@ class PendaftaranController extends Controller
                 'hide' => '0',
             ];
 
-            $pelangganEksis = DB::table('m_pelanggan')->where('id_perusahaan', $idPerusahaan)->first();
-            $currentUser = strtoupper(session('user.username') ?? session('user.nama_karyawan') ?? 'SYSTEM');
+            $creatorName = session('user.nama_karyawan') ?? session('user.nama') ?? session('user.username') ?? 'SYSTEM';
+            if (str_contains($creatorName, '@')) {
+                $creatorName = explode('@', $creatorName)[0];
+                $creatorName = str_replace(['.', '_', '-'], ' ', $creatorName);
+            }
+            $currentUser = strtoupper($creatorName);
 
             if ($pelangganEksis) {
                 DB::table('m_pelanggan')
@@ -1050,7 +1054,12 @@ class PendaftaranController extends Controller
         try {
             DB::beginTransaction();
 
-            $currentUser = strtoupper(session('user.username') ?? session('user.nama_karyawan') ?? 'SYSTEM');
+            $creatorName = session('user.nama_karyawan') ?? session('user.nama') ?? session('user.username') ?? 'SYSTEM';
+            if (str_contains($creatorName, '@')) {
+                $creatorName = explode('@', $creatorName)[0];
+                $creatorName = str_replace(['.', '_', '-'], ' ', $creatorName);
+            }
+            $currentUser = strtoupper($creatorName);
 
             $customer = DB::table('trx_batchjob_register')->where('nomor_internet', $nomorInternet)->first();
             if (!$customer) {

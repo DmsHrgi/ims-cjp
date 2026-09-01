@@ -286,18 +286,26 @@
                               </td>
                               <td class="py-4 px-4 align-top">
                                   <p class="text-sm text-gray-700">{{ \Carbon\Carbon::parse($r->date_create)->timezone('Asia/Jakarta')->format('d M Y H:i') }}</p>
-                                  <p class="text-sm font-semibold text-gray-800 mt-1">
-                                      @php
-                                          $uName = $r->user_create;
-                                          if (empty($uName) || str_contains($uName, '@')) {
-                                              $userDb = \Illuminate\Support\Facades\DB::table('view_pengguna')->where('username', $uName)->first();
-                                              if ($userDb && !empty($userDb->nama_karyawan)) {
-                                                  $uName = $userDb->nama_karyawan;
-                                              }
-                                          }
-                                      @endphp
-                                      {{ strtoupper($uName ?: 'SYSTEM') }}
-                                  </p>
+                                   <p class="text-sm font-semibold text-gray-800 mt-1">
+                                       @php
+                                           $uName = $r->user_create;
+                                           if (!empty($uName)) {
+                                               $userDb = \Illuminate\Support\Facades\DB::table('view_pengguna')
+                                                   ->where('username', $uName)
+                                                   ->orWhere('username', 'LIKE', $uName . '%')
+                                                   ->orWhere('kode_pengguna', $uName)
+                                                   ->orWhere('kode_karyawan', $uName)
+                                                   ->first();
+                                               if ($userDb && !empty($userDb->nama_karyawan)) {
+                                                   $uName = $userDb->nama_karyawan;
+                                               } elseif (str_contains($uName, '@')) {
+                                                   $clean = explode('@', $uName)[0];
+                                                   $uName = str_replace(['.', '_', '-'], ' ', $clean);
+                                               }
+                                           }
+                                       @endphp
+                                       {{ strtoupper($uName ?: 'SYSTEM') }}
+                                   </p>
                                   <p class="text-xs text-gray-500 mt-0.5 font-medium">SALES : {{ strtoupper($r->nama_sales ?: '-') }}</p>
                               </td>
                              <td class="py-4 px-4 align-top">
