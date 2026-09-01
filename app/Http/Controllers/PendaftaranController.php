@@ -1050,6 +1050,8 @@ class PendaftaranController extends Controller
         try {
             DB::beginTransaction();
 
+            $currentUser = strtoupper(session('user.nama_karyawan') ?? session('user.nama') ?? session('user.username') ?? 'SYSTEM');
+
             $customer = DB::table('trx_batchjob_register')->where('nomor_internet', $nomorInternet)->first();
             if (!$customer) {
                 return $this->redirectBackToPendaftaran('Data pendaftaran tidak ditemukan.', 'error');
@@ -1105,7 +1107,6 @@ class PendaftaranController extends Controller
                 $fotoBangunanUpdate['foto_bangunan'] = 'storage/' . $fotoBangunanPath;
             }
 
-            $currentUser = strtoupper(session('user.nama_karyawan') ?? session('user.nama') ?? session('user.username') ?? 'SYSTEM');
             $targetId = $customer->id_perusahaan ?? $customer->nik_penduduk;
 
             DB::statement('SET FOREIGN_KEY_CHECKS=0;');
