@@ -79,6 +79,8 @@ class UserController extends Controller
         $inactiveUsers = $totalUsers - $activeUsers;
         $totalRoles = $roles->count();
 
+        session(['users_last_url' => $request->fullUrl()]);
+
         return view('users.index', compact(
             'users',
             'roles',
@@ -91,6 +93,23 @@ class UserController extends Controller
             'filterStatus',
             'entries'
         ));
+    }
+
+    /**
+     * Redirect kembali dengan mempertahankan parameter URL/halaman saat ini.
+     */
+    private function redirectBackWith(Request $request, ?string $message = null, string $type = 'success')
+    {
+        $url = $request->input('redirect_url') ?: session('users_last_url') ?: url()->previous() ?: route('users.index');
+        $redirect = redirect()->to($url);
+        if ($message) {
+            if ($type === 'error') {
+                $redirect->withErrors(['error' => $message]);
+            } else {
+                $redirect->with($type, $message);
+            }
+        }
+        return $redirect;
     }
 
     /**
@@ -177,8 +196,7 @@ class UserController extends Controller
 
             DB::commit();
 
-            return redirect()->route('users.index')
-                ->with('success', "Pengguna baru '{$validated['username']}' ({$validated['nama_karyawan']}) berhasil ditambahkan.");
+            return $this->redirectBackWith($request, "Pengguna baru '{$validated['username']}' ({$validated['nama_karyawan']}) berhasil ditambahkan.");
 
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -196,7 +214,7 @@ class UserController extends Controller
 
         $user = DB::table('tb_pengguna')->where('kode_pengguna', $kode_pengguna)->first();
         if (!$user) {
-            return redirect()->route('users.index')->withErrors(['error' => 'Data pengguna tidak ditemukan.']);
+            return $this->redirectBackWith($request, 'Data pengguna tidak ditemukan.', 'error');
         }
 
         $validated = $request->validate([
@@ -292,8 +310,7 @@ class UserController extends Controller
 
             DB::commit();
 
-            return redirect()->route('users.index')
-                ->with('success', "Data pengguna '{$validated['username']}' berhasil diperbarui.");
+            return $this->redirectBackWith($request, "Data pengguna '{$validated['username']}' berhasil diperbarui.");
 
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -305,7 +322,7 @@ class UserController extends Controller
     /**
      * Hapus akun pengguna.
      */
-    public function destroy($kode_pengguna)
+    public function destroy(Request $request, $kode_pengguna)
     {
         $this->authorizeAdmin();
 
@@ -316,7 +333,7 @@ class UserController extends Controller
 
         $user = DB::table('tb_pengguna')->where('kode_pengguna', $kode_pengguna)->first();
         if (!$user) {
-            return redirect()->route('users.index')->withErrors(['error' => 'Data pengguna tidak ditemukan.']);
+            return $this->redirectBackWith($request, 'Data pengguna tidak ditemukan.', 'error');
         }
 
         if ($user->username === 'admin') {
@@ -331,8 +348,7 @@ class UserController extends Controller
 
             DB::commit();
 
-            return redirect()->route('users.index')
-                ->with('success', "Pengguna '{$username}' berhasil dihapus dari sistem.");
+            return $this->redirectBackWith($request, "Pengguna '{$username}' berhasil dihapus dari sistem.");
 
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -343,7 +359,7 @@ class UserController extends Controller
     /**
      * Toggle status aktif/nonaktif akun pengguna secara cepat.
      */
-    public function toggleStatus($kode_pengguna)
+    public function toggleStatus(Request $request, $kode_pengguna)
     {
         $this->authorizeAdmin();
 
@@ -354,7 +370,7 @@ class UserController extends Controller
 
         $user = DB::table('tb_pengguna')->where('kode_pengguna', $kode_pengguna)->first();
         if (!$user) {
-            return redirect()->route('users.index')->withErrors(['error' => 'Data pengguna tidak ditemukan.']);
+            return $this->redirectBackWith($request, 'Data pengguna tidak ditemukan.', 'error');
         }
 
         $isAktif = in_array((string)$user->status_aktif, ['1', '01'], true);
@@ -369,7 +385,6 @@ class UserController extends Controller
                 'user_update'  => substr(session('user.username', 'admin'), 0, 20),
             ]);
 
-        return redirect()->route('users.index')
-            ->with('success', "Akun '{$user->username}' berhasil {$statusLabel}.");
+        return $this->redirectBackWith($request, "Akun '{$user->username}' berhasil {$statusLabel}.");
     }
 }
