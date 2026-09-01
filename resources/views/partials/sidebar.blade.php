@@ -57,23 +57,21 @@
              style="background: radial-gradient(circle, #3b82f6, transparent 70%);"></div>
 
         {{-- Content --}}
-        <div class="relative flex items-center gap-3 px-3.5 py-3">
-            {{-- Logo bubble --}}
-            <div class="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center bg-white/10 border border-white/15 backdrop-blur-md shadow-inner">
-                <img src="{{ asset('img/logo-white.png') }}"
-                     alt="Logo Connecti Jelajah"
-                     class="w-7 h-7 object-contain drop-shadow-sm">
-            </div>
+        <div class="relative flex items-center justify-between gap-2 px-3.5 py-3">
+            {{-- Zoomed Logo with clear text --}}
+            <img src="{{ asset('img/logo-white.png') }}"
+                 alt="Fast Connect - Connecti Jelajah"
+                 class="h-9 w-auto max-w-[135px] object-contain drop-shadow-md">
 
             {{-- Brand text --}}
-            <div class="leading-tight min-w-0">
-                <p class="text-white font-extrabold text-[12.5px] tracking-wide truncate drop-shadow-sm">
-                    CONNECTI JELAJAH
+            <div class="leading-tight text-right min-w-0">
+                <p class="text-white font-extrabold text-[12px] tracking-wide truncate drop-shadow-sm">
+                    CONNECTI
                 </p>
-                <div class="flex items-center gap-1.5 mt-0.5">
+                <div class="flex items-center justify-end gap-1.5 mt-0.5">
                     <span class="inline-block w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
-                    <p class="text-cyan-300 text-[9.5px] font-semibold tracking-widest uppercase">
-                        Koneksi Cepat
+                    <p class="text-cyan-300 text-[9px] font-bold tracking-widest uppercase">
+                        Jelajah
                     </p>
                 </div>
             </div>
