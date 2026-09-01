@@ -347,7 +347,7 @@ class PermintaanController extends Controller
                     'time_collect_start' => $validated['time_collect_start'] ?? null,
                     'team_collect'       => $teamString,
                     'note_collect_start' => $validated['note_collect_start'] ?? null,
-                    'user_update'        => $currentUser,
+                    'user_update'        => substr($currentUser, 0, 15),
                     'date_update'        => now(),
                 ]);
 
@@ -361,10 +361,19 @@ class PermintaanController extends Controller
                     . ($teamString ? ' | Tim: ' . $teamString : '')
                     . (!empty($validated['note_collect_start']) ? ' | ' . $validated['note_collect_start'] : ''),
                 'status_terminasi'    => '12',
-                'user_create'         => $currentUser,
+                'user_create'         => substr($currentUser, 0, 15),
                 'date_create'         => now(),
                 'hide'                => '0',
             ]);
+
+            // Update status flag is_termin = 1 di register setelah dikonfirmasi/dijadwalkan oleh NOC
+            DB::table('trx_batchjob_register')
+                ->where('nomor_internet', $trx->nomor_internet)
+                ->update([
+                    'is_termin'   => '1',
+                    'user_update' => substr($currentUser, 0, 15),
+                    'date_update' => now(),
+                ]);
 
             DB::commit();
 
@@ -577,7 +586,7 @@ class PermintaanController extends Controller
                 ->update([
                     'status_suspend' => '12', // Suspend
                     'suspend_start'  => $validated['date_suspend_start'],
-                    'user_update'    => $currentUser,
+                    'user_update'    => substr($currentUser, 0, 15),
                     'date_update'    => now(),
                 ]);
 
@@ -585,10 +594,19 @@ class PermintaanController extends Controller
                 'kode_suspend_log' => 'L-SUSP-' . $kodeTrx . '-' . now()->format('ymdHis'),
                 'kode_suspend'     => $kodeTrx,
                 'status_suspend'   => '12',
-                'user_create'      => $currentUser,
+                'user_create'      => substr($currentUser, 0, 15),
                 'date_create'      => now(),
                 'hide'             => '0',
             ]);
+
+            // Update status flag is_suspend = 1 di register setelah di-approve oleh NOC
+            DB::table('trx_batchjob_register')
+                ->where('nomor_internet', $trx->nomor_internet)
+                ->update([
+                    'is_suspend'  => '1',
+                    'user_update' => substr($currentUser, 0, 15),
+                    'date_update' => now(),
+                ]);
 
             DB::commit();
 

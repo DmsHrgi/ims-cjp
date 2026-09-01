@@ -1493,12 +1493,11 @@ class PageController extends Controller
                 'hide'               => '0',
             ]);
 
-            // Update status flag di register
+            // Jangan langsung ubah is_termin = 1 (menunggu approval / schedule collect dari NOC)
             DB::table('trx_batchjob_register')
                 ->where('nomor_internet', $nomorInternet)
                 ->update([
-                    'is_termin'   => '1',
-                    'user_update' => $currentUser,
+                    'user_update' => substr($currentUser, 0, 15),
                     'date_update' => now(),
                 ]);
 
@@ -1646,12 +1645,11 @@ class PageController extends Controller
                 'hide'             => '0',
             ]);
 
-            // Update flag di register
+            // Jangan langsung ubah is_suspend = 1 (menunggu approval dari NOC)
             DB::table('trx_batchjob_register')
                 ->where('nomor_internet', $nomorInternet)
                 ->update([
-                    'is_suspend'  => '1',
-                    'user_update' => $currentUser,
+                    'user_update' => substr($currentUser, 0, 15),
                     'date_update' => now(),
                 ]);
 
