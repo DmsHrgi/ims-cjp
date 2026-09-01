@@ -321,8 +321,8 @@
                         <input type="text" name="rw_ktp" id="editRwKtp" required placeholder="000" value="{{ old('rw_ktp', $valRwKtp) }}" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 px-3.5 text-sm rounded-xl outline-none transition-all placeholder-slate-400">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Jenis Bangunan <span class="text-rose-500 font-bold">*</span></label>
-                        <input type="text" name="jenis_bangunan_perusahaan" id="editJenisBangunanPerusahaan" autocomplete="off" required placeholder="Contoh: RUMAH, RUKO, GEDUNG" value="{{ old('jenis_bangunan_perusahaan', $valJenisBangunanCorp) }}" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 px-3.5 text-sm rounded-xl outline-none transition-all placeholder-slate-400">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Jenis Bangunan</label>
+                        <input type="text" name="jenis_bangunan_perusahaan" id="editJenisBangunanPerusahaan" autocomplete="off" placeholder="Contoh: RUMAH, RUKO, GEDUNG" value="{{ old('jenis_bangunan_perusahaan', $valJenisBangunanCorp) }}" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 px-3.5 text-sm rounded-xl outline-none transition-all placeholder-slate-400">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1.5">No / Blok Bangunan <span class="text-rose-500 font-bold">*</span></label>
@@ -423,6 +423,10 @@
                         </div>
                         <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider">3. Alamat & Lokasi Pemasangan</h4>
                     </div>
+                    <label class="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 cursor-pointer bg-slate-50 hover:bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200 transition-colors">
+                        <input type="checkbox" id="editCheckboxSamaKTP" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer">
+                        <span>Sama dengan Alamat Perusahaan</span>
+                    </label>
                 </div>
 
                 <!-- Cascading Dropdown Wilayah Pemasangan -->
@@ -850,5 +854,76 @@
                 pwdInput.value = random6;
             }
         }
+
+        // ============================================
+        // FORM SUBMIT VALIDATION & LOADING STATE
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const formEdit = document.getElementById('formEdit');
+            if (!formEdit) return;
+
+            formEdit.addEventListener('submit', function(e) {
+                // Clear any existing alert
+                const oldAlert = document.getElementById('clientValidationAlert');
+                if (oldAlert) oldAlert.remove();
+
+                if (!this.checkValidity()) {
+                    e.preventDefault();
+                    
+                    const invalidEls = this.querySelectorAll(':invalid');
+                    const fieldNames = [];
+
+                    invalidEls.forEach((el, idx) => {
+                        el.classList.add('!border-rose-500', '!ring-rose-500/20');
+                        
+                        const removeHighlight = function() {
+                            el.classList.remove('!border-rose-500', '!ring-rose-500/20');
+                            el.removeEventListener('input', removeHighlight);
+                            el.removeEventListener('change', removeHighlight);
+                        };
+                        el.addEventListener('input', removeHighlight);
+                        el.addEventListener('change', removeHighlight);
+
+                        let labelText = el.closest('div')?.querySelector('label')?.innerText?.replace('*', '').trim();
+                        if (!labelText) {
+                            labelText = el.getAttribute('placeholder') || el.name;
+                        }
+                        if (labelText && !fieldNames.includes(labelText)) {
+                            fieldNames.push(labelText);
+                        }
+
+                        if (idx === 0) {
+                            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            setTimeout(() => {
+                                try { el.focus(); } catch (err) {}
+                            }, 300);
+                        }
+                    });
+
+                    const alertHtml = `
+                        <div id="clientValidationAlert" class="mb-5 bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-xl flex items-start gap-3 shadow-xs animate-in fade-in duration-200">
+                            <i class="fa-solid fa-circle-exclamation text-rose-500 mt-0.5 flex-shrink-0 text-base"></i>
+                            <div class="flex-1">
+                                <p class="text-xs font-bold text-rose-800">Mohon lengkapi kolom yang wajib diisi berikut:</p>
+                                <ul class="text-xs list-disc list-inside mt-1 space-y-0.5 text-rose-600 font-medium">
+                                    ${fieldNames.slice(0, 5).map(f => `<li>${f}</li>`).join('')}
+                                    ${fieldNames.length > 5 ? `<li>...dan ${fieldNames.length - 5} kolom lainnya</li>` : ''}
+                                </ul>
+                            </div>
+                        </div>
+                    `;
+                    formEdit.insertAdjacentHTML('afterbegin', alertHtml);
+                    document.getElementById('clientValidationAlert')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    return false;
+                }
+
+                const btnSubmit = formEdit.querySelector('button[type="submit"]');
+                if (btnSubmit) {
+                    btnSubmit.disabled = true;
+                    btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-xs mr-1"></i> Menyimpan Perubahan...';
+                    btnSubmit.classList.add('opacity-75', 'cursor-not-allowed');
+                }
+            });
+        });
     </script>
 @endsection
