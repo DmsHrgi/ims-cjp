@@ -6,6 +6,7 @@ use App\Http\Controllers\BillingController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PermintaanController;
 use App\Http\Controllers\PendaftaranController;
+use App\Http\Controllers\UserController;
 
 // --- AUTENTIKASI (terbuka) ---
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -176,6 +177,13 @@ Route::middleware(\App\Http\Middleware\EnsureAuthenticated::class)->group(functi
     Route::post('/billing/layanan/{kode_billing}/adjust', [BillingController::class, 'adjustLayanan'])->where('kode_billing', '.*');
     Route::delete('/billing/layanan/{kode_billing}', [BillingController::class, 'destroyLayanan'])->where('kode_billing', '.*');
     Route::post('/billing/update-payment-type', [BillingController::class, 'updatePaymentType'])->name('billing.update-payment-type');
+
+    // Manajemen User (Role Admin)
+    Route::get('/manajemen-user', [UserController::class, 'index'])->name('users.index');
+    Route::post('/manajemen-user', [UserController::class, 'store'])->name('users.store');
+    Route::put('/manajemen-user/{kode_pengguna}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('/manajemen-user/{kode_pengguna}', [UserController::class, 'destroy'])->name('users.destroy');
+    Route::patch('/manajemen-user/{kode_pengguna}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
 });
 
 // Route penayangan berkas media (foto PO, foto bangunan, dokumen) tanpa ketergantungan symlink hosting

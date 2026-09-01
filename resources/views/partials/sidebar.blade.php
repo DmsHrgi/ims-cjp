@@ -19,6 +19,10 @@
         ['route' => 'pelanggan',   'icon' => 'fa-users',          'label' => 'Pelanggan'],
     ];
 
+    if ($isAdmin) {
+        $allNavItems[] = ['route' => 'users.index', 'icon' => 'fa-user-gear', 'label' => 'Manajemen User'];
+    }
+
     $navItems = array_values(array_filter($allNavItems, function($item) use ($isNoc, $isFinance) {
         if ($isNoc && $item['route'] === 'pendaftaran') {
             return false;
