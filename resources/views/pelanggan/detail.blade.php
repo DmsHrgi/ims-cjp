@@ -503,7 +503,14 @@
                                                     {{ $l->tanggal ? \Carbon\Carbon::parse($l->tanggal)->translatedFormat('d M Y H:i') : '-' }}
                                                 </td>
                                                 <td class="py-3.5 px-4 align-top font-semibold text-gray-800 uppercase">
-                                                    {{ $l->user }}
+                                                    @php
+                                                        $dispUser = $l->user ?? '';
+                                                        if (str_contains($dispUser, '@')) {
+                                                            $cleanU = explode('@', $dispUser)[0];
+                                                            $dispUser = ucwords(str_replace(['.', '_', '-'], ' ', $cleanU));
+                                                        }
+                                                    @endphp
+                                                    {{ strtoupper($dispUser ?: 'SYSTEM') }}
                                                 </td>
                                             </tr>
                                         @empty
@@ -867,7 +874,14 @@
                                                         {{ $u->note_schedule ?: ($u->note_cancel ?: ($u->note_request ?: ($u->note_closing ?: '-'))) }}
                                                     </td>
                                                     <td class="py-3 px-4 text-slate-700 font-medium whitespace-nowrap">
-                                                        {{ $u->user_update ?: ($u->user_create ?: 'System') }}
+                                                        @php
+                                                            $dispUbah = $u->user_display ?? ($u->user_update ?: ($u->user_create ?: 'System'));
+                                                            if (str_contains($dispUbah, '@')) {
+                                                                $cleanU = explode('@', $dispUbah)[0];
+                                                                $dispUbah = ucwords(str_replace(['.', '_', '-'], ' ', $cleanU));
+                                                            }
+                                                        @endphp
+                                                        {{ strtoupper($dispUbah) }}
                                                     </td>
                                                 </tr>
                                             @empty
@@ -934,7 +948,14 @@
                                                     </span>
                                                 </td>
                                                 <td class="py-3.5 px-4 text-slate-700 font-medium whitespace-nowrap">
-                                                    {{ $s->user_update ?: ($s->user_create ?: 'System') }}
+                                                    @php
+                                                        $dispSusp = $s->user_display ?? ($s->user_update ?: ($s->user_create ?: 'System'));
+                                                        if (str_contains($dispSusp, '@')) {
+                                                            $cleanU = explode('@', $dispSusp)[0];
+                                                            $dispSusp = ucwords(str_replace(['.', '_', '-'], ' ', $cleanU));
+                                                        }
+                                                    @endphp
+                                                    {{ strtoupper($dispSusp) }}
                                                 </td>
                                             </tr>
                                         @empty

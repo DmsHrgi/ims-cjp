@@ -679,7 +679,10 @@ class PageController extends Controller
             'badge'      => 'bg-cyan-100 text-cyan-800 border border-cyan-200'
         ]);
 
-        $logs = $logs->sortByDesc('tanggal')->values();
+        $logs = $logs->map(function ($item) {
+            $item->user = $this->resolveUserName($item->user ?? null);
+            return $item;
+        })->sortByDesc('tanggal')->values();
 
         // Data Tab Terkait
         $ubahLayanan = DB::table('trx_ubah_layanan as u')
@@ -703,14 +706,22 @@ class PageController extends Controller
                 $q->where('u.hide', '0')->orWhereNull('u.hide');
             })
             ->orderByDesc('u.date_create')
-            ->get();
+            ->get()
+            ->map(function ($item) {
+                $item->user_display = $this->resolveUserName($item->user_update ?: ($item->user_create ?: null));
+                return $item;
+            });
 
         $suspends = DB::table('trx_suspend as s')
             ->leftJoin('m_status_suspend as ms', 'ms.status_suspend', '=', 's.status_suspend')
             ->select('s.*', 'ms.desc_status_suspend')
             ->where('s.nomor_internet', $nomorInternet)
             ->orderByDesc('s.date_create')
-            ->get();
+            ->get()
+            ->map(function ($item) {
+                $item->user_display = $this->resolveUserName($item->user_update ?: ($item->user_create ?: null));
+                return $item;
+            });
 
         $billings = DB::table('trx_billing_layanan')
             ->where('nomor_internet', $nomorInternet)
@@ -1275,23 +1286,85 @@ class PageController extends Controller
                     ->get();
                 foreach ($users as $u) {
                     if (!empty($u->nama_karyawan)) {
-                        if (!empty($u->username)) self::$userMap[strtolower(trim($u->username))] = $u->nama_karyawan;
-                        if (!empty($u->kode_pengguna)) self::$userMap[strtolower(trim($u->kode_pengguna))] = $u->nama_karyawan;
-                        if (!empty($u->kode_karyawan)) self::$userMap[strtolower(trim($u->kode_karyawan))] = $u->nama_karyawan;
+                        $nm = trim($u->nama_karyawan);
+                        if (!empty($u->username)) {
+                            $un = strtolower(trim($u->username));
+                            self::$userMap[$un] = $nm;
+                            if (str_contains($un, '@')) {
+                                self::$userMap[explode('@', $un)[0]] = $nm;
+                            }
+                        }
+                        if (!empty($u->kode_pengguna)) self::$userMap[strtolower(trim($u->kode_pengguna))] = $nm;
+                        if (!empty($u->kode_karyawan)) self::$userMap[strtolower(trim($u->kode_karyawan))] = $nm;
                     }
                 }
             } catch (\Throwable $e) {
                 // ignore
             }
+
+            try {
+                $karyawans = DB::table('view_karyawan')
+                    ->select('kode_karyawan', 'nama_karyawan', 'email')
+                    ->get();
+                foreach ($karyawans as $k) {
+                    if (!empty($k->nama_karyawan)) {
+                        $nm = trim($k->nama_karyawan);
+                        if (!empty($k->kode_karyawan)) self::$userMap[strtolower(trim($k->kode_karyawan))] = $nm;
+                        if (!empty($k->email)) {
+                            $em = strtolower(trim($k->email));
+                            self::$userMap[$em] = $nm;
+                            if (str_contains($em, '@')) {
+                                self::$userMap[explode('@', $em)[0]] = $nm;
+                            }
+                        }
+                    }
+                }
+            } catch (\Throwable $e) {
+                // ignore
+            }
+
+            $defaultStaff = [
+                'kelvin'  => 'KELVIN SULTAN ASHARI',
+                'ricky'   => 'RICKY SAHARA PUTRA',
+                'ridwan'  => 'RIDWAN MUSTOPA',
+                'rashif'  => 'RASHIF',
+                'harry'   => 'HARRY SETIONO',
+                'muhamad' => 'MUHAMAD RAFI RAMDHANI',
+                'ipin'    => 'IPIN ARIPIN',
+                'admin'   => 'ADMINISTRATOR',
+                'sri'     => 'SRI SUGIANTI',
+                'didin'   => 'DIDIN SAMSUDIN',
+                'deni'    => 'DENI HAMDANI',
+                'ajmal'   => 'LEVANDRI AHMAD FAUZAN AJMAL',
+                'nunu'    => 'NUNU NUGRAHA',
+            ];
+            foreach ($defaultStaff as $prefix => $fullName) {
+                if (!isset(self::$userMap[$prefix])) {
+                    self::$userMap[$prefix] = $fullName;
+                }
+            }
         }
 
-        $key = strtolower(trim($userCreate));
+        $trimmed = trim($userCreate);
+        $key = strtolower($trimmed);
+
         if (isset(self::$userMap[$key])) {
             return self::$userMap[$key];
         }
 
+        $emailPrefix = str_contains($key, '@') ? explode('@', $key)[0] : $key;
+        if (isset(self::$userMap[$emailPrefix])) {
+            return self::$userMap[$emailPrefix];
+        }
+
         foreach (self::$userMap as $uKey => $name) {
-            if ($uKey === $key || str_starts_with($key, $uKey) || str_starts_with($uKey, $key)) {
+            if ($uKey === $key || $uKey === $emailPrefix) {
+                return $name;
+            }
+            if (strlen($key) >= 4 && (str_starts_with($uKey, $key) || str_starts_with($key, $uKey))) {
+                return $name;
+            }
+            if (strlen($emailPrefix) >= 3 && (str_starts_with($uKey, $emailPrefix) || str_starts_with($emailPrefix, $uKey))) {
                 return $name;
             }
         }
