@@ -1927,17 +1927,6 @@ class PageController extends Controller
                 ->where('nomor_internet', $nomorInternet)
                 ->update($updateData);
 
-            // Sync ke trx_instalasi jika tabel dan row ada
-            $instExists = DB::table('trx_instalasi')->where('nomor_internet', $nomorInternet)->first();
-            if ($instExists) {
-                $instUpdate = [
-                    'user_update' => substr($currentUser, 0, 15),
-                    'date_update' => now(),
-                ];
-                if (array_key_exists('ont_us', $updateData)) $instUpdate['ont_us'] = $updateData['ont_us'];
-                DB::table('trx_instalasi')->where('nomor_internet', $nomorInternet)->update($instUpdate);
-            }
-
             // Catat log perubahan di trx_batchjob_register_log
             $noteLog = 'Update Infrastruktur & Akses: POP=' . ($updateData['kode_pop'] ?? '-') . 
                        ', Media=' . ($updateData['media_akses'] ?? '-') . 
