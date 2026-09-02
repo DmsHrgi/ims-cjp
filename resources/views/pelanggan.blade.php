@@ -370,7 +370,29 @@
                                         {{ \Carbon\Carbon::parse($c->date_create)->format('d M Y H:i') }} WIB
                                     </div>
                                     <div class="text-xs font-bold text-gray-800 uppercase">
-                                        {{ strtoupper($c->user_create ?: 'NUNU NUGRAHA') }}
+                                        @php
+                                            $creatorName = $c->user_create_name ?? null;
+                                            if (empty($creatorName)) {
+                                                $uName = $c->user_create ?? '';
+                                                if (!empty($uName)) {
+                                                    $userDb = \Illuminate\Support\Facades\DB::table('view_pengguna')
+                                                        ->where('username', $uName)
+                                                        ->orWhere('username', 'LIKE', $uName . '%')
+                                                        ->orWhere('kode_pengguna', $uName)
+                                                        ->orWhere('kode_karyawan', $uName)
+                                                        ->first();
+                                                    if ($userDb && !empty($userDb->nama_karyawan)) {
+                                                        $creatorName = $userDb->nama_karyawan;
+                                                    } elseif (str_contains($uName, '@')) {
+                                                        $clean = explode('@', $uName)[0];
+                                                        $creatorName = str_replace(['.', '_', '-'], ' ', $clean);
+                                                    } else {
+                                                        $creatorName = $uName;
+                                                    }
+                                                }
+                                            }
+                                        @endphp
+                                        {{ strtoupper($creatorName ?: 'NUNU NUGRAHA') }}
                                     </div>
                                     <div class="text-xs text-gray-500 uppercase">
                                         SALES : {{ strtoupper($c->nama_sales ?: '-') }}

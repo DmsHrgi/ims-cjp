@@ -1211,13 +1211,14 @@
                                             <label class="block text-xs font-semibold text-slate-700">
                                                 Pilih Server OLT (FTTH)<span class="text-red-500">*</span>
                                             </label>
-                                            <span class="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">3 OLT Tersedia</span>
+                                            <span class="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">4 OLT Tersedia</span>
                                         </div>
                                         <select name="olt" id="aktivasiOltSelect" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-700 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none">
                                             <option value="" disabled selected>Pilih Server OLT (FTTH)</option>
-                                            <option value="OLT KAYU AGUNG (01)">OLT KAYU AGUNG (01)</option>
-                                            <option value="OLT BABAKAN TAROGONG (02)">OLT BABAKAN TAROGONG (02)</option>
-                                            <option value="OLT BBU (03)">OLT BBU (03)</option>
+                                            <option value="OLT KAYU AGUNG">OLT KAYU AGUNG</option>
+                                            <option value="OLT BABAKAN TAROGONG">OLT BABAKAN TAROGONG</option>
+                                            <option value="OLT BBU">OLT BBU</option>
+                                            <option value="OLT SOREANG">OLT SOREANG</option>
                                         </select>
                                     </div>
 
@@ -2135,13 +2136,14 @@
                                             <label class="block text-xs font-semibold text-slate-700">
                                                 Pilih Server OLT (FTTH)<span class="text-rose-500">*</span>
                                             </label>
-                                            <span class="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">3 OLT Tersedia</span>
+                                            <span class="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">4 OLT Tersedia</span>
                                         </div>
                                         <select name="olt" id="reportAktivasiOltSelect" class="w-full bg-white border border-slate-200 focus:border-blue-500 text-slate-800 py-2 px-3 text-xs rounded-lg outline-none">
                                             <option value="" disabled selected>Pilih Server OLT (FTTH)</option>
-                                            <option value="OLT KAYU AGUNG (01)">OLT KAYU AGUNG (01)</option>
-                                            <option value="OLT BABAKAN TAROGONG (02)">OLT BABAKAN TAROGONG (02)</option>
-                                            <option value="OLT BBU (03)">OLT BBU (03)</option>
+                                            <option value="OLT KAYU AGUNG">OLT KAYU AGUNG</option>
+                                            <option value="OLT BABAKAN TAROGONG">OLT BABAKAN TAROGONG</option>
+                                            <option value="OLT BBU">OLT BBU</option>
+                                            <option value="OLT SOREANG">OLT SOREANG</option>
                                         </select>
                                     </div>
 
@@ -2894,8 +2896,12 @@
                 if (oltSelect) {
                     oltSelect.required = true;
                     if (initialOltVal) {
-                        oltSelect.value = initialOltVal;
-                        if (!Array.from(oltSelect.options).some(function(o) { return o.value === initialOltVal; })) {
+                        var cleanOlt = initialOltVal.replace(/\s*\(\d+\)\s*$/, '').trim();
+                        if (Array.from(oltSelect.options).some(function(o) { return o.value === cleanOlt; })) {
+                            oltSelect.value = cleanOlt;
+                        } else if (Array.from(oltSelect.options).some(function(o) { return o.value === initialOltVal; })) {
+                            oltSelect.value = initialOltVal;
+                        } else {
                             oltSelect.add(new Option(initialOltVal, initialOltVal, true, true));
                         }
                     }
@@ -3068,8 +3074,12 @@
                 if (oltSelect) {
                     oltSelect.required = true;
                     if (initialOltVal) {
-                        oltSelect.value = initialOltVal;
-                        if (!Array.from(oltSelect.options).some(function(o) { return o.value === initialOltVal; })) {
+                        var cleanOltAktivasi = initialOltVal.replace(/\s*\(\d+\)\s*$/, '').trim();
+                        if (Array.from(oltSelect.options).some(function(o) { return o.value === cleanOltAktivasi; })) {
+                            oltSelect.value = cleanOltAktivasi;
+                        } else if (Array.from(oltSelect.options).some(function(o) { return o.value === initialOltVal; })) {
+                            oltSelect.value = initialOltVal;
+                        } else {
                             oltSelect.add(new Option(initialOltVal, initialOltVal, true, true));
                         }
                     }

@@ -1259,6 +1259,51 @@ class PageController extends Controller
         return ['now' => $now, 'prev' => $prev, 'trend' => $trend, 'dir' => $dir];
     }
 
+    private static ?array $userMap = null;
+
+    private function resolveUserName(?string $userCreate): string
+    {
+        if (empty($userCreate)) {
+            return 'NUNU NUGRAHA';
+        }
+
+        if (self::$userMap === null) {
+            self::$userMap = [];
+            try {
+                $users = DB::table('view_pengguna')
+                    ->select('username', 'kode_pengguna', 'kode_karyawan', 'nama_karyawan')
+                    ->get();
+                foreach ($users as $u) {
+                    if (!empty($u->nama_karyawan)) {
+                        if (!empty($u->username)) self::$userMap[strtolower(trim($u->username))] = $u->nama_karyawan;
+                        if (!empty($u->kode_pengguna)) self::$userMap[strtolower(trim($u->kode_pengguna))] = $u->nama_karyawan;
+                        if (!empty($u->kode_karyawan)) self::$userMap[strtolower(trim($u->kode_karyawan))] = $u->nama_karyawan;
+                    }
+                }
+            } catch (\Throwable $e) {
+                // ignore
+            }
+        }
+
+        $key = strtolower(trim($userCreate));
+        if (isset(self::$userMap[$key])) {
+            return self::$userMap[$key];
+        }
+
+        foreach (self::$userMap as $uKey => $name) {
+            if ($uKey === $key || str_starts_with($key, $uKey) || str_starts_with($uKey, $key)) {
+                return $name;
+            }
+        }
+
+        if (str_contains($userCreate, '@')) {
+            $clean = explode('@', $userCreate)[0];
+            return ucwords(str_replace(['.', '_', '-'], ' ', $clean));
+        }
+
+        return $userCreate;
+    }
+
     /** Tambah nama_display & paket ke baris view_batchjob / join gangguan */
     private function decorate($r)
     {
@@ -1270,6 +1315,7 @@ class PageController extends Controller
             $kat = str_ireplace('UP TO NEW', 'LOCALLOOP', $kat);
         }
         $r->paket = trim(preg_replace('/\s+/', ' ', $kat . ' ' . ($r->nominal_bandwith ?? '') . ' Mbps'));
+        $r->user_create_name = $this->resolveUserName($r->user_create ?? null);
         return $r;
     }
 
