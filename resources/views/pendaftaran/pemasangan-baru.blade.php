@@ -1213,7 +1213,7 @@
                                             </label>
                                             <span class="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">4 OLT Tersedia</span>
                                         </div>
-                                        <select name="olt" id="aktivasiOltSelect" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-700 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none">
+                                        <select name="olt" id="aktivasiOltSelect" onchange="onOltChanged('aktivasi')" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-700 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none">
                                             <option value="" disabled selected>Pilih Server OLT (FTTH)</option>
                                             <option value="OLT KAYU AGUNG">OLT KAYU AGUNG</option>
                                             <option value="OLT BABAKAN TAROGONG">OLT BABAKAN TAROGONG</option>
@@ -2138,7 +2138,7 @@
                                             </label>
                                             <span class="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">4 OLT Tersedia</span>
                                         </div>
-                                        <select name="olt" id="reportAktivasiOltSelect" class="w-full bg-white border border-slate-200 focus:border-blue-500 text-slate-800 py-2 px-3 text-xs rounded-lg outline-none">
+                                        <select name="olt" id="reportAktivasiOltSelect" onchange="onOltChanged('reportAktivasi')" class="w-full bg-white border border-slate-200 focus:border-blue-500 text-slate-800 py-2 px-3 text-xs rounded-lg outline-none">
                                             <option value="" disabled selected>Pilih Server OLT (FTTH)</option>
                                             <option value="OLT KAYU AGUNG">OLT KAYU AGUNG</option>
                                             <option value="OLT BABAKAN TAROGONG">OLT BABAKAN TAROGONG</option>
@@ -2822,21 +2822,80 @@
         // ── Report Aktivasi Functions (Role NOC) ──
         let globalReportAktivasiItems = [];
 
-        const GPON_PORTS = [];
-        for (let i = 1; i <= 16; i++) {
-            GPON_PORTS.push({ port: 'GPON-ONU_1/1/' + i, label: 'GPON-ONU_1/1/' + i });
+        function getGponPrefixForOlt(oltName) {
+            if (!oltName) return '1/1/';
+            const upper = String(oltName).toUpperCase();
+            if (upper.includes('KAYU AGUNG') || upper.includes('SOREANG')) {
+                return '1/2/';
+            }
+            if (upper.includes('BABAKAN TAROGONG')) {
+                return '1/1/';
+            }
+            return '1/1/';
         }
 
-        function initGponPortDropdown(prefix) {
+        function getGponPortsForOlt(oltName) {
+            const prefix = getGponPrefixForOlt(oltName);
+            const ports = [];
+            for (let i = 1; i <= 16; i++) {
+                const p = 'GPON-ONU_' + prefix + i;
+                ports.push({ port: p, label: p });
+            }
+            return ports;
+        }
+
+        function initGponPortDropdown(prefix, targetOlt) {
             const portSel = document.getElementById(prefix + 'PortGpon');
             if (!portSel) return;
+
+            if (!targetOlt) {
+                const oltSel = document.getElementById(prefix === 'aktivasi' ? 'aktivasiOltSelect' : 'reportAktivasiOltSelect');
+                targetOlt = oltSel ? oltSel.value : '';
+            }
+
+            const ports = getGponPortsForOlt(targetOlt);
             portSel.innerHTML = '';
-            GPON_PORTS.forEach(function(item) {
+            ports.forEach(function(item) {
                 const opt = document.createElement('option');
                 opt.value = item.port;
                 opt.textContent = item.label;
                 portSel.appendChild(opt);
             });
+        }
+
+        function onOltChanged(prefix) {
+            const oltSel = document.getElementById(prefix === 'aktivasi' ? 'aktivasiOltSelect' : 'reportAktivasiOltSelect');
+            const portSel = document.getElementById(prefix + 'PortGpon');
+            const indexSel = document.getElementById(prefix + 'IndexOnu');
+            if (!oltSel || !portSel) return;
+
+            const selectedOlt = oltSel.value;
+            const targetPrefix = getGponPrefixForOlt(selectedOlt);
+
+            let currentPortNum = '1';
+            if (portSel.value) {
+                const parts = portSel.value.split('/');
+                if (parts.length >= 3) {
+                    currentPortNum = parts[parts.length - 1];
+                }
+            }
+
+            let currentOnuNum = '14';
+            if (indexSel && indexSel.value && indexSel.value.indexOf(':') !== -1) {
+                currentOnuNum = indexSel.value.split(':')[1];
+            }
+
+            initGponPortDropdown(prefix, selectedOlt);
+
+            const newPort = 'GPON-ONU_' + targetPrefix + currentPortNum;
+            if (Array.from(portSel.options).some(function(o) { return o.value === newPort; })) {
+                portSel.value = newPort;
+            } else if (portSel.options.length > 0) {
+                portSel.selectedIndex = 0;
+            }
+
+            const newTargetIndex = (portSel.value || newPort) + ':' + currentOnuNum;
+            updateIndexOltOptions(prefix, newTargetIndex);
         }
 
         function updateIndexOltOptions(prefix, targetIndexVal) {
@@ -2907,14 +2966,30 @@
                     }
                 }
 
-                var targetPort = 'GPON-ONU_1/1/1';
-                var targetIndex = (initialIndexOlt || 'GPON-ONU_1/1/1:14').toUpperCase();
+                var currentOlt = (oltSelect ? oltSelect.value : '') || initialOltVal || '';
+                var gponPrefix = getGponPrefixForOlt(currentOlt);
+
+                var targetPort = 'GPON-ONU_' + gponPrefix + '1';
+                var targetIndex = (initialIndexOlt || (targetPort + ':14')).toUpperCase();
                 if (initialIndexOlt && initialIndexOlt.indexOf(':') !== -1) {
                     targetPort = initialIndexOlt.split(':')[0].toUpperCase();
                 }
                 if (portGpon) {
-                    initGponPortDropdown('reportAktivasi');
-                    portGpon.value = targetPort;
+                    initGponPortDropdown('reportAktivasi', currentOlt);
+                    if (Array.from(portGpon.options).some(function(o) { return o.value === targetPort; })) {
+                        portGpon.value = targetPort;
+                    } else {
+                        var pNum = targetPort.split('/').pop();
+                        var adaptedPort = 'GPON-ONU_' + gponPrefix + pNum;
+                        if (Array.from(portGpon.options).some(function(o) { return o.value === adaptedPort; })) {
+                            portGpon.value = adaptedPort;
+                            var onuPart = initialIndexOlt && initialIndexOlt.indexOf(':') !== -1 ? initialIndexOlt.split(':')[1] : '14';
+                            targetIndex = adaptedPort + ':' + onuPart;
+                        } else if (portGpon.options.length > 0) {
+                            portGpon.selectedIndex = 0;
+                            targetIndex = portGpon.value + ':14';
+                        }
+                    }
                 }
                 updateIndexOltOptions('reportAktivasi', targetIndex);
             } else {
@@ -3085,14 +3160,30 @@
                     }
                 }
 
-                let targetPort = 'GPON-ONU_1/1/1';
-                let targetIndex = (initialIndexOlt || 'GPON-ONU_1/1/1:14').toUpperCase();
+                var currentOltAktivasi = (oltSelect ? oltSelect.value : '') || initialOltVal || '';
+                var gponPrefixAktivasi = getGponPrefixForOlt(currentOltAktivasi);
+
+                let targetPort = 'GPON-ONU_' + gponPrefixAktivasi + '1';
+                let targetIndex = (initialIndexOlt || (targetPort + ':14')).toUpperCase();
                 if (initialIndexOlt && initialIndexOlt.indexOf(':') !== -1) {
                     targetPort = initialIndexOlt.split(':')[0].toUpperCase();
                 }
                 if (portGpon) {
-                    initGponPortDropdown('aktivasi');
-                    portGpon.value = targetPort;
+                    initGponPortDropdown('aktivasi', currentOltAktivasi);
+                    if (Array.from(portGpon.options).some(function(o) { return o.value === targetPort; })) {
+                        portGpon.value = targetPort;
+                    } else {
+                        var pNum = targetPort.split('/').pop();
+                        var adaptedPort = 'GPON-ONU_' + gponPrefixAktivasi + pNum;
+                        if (Array.from(portGpon.options).some(function(o) { return o.value === adaptedPort; })) {
+                            portGpon.value = adaptedPort;
+                            var onuPart = initialIndexOlt && initialIndexOlt.indexOf(':') !== -1 ? initialIndexOlt.split(':')[1] : '14';
+                            targetIndex = adaptedPort + ':' + onuPart;
+                        } else if (portGpon.options.length > 0) {
+                            portGpon.selectedIndex = 0;
+                            targetIndex = portGpon.value + ':14';
+                        }
+                    }
                 }
                 updateIndexOltOptions('aktivasi', targetIndex);
             } else {
