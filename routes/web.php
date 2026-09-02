@@ -149,6 +149,7 @@ Route::middleware(\App\Http\Middleware\EnsureAuthenticated::class)->group(functi
     Route::post('/pelanggan/adjust', [PageController::class, 'postAdjustData'])->name('pelanggan.adjust');
     Route::get('/pelanggan/{nomor_internet}', [PageController::class, 'pelangganDetail'])->name('pelanggan.detail');
     Route::post('/pelanggan/{nomor_internet}/update-pppoe', [PageController::class, 'updatePppoe'])->name('pelanggan.update-pppoe');
+    Route::put('/pelanggan/{nomor_internet}/update-infrastruktur', [PageController::class, 'updateInfrastruktur'])->name('pelanggan.update-infrastruktur');
     Route::get('/pelanggan/{nomor_internet}/pdf', [PageController::class, 'downloadPelangganPdf'])->name('pelanggan.pdf');
     Route::get('/pelanggan/{nomor_internet}/pdf-survey', [PageController::class, 'downloadSurveyPdf'])->name('pelanggan.pdf-survey');
     Route::get('/pelanggan/{nomor_internet}/pdf-instalasi', [PageController::class, 'downloadInstalasiPdf'])->name('pelanggan.pdf-instalasi');

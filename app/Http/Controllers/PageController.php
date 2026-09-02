@@ -1853,4 +1853,115 @@ class PageController extends Controller
             return back()->withErrors(['error' => 'Gagal memperbarui Akun PPPoE: ' . $e->getMessage()]);
         }
     }
+
+    /**
+     * Update Data Infrastruktur & Akses Pelanggan (POP, Media Akses, OLT, Index OLT, ONT US, ONT PS)
+     */
+    public function updateInfrastruktur(Request $request, $nomorInternet)
+    {
+        if (!session()->has('user')) {
+            abort(401, 'Silakan login terlebih dahulu.');
+        }
+
+        $validated = $request->validate([
+            'kode_pop'    => 'nullable|string|max:100',
+            'media_akses' => 'nullable|string|max:50',
+            'olt'         => 'nullable|string|max:100',
+            'index_olt'   => 'nullable|string|max:100',
+            'ont_us'      => 'nullable|string|max:100',
+            'ont_ps'      => 'nullable|string|max:100',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $customer = DB::table('trx_batchjob_register')->where('nomor_internet', $nomorInternet)->first();
+            if (!$customer) {
+                return back()->withErrors(['error' => 'Data pelanggan tidak ditemukan.']);
+            }
+
+            $currentUser = substr(session('user.username') ?? session('user.nama_karyawan') ?? 'ADMIN', 0, 50);
+
+            $updateData = [
+                'user_update' => substr($currentUser, 0, 15),
+                'date_update' => now(),
+            ];
+
+            if ($request->has('kode_pop')) {
+                $updateData['kode_pop'] = $validated['kode_pop'] ?: null;
+                if (!empty($validated['kode_pop'])) {
+                    DB::table('m_pop')->updateOrInsert(
+                        ['kode_pop' => $validated['kode_pop']],
+                        [
+                            'nama_pop'    => $validated['kode_pop'],
+                            'date_create' => now(),
+                            'user_create' => 'SYSTEM',
+                            'hide'        => '0'
+                        ]
+                    );
+                }
+            }
+
+            if ($request->has('media_akses')) {
+                $updateData['media_akses'] = $validated['media_akses'] ?: null;
+            }
+
+            if ($request->has('olt')) {
+                $updateData['olt'] = $validated['olt'] ?: null;
+            }
+
+            if ($request->has('index_olt')) {
+                $updateData['index_olt'] = !empty($validated['index_olt']) ? strtoupper($validated['index_olt']) : null;
+            }
+
+            if ($request->has('ont_us')) {
+                $updateData['ont_us'] = $validated['ont_us'] ?: null;
+            }
+
+            if ($request->has('ont_ps')) {
+                $updateData['ont_ps'] = $validated['ont_ps'] ?: null;
+            }
+
+            // Update trx_batchjob_register
+            DB::table('trx_batchjob_register')
+                ->where('nomor_internet', $nomorInternet)
+                ->update($updateData);
+
+            // Sync ke trx_instalasi jika tabel dan row ada
+            $instExists = DB::table('trx_instalasi')->where('nomor_internet', $nomorInternet)->first();
+            if ($instExists) {
+                $instUpdate = [
+                    'user_update' => substr($currentUser, 0, 15),
+                    'date_update' => now(),
+                ];
+                if (array_key_exists('ont_us', $updateData)) $instUpdate['ont_us'] = $updateData['ont_us'];
+                DB::table('trx_instalasi')->where('nomor_internet', $nomorInternet)->update($instUpdate);
+            }
+
+            // Catat log perubahan di trx_batchjob_register_log
+            $noteLog = 'Update Infrastruktur & Akses: POP=' . ($updateData['kode_pop'] ?? '-') . 
+                       ', Media=' . ($updateData['media_akses'] ?? '-') . 
+                       ', OLT=' . ($updateData['olt'] ?? '-') . 
+                       ', Index=' . ($updateData['index_olt'] ?? '-') . 
+                       ', ONT US=' . ($updateData['ont_us'] ?? '-') . 
+                       ', ONT PS=' . ($updateData['ont_ps'] ?? '-');
+
+            DB::table('trx_batchjob_register_log')->insert([
+                'kode_batchjob_register_log' => 'L-' . $nomorInternet . '-INF-' . now()->format('ymdHis'),
+                'nomor_internet'             => $nomorInternet,
+                'status_reg'                 => $customer->status_reg ?? '16',
+                'note_schedule'              => $noteLog,
+                'user_create'                => substr($currentUser, 0, 50),
+                'date_create'                => now(),
+                'hide'                       => '0',
+            ]);
+
+            DB::commit();
+
+            return back()->with('success', 'Data Infrastruktur & Akses berhasil diperbarui.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Gagal memperbarui infrastruktur: ' . $e->getMessage()]);
+        }
+    }
 }

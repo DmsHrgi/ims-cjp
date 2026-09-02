@@ -31,6 +31,20 @@
             </div>
         </div>
 
+        @if(session('success'))
+            <div class="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-2xl flex items-center gap-3 shadow-xs">
+                <i class="fa-solid fa-circle-check text-emerald-500 text-lg"></i>
+                <span class="text-sm font-semibold">{{ session('success') }}</span>
+            </div>
+        @endif
+
+        @if($errors->any())
+            <div class="mb-6 bg-rose-50 border border-rose-200 text-rose-800 px-4 py-3 rounded-2xl flex items-center gap-3 shadow-xs">
+                <i class="fa-solid fa-circle-exclamation text-rose-500 text-lg"></i>
+                <span class="text-sm font-semibold">{{ $errors->first() }}</span>
+            </div>
+        @endif
+
         <!-- Main Layout: 2 Panel Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
@@ -767,7 +781,13 @@
                                 </div>
 
                                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-2.5">
-                                    <h4 class="font-bold text-gray-800 border-b border-slate-200 pb-2 uppercase tracking-wider text-[11px] text-indigo-600">Infrastruktur & Akses</h4>
+                                    <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+                                        <h4 class="font-bold uppercase tracking-wider text-[11px] text-indigo-600">Infrastruktur & Akses</h4>
+                                        <button type="button" onclick="openModalEditInfrastruktur()" class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-indigo-600 bg-white hover:bg-indigo-50 hover:text-indigo-700 rounded-lg transition-all border border-indigo-200 shadow-xs cursor-pointer active:scale-95">
+                                            <i class="fa-solid fa-pen-to-square text-[11px]"></i>
+                                            <span>Edit</span>
+                                        </button>
+                                    </div>
                                     <div class="flex justify-between py-1 border-b border-slate-100">
                                         <span class="text-gray-500">Point of Presence (POP):</span>
                                         <span class="font-semibold text-gray-800">{{ $customer->nama_pop ?: $customer->kode_pop ?: '-' }}</span>
@@ -1363,6 +1383,125 @@
         </div>
     </div>
 
+    <!-- Modal Edit Infrastruktur & Akses -->
+    <div id="modalEditInfrastruktur" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden" onclick="closeModalEditInfrastruktur()">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 border border-slate-200" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-base shadow-xs">
+                        <i class="fa-solid fa-network-wired"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-800">Edit Infrastruktur & Akses</h3>
+                        <p class="text-xs text-slate-400">Konektivitas, POP, OLT & Perangkat ONT</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeModalEditInfrastruktur()" class="w-7 h-7 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 flex items-center justify-center transition-colors cursor-pointer">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            <form id="formEditInfrastruktur" method="POST" action="{{ route('pelanggan.update-infrastruktur', $customer->nomor_internet) }}" class="space-y-4">
+                @csrf
+                @method('PUT')
+
+                <!-- 1. POP/ODN -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">
+                        Point of Presence (POP)<span class="text-rose-500">*</span>
+                    </label>
+                    <select name="kode_pop" id="modalInfraPop" required class="w-full bg-white border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 text-slate-800 py-2 px-3 text-xs rounded-xl outline-none transition-all">
+                        <option value="" disabled>Pilih POP / ODN</option>
+                        <option value="POP MSN" {{ ($customer->kode_pop == 'POP MSN' || $customer->nama_pop == 'POP MSN') ? 'selected' : '' }}>POP MSN</option>
+                        <option value="POP Babakan Tarogong" {{ ($customer->kode_pop == 'POP Babakan Tarogong' || $customer->nama_pop == 'POP Babakan Tarogong') ? 'selected' : '' }}>POP Babakan Tarogong</option>
+                        <option value="POP Bojong Sayang" {{ ($customer->kode_pop == 'POP Bojong Sayang' || $customer->nama_pop == 'POP Bojong Sayang') ? 'selected' : '' }}>POP Bojong Sayang</option>
+                        @if(!in_array($customer->kode_pop ?: $customer->nama_pop, ['POP MSN', 'POP Babakan Tarogong', 'POP Bojong Sayang']) && !empty($customer->kode_pop ?: $customer->nama_pop))
+                            <option value="{{ $customer->kode_pop ?: $customer->nama_pop }}" selected>{{ $customer->nama_pop ?: $customer->kode_pop }}</option>
+                        @endif
+                    </select>
+                </div>
+
+                <!-- 2. Media Akses -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">
+                        Media Akses<span class="text-rose-500">*</span>
+                    </label>
+                    <select name="media_akses" id="modalInfraMediaAkses" onchange="toggleDetailMediaAkses(this.value)" required class="w-full bg-white border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 text-slate-800 py-2 px-3 text-xs rounded-xl outline-none transition-all">
+                        <option value="FTTH" {{ strtoupper($customer->media_akses ?? 'FTTH') === 'FTTH' ? 'selected' : '' }}>FTTH</option>
+                        <option value="PTP" {{ strtoupper($customer->media_akses ?? '') === 'PTP' ? 'selected' : '' }}>PTP</option>
+                    </select>
+                </div>
+
+                <!-- 3. FTTH Section (Server OLT & Index OLT) -->
+                <div id="modalInfraFtthContainer" class="space-y-3.5 {{ strtoupper($customer->media_akses ?? 'FTTH') === 'PTP' ? 'hidden' : '' }}">
+                    <!-- Server OLT -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-xs font-semibold text-slate-700">
+                                Pilih Server OLT (FTTH)<span class="text-rose-500">*</span>
+                            </label>
+                            <span class="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">4 OLT Tersedia</span>
+                        </div>
+                        <select name="olt" id="modalInfraOltSelect" onchange="onDetailInfraOltChanged()" class="w-full bg-white border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 text-slate-800 py-2 px-3 text-xs rounded-xl outline-none transition-all">
+                            <option value="" disabled>Pilih Server OLT (FTTH)</option>
+                            <option value="OLT KAYU AGUNG" {{ str_contains(strtoupper($customer->olt ?? ''), 'KAYU AGUNG') ? 'selected' : '' }}>OLT KAYU AGUNG</option>
+                            <option value="OLT BABAKAN TAROGONG" {{ str_contains(strtoupper($customer->olt ?? ''), 'BABAKAN') ? 'selected' : '' }}>OLT BABAKAN TAROGONG</option>
+                            <option value="OLT BBU" {{ str_contains(strtoupper($customer->olt ?? ''), 'BBU') ? 'selected' : '' }}>OLT BBU</option>
+                            <option value="OLT SOREANG" {{ str_contains(strtoupper($customer->olt ?? ''), 'SOREANG') ? 'selected' : '' }}>OLT SOREANG</option>
+                        </select>
+                    </div>
+
+                    <!-- Index OLT Selector Box -->
+                    <div class="p-3.5 border border-slate-200 rounded-xl bg-slate-50/70 space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <label class="block text-xs font-semibold text-slate-700">
+                                Index OLT<span class="text-rose-500">*</span>
+                            </label>
+                            <span id="detailPreviewIndexOlt" class="font-mono text-xs font-semibold text-blue-600">{{ $customer->index_olt ?: 'GPON-ONU_1/1/1:14' }}</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-600 mb-1">Pilih Port GPON:</label>
+                                <select id="modalInfraPortGpon" onchange="updateDetailIndexOltOptions()" class="w-full bg-white border border-slate-200 focus:border-indigo-500 text-slate-800 py-1.5 px-2.5 text-xs rounded-lg outline-none font-mono">
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-600 mb-1">Pilih Index:</label>
+                                <select id="modalInfraIndexOnu" onchange="onDetailIndexOnuChanged()" class="w-full bg-white border border-slate-200 focus:border-indigo-500 text-slate-800 py-1.5 px-2.5 text-xs rounded-lg outline-none font-mono">
+                                </select>
+                            </div>
+                        </div>
+                        <input type="hidden" name="index_olt" id="modalInfraIndexOlt" value="{{ $customer->index_olt ?: 'GPON-ONU_1/1/1:14' }}">
+                    </div>
+                </div>
+
+                <!-- 4. ONT US / Serial Number & ONT PS -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">SN / Serial Nomor ONT</label>
+                        <input type="text" name="ont_us" id="modalInfraOntUs" value="{{ old('ont_us', $customer->ont_us ?? '') }}" placeholder="Contoh: ZTEGC1234567"
+                               class="w-full bg-white border border-slate-200 focus:border-indigo-500 text-slate-800 py-2 px-3 text-xs rounded-xl outline-none font-mono uppercase transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">ONT PS (Password / Tipe)</label>
+                        <input type="text" name="ont_ps" id="modalInfraOntPs" value="{{ old('ont_ps', $customer->ont_ps ?? '') }}" placeholder="Contoh: ZTE F660"
+                               class="w-full bg-white border border-slate-200 focus:border-indigo-500 text-slate-800 py-2 px-3 text-xs rounded-xl outline-none font-mono transition-all">
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="closeModalEditInfrastruktur()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition-colors cursor-pointer">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-md shadow-indigo-200 transition-colors cursor-pointer">
+                        <i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         function openEditPppoeModal() {
             document.getElementById('modalEditPppoe').classList.remove('hidden');
@@ -1375,6 +1514,170 @@
             const pwdInput = document.getElementById('modalPppoePassword');
             if (pwdInput) {
                 pwdInput.value = random6;
+            }
+        }
+
+        // --- Logic Modal Edit Infrastruktur ---
+        function openModalEditInfrastruktur() {
+            document.getElementById('modalEditInfrastruktur').classList.remove('hidden');
+            initDetailInfrastrukturOlt();
+        }
+
+        function closeModalEditInfrastruktur() {
+            document.getElementById('modalEditInfrastruktur').classList.add('hidden');
+        }
+
+        function toggleDetailMediaAkses(mediaVal) {
+            const container = document.getElementById('modalInfraFtthContainer');
+            const oltSelect = document.getElementById('modalInfraOltSelect');
+            if (mediaVal === 'FTTH') {
+                if (container) container.classList.remove('hidden');
+                if (oltSelect) oltSelect.required = true;
+            } else {
+                if (container) container.classList.add('hidden');
+                if (oltSelect) oltSelect.required = false;
+            }
+        }
+
+        function getDetailGponPrefix(oltName) {
+            if (!oltName) return '1/1/';
+            const upper = String(oltName).toUpperCase();
+            if (upper.includes('KAYU AGUNG') || upper.includes('SOREANG')) {
+                return '1/2/';
+            }
+            if (upper.includes('BABAKAN TAROGONG')) {
+                return '1/1/';
+            }
+            return '1/1/';
+        }
+
+        function initDetailInfrastrukturOlt() {
+            const oltSelect = document.getElementById('modalInfraOltSelect');
+            const portSel = document.getElementById('modalInfraPortGpon');
+            const hiddenIndex = document.getElementById('modalInfraIndexOlt');
+            const currentVal = (hiddenIndex ? hiddenIndex.value : '{{ $customer->index_olt ?? "GPON-ONU_1/1/1:14" }}').toUpperCase();
+
+            const selectedOlt = oltSelect ? oltSelect.value : '{{ $customer->olt ?? "" }}';
+            const prefix = getDetailGponPrefix(selectedOlt);
+
+            let targetPort = 'GPON-ONU_' + prefix + '1';
+            let targetIndex = currentVal;
+            if (currentVal.indexOf(':') !== -1) {
+                targetPort = currentVal.split(':')[0];
+            }
+
+            if (portSel) {
+                portSel.innerHTML = '';
+                for (let i = 1; i <= 16; i++) {
+                    const p = 'GPON-ONU_' + prefix + i;
+                    const opt = document.createElement('option');
+                    opt.value = p;
+                    opt.textContent = p;
+                    portSel.appendChild(opt);
+                }
+
+                if (Array.from(portSel.options).some(function(o) { return o.value === targetPort; })) {
+                    portSel.value = targetPort;
+                } else {
+                    const pNum = targetPort.split('/').pop();
+                    const adapted = 'GPON-ONU_' + prefix + pNum;
+                    if (Array.from(portSel.options).some(function(o) { return o.value === adapted; })) {
+                        portSel.value = adapted;
+                        const onuPart = currentVal.indexOf(':') !== -1 ? currentVal.split(':')[1] : '14';
+                        targetIndex = adapted + ':' + onuPart;
+                    } else if (portSel.options.length > 0) {
+                        portSel.selectedIndex = 0;
+                        targetIndex = portSel.value + ':14';
+                    }
+                }
+            }
+
+            updateDetailIndexOltOptions(targetIndex);
+        }
+
+        function onDetailInfraOltChanged() {
+            const oltSelect = document.getElementById('modalInfraOltSelect');
+            const portSel = document.getElementById('modalInfraPortGpon');
+            const indexSel = document.getElementById('modalInfraIndexOnu');
+            if (!oltSelect || !portSel) return;
+
+            const selectedOlt = oltSelect.value;
+            const prefix = getDetailGponPrefix(selectedOlt);
+
+            let currentPortNum = '1';
+            if (portSel.value) {
+                const parts = portSel.value.split('/');
+                if (parts.length >= 3) {
+                    currentPortNum = parts[parts.length - 1];
+                }
+            }
+
+            let currentOnuNum = '14';
+            if (indexSel && indexSel.value && indexSel.value.indexOf(':') !== -1) {
+                currentOnuNum = indexSel.value.split(':')[1];
+            }
+
+            portSel.innerHTML = '';
+            for (let i = 1; i <= 16; i++) {
+                const p = 'GPON-ONU_' + prefix + i;
+                const opt = document.createElement('option');
+                opt.value = p;
+                opt.textContent = p;
+                portSel.appendChild(opt);
+            }
+
+            const newPort = 'GPON-ONU_' + prefix + currentPortNum;
+            if (Array.from(portSel.options).some(function(o) { return o.value === newPort; })) {
+                portSel.value = newPort;
+            } else if (portSel.options.length > 0) {
+                portSel.selectedIndex = 0;
+            }
+
+            const newTargetIndex = (portSel.value || newPort) + ':' + currentOnuNum;
+            updateDetailIndexOltOptions(newTargetIndex);
+        }
+
+        function updateDetailIndexOltOptions(targetIndexVal) {
+            const portSel = document.getElementById('modalInfraPortGpon');
+            const indexSel = document.getElementById('modalInfraIndexOnu');
+            const previewSpan = document.getElementById('detailPreviewIndexOlt');
+            const hiddenInput = document.getElementById('modalInfraIndexOlt');
+
+            if (!portSel || !indexSel) return;
+
+            const selectedPort = (portSel.value || 'GPON-ONU_1/1/1').toUpperCase();
+            indexSel.innerHTML = '';
+
+            for (let i = 1; i <= 128; i++) {
+                const fullVal = selectedPort + ':' + i;
+                const opt = document.createElement('option');
+                opt.value = fullVal;
+                opt.textContent = '🟢 ' + fullVal;
+                indexSel.appendChild(opt);
+            }
+
+            if (targetIndexVal) {
+                targetIndexVal = targetIndexVal.toUpperCase();
+                if (Array.from(indexSel.options).some(function(o) { return o.value === targetIndexVal; })) {
+                    indexSel.value = targetIndexVal;
+                } else {
+                    const customOpt = new Option('🟢 ' + targetIndexVal, targetIndexVal, true, true);
+                    indexSel.add(customOpt);
+                }
+            }
+
+            const currentVal = (indexSel.value || (selectedPort + ':14')).toUpperCase();
+            if (previewSpan) previewSpan.textContent = currentVal;
+            if (hiddenInput) hiddenInput.value = currentVal;
+        }
+
+        function onDetailIndexOnuChanged() {
+            const indexSel = document.getElementById('modalInfraIndexOnu');
+            const previewSpan = document.getElementById('detailPreviewIndexOlt');
+            const hiddenInput = document.getElementById('modalInfraIndexOlt');
+            if (indexSel && indexSel.value) {
+                if (previewSpan) previewSpan.textContent = indexSel.value.toUpperCase();
+                if (hiddenInput) hiddenInput.value = indexSel.value.toUpperCase();
             }
         }
     </script>
