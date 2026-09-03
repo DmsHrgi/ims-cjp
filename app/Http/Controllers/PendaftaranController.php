@@ -636,6 +636,7 @@ class PendaftaranController extends Controller
                 $creatorName = str_replace(['.', '_', '-'], ' ', $creatorName);
             }
             $currentUser = strtoupper($creatorName);
+            $pelangganEksis = DB::table('m_pelanggan')->where('id_perusahaan', $idPerusahaan)->first();
 
             if ($pelangganEksis) {
                 DB::table('m_pelanggan')
