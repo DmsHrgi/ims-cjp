@@ -357,11 +357,12 @@ class PageController extends Controller
             'aktif'     => 0,
             'suspend'   => 0,
             'terminasi' => 0,
+            'gagal'     => 0,
         ];
 
         foreach ($allTableRows as $r) {
             $sec = $this->sectionOf($r);
-            if (in_array($sec, ['aktif', 'suspend', 'terminasi'], true)) {
+            if (in_array($sec, ['aktif', 'suspend', 'terminasi', 'gagal'], true)) {
                 $statusCounts['semua']++;
                 if (isset($statusCounts[$sec])) {
                     $statusCounts[$sec]++;
@@ -382,10 +383,14 @@ class PageController extends Controller
             $allTableRows = $allTableRows->filter(function ($r) {
                 return $this->sectionOf($r) === 'terminasi';
             });
-        } else {
-            // Default: Tampilkan semua pelanggan yang sudah aktivasi (aktif, suspend, terminasi)
+        } elseif ($sec === 'gagal' || $sec === 'batal') {
             $allTableRows = $allTableRows->filter(function ($r) {
-                return in_array($this->sectionOf($r), ['aktif', 'suspend', 'terminasi'], true);
+                return $this->sectionOf($r) === 'gagal';
+            });
+        } else {
+            // Default: Tampilkan semua pelanggan yang sudah aktivasi (aktif, suspend, terminasi) dan gagal pasang
+            $allTableRows = $allTableRows->filter(function ($r) {
+                return in_array($this->sectionOf($r), ['aktif', 'suspend', 'terminasi', 'gagal'], true);
             });
         }
 
@@ -410,11 +415,63 @@ class PageController extends Controller
             ['path' => Paginator::resolveCurrentPath(), 'query' => $request->query()]
         );
 
+        // Data teknisi & barang untuk workflow modal pada pelanggan gagal pasang
+        $targetTeknisNames = [
+            'Abdul Ghani',
+            'Dede',
+            'Dika',
+            'Dodi Sodikin',
+            'Cristian',
+            'Iyan sofian',
+            'Fadil',
+            'M Ryan Septiadi',
+            'Sandi',
+            'Dudi',
+            'Dandi',
+            'Reza Apriant',
+        ];
+
+        $existingTeknis = DB::table('tb_m_karyawan')
+            ->whereIn('status_aktif', ['1', '01'])
+            ->where(function ($q) use ($targetTeknisNames) {
+                foreach ($targetTeknisNames as $name) {
+                    $q->orWhere('nama_karyawan', 'LIKE', '%' . $name . '%');
+                }
+            })
+            ->get(['kode_karyawan', 'nama_karyawan']);
+
+        $teamTeknisList = collect($targetTeknisNames)->map(function ($targetName) use ($existingTeknis) {
+            $found = $existingTeknis->first(function ($item) use ($targetName) {
+                return strcasecmp(trim($item->nama_karyawan), trim($targetName)) === 0
+                    || stripos($item->nama_karyawan, $targetName) !== false;
+            });
+
+            return (object)[
+                'kode_karyawan' => $found ? $found->kode_karyawan : 'KRY-' . strtoupper(\Illuminate\Support\Str::slug($targetName)),
+                'nama_karyawan' => $found ? $found->nama_karyawan : $targetName,
+            ];
+        });
+
+        $barangList = DB::table('m_barang as b')
+            ->leftJoin('m_jns_barang as jb', 'jb.kode_jns_barang', '=', 'b.kode_jns_barang')
+            ->where(function ($q) { $q->where('b.hide', '0')->orWhereNull('b.hide'); })
+            ->select('b.kode_barang', 'b.nama_barang', 'b.tipe_barang', 'jb.satuan')
+            ->orderBy('b.nama_barang')
+            ->get();
+
+        $installedItems = DB::table('trx_instalasi_barang as ib')
+            ->leftJoin('m_barang as b', 'b.kode_barang', '=', 'ib.kode_barang')
+            ->leftJoin('m_jns_barang as jb', 'jb.kode_jns_barang', '=', 'b.kode_jns_barang')
+            ->where(function ($q) { $q->where('ib.hide', '0')->orWhereNull('ib.hide'); })
+            ->select('ib.nomor_internet', 'ib.kode_barang', 'ib.jumlah_barang', 'b.nama_barang', 'b.tipe_barang', 'jb.satuan')
+            ->get()
+            ->groupBy('nomor_internet');
+
         session([
             'pendaftaran_last_url' => $request->fullUrl(),
         ]);
 
-        return view('pelanggan', compact('sections', 'wilayahList', 'mediaAksesList', 'groupLayananList', 'customers', 'categories', 'statusCounts'));
+        return view('pelanggan', compact('sections', 'wilayahList', 'mediaAksesList', 'groupLayananList', 'customers', 'categories', 'statusCounts', 'teamTeknisList', 'barangList', 'installedItems'));
     }
 
     public function pelangganDetail($nomorInternet)
@@ -1401,10 +1458,15 @@ class PageController extends Controller
     {
         if ($this->flagOn($r->is_suspend ?? null)) return 'suspend';
         if ($this->flagOn($r->is_termin ?? null))  return 'terminasi';
-        if (str_contains(strtoupper((string) ($r->desc_registrasi ?? '')), 'GAGAL')) return 'gagal';
+
+        $descUpper = strtoupper((string) ($r->desc_registrasi ?? ''));
+        $statusReg = (string) ($r->status_reg ?? '');
+        if (str_contains($descUpper, 'GAGAL') || str_contains($descUpper, 'BATAL') || in_array($statusReg, ['17', '11.1'], true)) {
+            return 'gagal';
+        }
 
         // Syarat Pelanggan Aktif: Wajib SUDAH SELESAI PROSES AKTIVASI di NOC
-        $isAktivasiDone = !empty($r->aktivasi_date_finish) || (string)($r->status_reg ?? '') === '16' || str_contains(strtoupper((string)($r->desc_registrasi ?? '')), 'SELESAI AKTIVASI');
+        $isAktivasiDone = !empty($r->aktivasi_date_finish) || $statusReg === '16' || str_contains($descUpper, 'SELESAI AKTIVASI');
         if ($isAktivasiDone) {
             return 'aktif';
         }

@@ -71,11 +71,15 @@ class PendaftaranController extends Controller
             })
             ->where(function ($q) {
                 $q->whereNull('status_reg')
-                  ->orWhere('status_reg', '!=', '16');
+                  ->orWhereNotIn('status_reg', ['16', '17']);
             })
             ->where(function ($q) {
                 $q->whereNull('desc_registrasi')
-                  ->orWhere('desc_registrasi', 'not like', '%SELESAI AKTIVASI%');
+                  ->orWhere(function ($sub) {
+                      $sub->where('desc_registrasi', 'not like', '%SELESAI AKTIVASI%')
+                          ->where('desc_registrasi', 'not like', '%BATAL%')
+                          ->where('desc_registrasi', 'not like', '%GAGAL%');
+                  });
             })
             ->whereNotNull('nama_kota_pasang')
             ->where('nama_kota_pasang', '!=', '')
@@ -93,11 +97,15 @@ class PendaftaranController extends Controller
             })
             ->where(function ($q) {
                 $q->whereNull('status_reg')
-                  ->orWhere('status_reg', '!=', '16');
+                  ->orWhereNotIn('status_reg', ['16', '17']);
             })
             ->where(function ($q) {
                 $q->whereNull('desc_registrasi')
-                  ->orWhere('desc_registrasi', 'not like', '%SELESAI AKTIVASI%');
+                  ->orWhere(function ($sub) {
+                      $sub->where('desc_registrasi', 'not like', '%SELESAI AKTIVASI%')
+                          ->where('desc_registrasi', 'not like', '%BATAL%')
+                          ->where('desc_registrasi', 'not like', '%GAGAL%');
+                  });
             });
 
         if ($request->filled('layanan')) {
@@ -1279,15 +1287,18 @@ class PendaftaranController extends Controller
 
             $alasanLengkap = $validated['kategori_batal'] . ' - ' . $validated['alasan_batal'];
 
-            // Ambil status registrasi batal/gagal yang valid dari m_status_registrasi
+            // Status registrasi 17 = Batal Pasang
             $statusBatal = DB::table('m_status_registrasi')
-                ->where(function ($q) {
-                    $q->where('desc_registrasi', 'like', '%batal%')
-                      ->orWhere('desc_registrasi', 'like', '%gagal%')
-                      ->orWhere('desc_registrasi', 'like', '%tidak valid%')
-                      ->orWhere('desc_registrasi', 'like', '%belum valid%');
-                })
-                ->value('status_reg') ?? '11.1';
+                ->where('status_reg', '17')
+                ->orWhere('desc_registrasi', 'like', '%batal%')
+                ->value('status_reg') ?? '17';
+
+            $creatorName = session('user.nama_karyawan') ?? session('user.nama') ?? session('user.username') ?? 'SYSTEM';
+            if (str_contains($creatorName, '@')) {
+                $creatorName = explode('@', $creatorName)[0];
+                $creatorName = str_replace(['.', '_', '-'], ' ', $creatorName);
+            }
+            $currentUser = strtoupper($creatorName);
 
             DB::table('trx_batchjob_register')
                 ->where('nomor_internet', $nomorInternet)
@@ -1295,12 +1306,23 @@ class PendaftaranController extends Controller
                     'status_reg' => $statusBatal,
                     'note_request' => $alasanLengkap,
                     'date_update' => now(),
-                    'user_update' => substr(session('user.username') ?? 'system', 0, 15),
+                    'user_update' => substr($currentUser, 0, 15),
                 ]);
+
+            try {
+                DB::table('trx_batchjob_register_log')->insert([
+                    'nomor_internet' => $nomorInternet,
+                    'status_reg'     => $statusBatal,
+                    'note_request'   => $alasanLengkap,
+                    'date_create'    => now(),
+                    'user_create'    => substr($currentUser, 0, 15),
+                    'hide'           => '0',
+                ]);
+            } catch (\Exception $e) {}
 
             DB::commit();
 
-            return $this->redirectBackToPendaftaran("Pendaftaran {$nomorInternet} telah dibatalkan.");
+            return $this->redirectBackToPendaftaran("Pendaftaran {$nomorInternet} berhasil dibatalkan dan dipindahkan ke bagian Pelanggan Gagal Pasang.");
 
         } catch (\Exception $e) {
             DB::rollBack();

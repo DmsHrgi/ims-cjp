@@ -333,14 +333,10 @@
                                       @elseif($isNoc ?? false)
                                          {{-- Role NOC Aksi --}}
                                          <div class="flex flex-col items-start gap-1.5 text-xs font-medium whitespace-nowrap">
-                                             <form method="POST" action="{{ route('pendaftaran.batal-pasang', $r->nomor_internet) }}" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pendaftaran ini?')" class="inline">
-                                                 @csrf
-                                                 @method('PUT')
-                                                 <button type="submit" class="flex items-center gap-1.5 text-gray-700 hover:text-rose-600 transition-colors whitespace-nowrap">
-                                                     <i class="fa-solid fa-xmark text-slate-400"></i>
-                                                     <span>Batal Pasang</span>
-                                                 </button>
-                                             </form>
+                                              <button type="button" onclick="openBatalPasangModal('{{ $r->nomor_internet }}', '{{ addslashes($r->nama_pelanggan ?: $r->nama_penduduk ?: 'Pelanggan') }}')" class="flex items-center gap-1.5 text-gray-700 hover:text-rose-600 transition-colors whitespace-nowrap cursor-pointer">
+                                                  <i class="fa-solid fa-xmark text-slate-400"></i>
+                                                  <span>Batal Pasang</span>
+                                              </button>
 
                                              {{-- 2. NOC Workflow --}}
                                              @if(empty($r->aktivasi_date_start))
@@ -404,14 +400,10 @@
                                           {{-- Role Teknik / General Admin Aksi --}}
                                           <div class="flex flex-col items-start gap-1.5 text-xs font-medium whitespace-nowrap">
                                               {{-- 1. Batal Pasang --}}
-                                              <form method="POST" action="{{ route('pendaftaran.batal-pasang', $r->nomor_internet) }}" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pendaftaran ini?')" class="inline">
-                                                  @csrf
-                                                  @method('PUT')
-                                                  <button type="submit" class="flex items-center gap-1.5 text-gray-700 hover:text-rose-600 transition-colors whitespace-nowrap">
-                                                      <i class="fa-solid fa-xmark text-slate-400"></i>
-                                                      <span>Batal Pasang</span>
-                                                  </button>
-                                              </form>
+                                              <button type="button" onclick="openBatalPasangModal('{{ $r->nomor_internet }}', '{{ addslashes($r->nama_pelanggan ?: $r->nama_penduduk ?: 'Pelanggan') }}')" class="flex items-center gap-1.5 text-gray-700 hover:text-rose-600 transition-colors whitespace-nowrap cursor-pointer">
+                                                  <i class="fa-solid fa-xmark text-slate-400"></i>
+                                                  <span>Batal Pasang</span>
+                                              </button>
 
                                               {{-- 2. Workflow Actions --}}
                                               @if($step1_dataInput)
@@ -2329,7 +2321,69 @@
         </div>
     </div>
 
+    <!-- Modal Batal Pasang -->
+    <div id="modalBatalPasang" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-100 animate-in fade-in zoom-in-95 duration-200">
+            <div class="px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+                        <i class="fa-solid fa-ban text-sm"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-800">Batal Pasang Registrasi</h3>
+                        <p id="batalModalSubtitle" class="text-xs text-slate-500 font-medium"></p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeBatalPasangModal()" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200/50 flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+            <form id="formBatalPasang" method="POST" action="">
+                @csrf
+                @method('PUT')
+                <div class="p-6 space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">
+                            Kategori Alasan Pembatalan <span class="text-rose-500">*</span>
+                        </label>
+                        <select id="kategoriBatal" name="kategori_batal" required class="w-full bg-slate-50 border border-slate-200 focus:border-rose-500 focus:bg-white text-slate-800 text-xs font-medium rounded-xl p-3 outline-none transition-all">
+                            <option value="">-- PILIH KATEGORI PEMBATALAN --</option>
+                            <option value="TIDAK TERJANGKAU JARINGAN">TIDAK TERJANGKAU JARINGAN</option>
+                            <option value="PERMINTAAN DARI USER">PERMINTAAN DARI USER</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">
+                            Alasan / Keterangan Pembatalan <span class="text-rose-500">*</span>
+                        </label>
+                        <textarea id="alasanBatal" name="alasan_batal" rows="3" required placeholder="Tuliskan keterangan detail alasan batal pasang..." class="w-full bg-slate-50 border border-slate-200 focus:border-rose-500 focus:bg-white text-slate-800 text-xs font-medium rounded-xl p-3 outline-none transition-all resize-none"></textarea>
+                    </div>
+                </div>
+                <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2.5">
+                    <button type="button" onclick="closeBatalPasangModal()" class="px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold transition-all shadow-xs">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-all shadow-md shadow-rose-500/20 flex items-center gap-2">
+                        <i class="fa-solid fa-ban"></i> Konfirmasi Batal Pasang
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
+        function openBatalPasangModal(nomorInternet, namaPelanggan) {
+            var form = document.getElementById('formBatalPasang');
+            form.action = '/pendaftaran/' + encodeURIComponent(nomorInternet) + '/batal-pasang';
+            document.getElementById('batalModalSubtitle').textContent = (nomorInternet || '') + ' - ' + (namaPelanggan || '');
+            document.getElementById('kategoriBatal').value = '';
+            document.getElementById('alasanBatal').value = '';
+            document.getElementById('modalBatalPasang').classList.remove('hidden');
+        }
+
+        function closeBatalPasangModal() {
+            document.getElementById('modalBatalPasang').classList.add('hidden');
+        }
         // State tracking URL foto mapping untuk setiap modal
         const currentFotoMappingState = {
             survey: { url: '', name: '', title: '' },

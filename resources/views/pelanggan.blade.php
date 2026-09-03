@@ -106,8 +106,8 @@
         </div>
     @endif
 
-    <!-- Status Selection Tabs (Aktif, Suspend, Terminasi, Semua) -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+    <!-- Status Selection Tabs (Aktif, Suspend, Terminasi, Gagal Pasang, Semua) -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
         @php
             $currentSec = request('section', request('status', ''));
         @endphp
@@ -183,6 +183,24 @@
                 <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-md font-bold text-white uppercase tracking-wider">Dipilih</span>
             @endif
         </a>
+
+        <!-- Tab 5: Pelanggan Gagal Pasang -->
+        @php $isGagal = $currentSec === 'gagal' || $currentSec === 'batal'; @endphp
+        <a href="{{ route('pelanggan', array_merge(request()->except('page', 'section', 'status'), ['section' => 'gagal'])) }}"
+           class="flex items-center justify-between p-4 rounded-2xl border transition-all duration-200 group {{ $isGagal ? 'bg-slate-700 text-white border-slate-700 shadow-md shadow-slate-700/20 scale-[1.01]' : 'bg-white text-gray-700 border-gray-100 hover:border-slate-400 hover:shadow-sm' }}">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm {{ $isGagal ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-700 group-hover:scale-105' }} transition-transform">
+                    <i class="fa-solid fa-ban"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wider {{ $isGagal ? 'text-slate-200' : 'text-gray-500' }}">Gagal Pasang</p>
+                    <p class="text-lg font-bold leading-none mt-0.5">{{ number_format($statusCounts['gagal'] ?? 0) }}</p>
+                </div>
+            </div>
+            @if($isGagal)
+                <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-md font-bold text-white uppercase tracking-wider">Dipilih</span>
+            @endif
+        </a>
     </div>
 
     <div>
@@ -197,6 +215,7 @@
                         <option value="aktif" {{ request('section') === 'aktif' ? 'selected' : '' }}>PELANGGAN AKTIF</option>
                         <option value="suspend" {{ request('section') === 'suspend' ? 'selected' : '' }}>PELANGGAN SUSPEND</option>
                         <option value="terminasi" {{ request('section') === 'terminasi' ? 'selected' : '' }}>PELANGGAN TERMINASI</option>
+                        <option value="gagal" {{ request('section') === 'gagal' ? 'selected' : '' }}>PELANGGAN GAGAL PASANG</option>
                     </select>
                 </div>
 
@@ -347,9 +366,14 @@
                                                 Terminasi
                                             </span>
                                         @elseif(($c->section ?? '') === 'gagal')
-                                            <span class="inline-block bg-gray-100 text-gray-800 border border-gray-300 text-[10px] font-bold px-2 py-0.5 rounded uppercase">
-                                                Gagal Pasang
+                                            <span class="inline-block bg-rose-100 text-rose-800 border border-rose-300 text-[10px] font-bold px-2 py-0.5 rounded uppercase">
+                                                <i class="fa-solid fa-ban text-[9px] mr-0.5"></i> Gagal Pasang
                                             </span>
+                                            @if(!empty($c->note_request))
+                                                <div class="text-[10px] text-rose-600 font-medium leading-tight max-w-[220px] mt-1 bg-rose-50/80 p-1.5 rounded border border-rose-100">
+                                                    {{ $c->note_request }}
+                                                </div>
+                                            @endif
                                         @else
                                             <span class="inline-block bg-blue-100 text-blue-800 border border-blue-200 text-[10px] font-bold px-2 py-0.5 rounded uppercase">
                                                 Aktif
@@ -402,7 +426,100 @@
                                     <!-- Col 5: Aksi -->
                                     <td class="py-4 px-6 align-top">
                                         <div class="flex flex-col gap-1.5 text-xs whitespace-nowrap">
-                                            @if($isAdmin || $isNoc || $isTeknik)
+                                            @if(($c->section ?? '') === 'gagal')
+                                                {{-- Role Teknik & Admin di bagian Pelanggan Gagal Pasang: sama dengan menu registrasi --}}
+                                                @php
+                                                    $isReportDone = !empty($c->instalasi_date_finish) || (!empty($c->instalasi_team) && !empty($c->instalasi_note_finish)) || ($c->status_reg ?? '') == '15' || str_contains(strtoupper($c->desc_registrasi ?? ''), 'SELESAI INSTALASI');
+                                                    $isAktivasiScheduled = !empty($c->aktivasi_date_start);
+                                                    $isAktivasiDone = !empty($c->aktivasi_date_finish) || ($c->status_reg ?? '') == '16' || str_contains(strtoupper($c->desc_registrasi ?? ''), 'SELESAI AKTIVASI');
+                                                    $step5_instalasiDone = $isReportDone && !$isAktivasiScheduled && !$isAktivasiDone;
+                                                    $step1_dataInput = empty($c->survey_date_start) && empty($c->survey_date_finish) && empty($c->instalasi_date_start) && !$step5_instalasiDone && !$isAktivasiScheduled && !$isAktivasiDone;
+                                                    $step2_surveyScheduled = !empty($c->survey_date_start) && empty($c->survey_date_finish) && empty($c->instalasi_date_start) && !$step5_instalasiDone && !$isAktivasiScheduled && !$isAktivasiDone;
+                                                    $step3_surveyDone = !empty($c->survey_date_finish) && empty($c->instalasi_date_start) && !$step5_instalasiDone && !$isAktivasiScheduled && !$isAktivasiDone;
+                                                    $step4_instalasiScheduled = !empty($c->instalasi_date_start) && empty($c->instalasi_date_finish) && !$step5_instalasiDone && !$isAktivasiScheduled && !$isAktivasiDone;
+                                                @endphp
+
+                                                @if($isAdmin || $isTeknik)
+                                                    @if($step1_dataInput || in_array((string)($c->status_reg ?? ''), ['17', '11.1'], true))
+                                                        <button type="button" onclick="openSurveyModal(
+                                                                '{{ $c->nomor_internet }}',
+                                                                '{{ addslashes($c->nama_display) }}',
+                                                                '{{ $c->survey_date_start ?? '' }}',
+                                                                '{{ $c->survey_time ?? '' }}',
+                                                                '{{ addslashes($c->survey_note ?? '') }}',
+                                                                '{{ addslashes($c->survey_team ?? '') }}',
+                                                                '{{ !empty($c->foto_peta) ? route('media.file', ['path' => $c->foto_peta]) : '' }}'
+                                                            )" class="flex items-center gap-1.5 text-gray-700 hover:text-blue-600 transition-colors whitespace-nowrap cursor-pointer">
+                                                            <i class="fa-solid fa-pen-to-square text-blue-500 text-[11px]"></i>
+                                                            <span>Jadwal Survey</span>
+                                                        </button>
+                                                    @elseif($step2_surveyScheduled)
+                                                        <button type="button" onclick="openReportSurveyModal(
+                                                                '{{ $c->nomor_internet }}',
+                                                                '{{ addslashes($c->nama_display) }}',
+                                                                '{{ $c->survey_date_finish ?? '' }}',
+                                                                '{{ addslashes($c->survey_note_finish ?? '') }}',
+                                                                '{{ addslashes($c->survey_team ?? '') }}',
+                                                                '{{ !empty($c->foto_peta) ? route('media.file', ['path' => $c->foto_peta]) : '' }}'
+                                                            )" class="flex items-center gap-1.5 text-gray-700 hover:text-blue-600 transition-colors whitespace-nowrap cursor-pointer">
+                                                            <i class="fa-solid fa-pen-to-square text-blue-500 text-[11px]"></i>
+                                                            <span>Report Survey</span>
+                                                        </button>
+                                                    @elseif($step3_surveyDone)
+                                                        @php
+                                                            $cItems = isset($installedItems) ? $installedItems->get($c->nomor_internet, collect()) : collect();
+                                                        @endphp
+                                                        <button type="button" onclick="openFormInstalasiModal(
+                                                                '{{ $c->nomor_internet }}',
+                                                                '{{ addslashes($c->nama_display) }}',
+                                                                '{{ addslashes($c->survey_note_finish ?: $c->note_request ?: '') }}',
+                                                                '{{ $c->instalasi_date_start ?? '' }}',
+                                                                '{{ $c->instalasi_time ?? '' }}',
+                                                                '{{ addslashes($c->instalasi_note ?? '') }}',
+                                                                '{{ addslashes($c->instalasi_team ?? '') }}',
+                                                                {{ json_encode($cItems) }},
+                                                                '{{ !empty($c->foto_peta) ? route('media.file', ['path' => $c->foto_peta]) : '' }}'
+                                                            )" class="flex items-center gap-1.5 text-gray-700 hover:text-blue-600 transition-colors whitespace-nowrap cursor-pointer">
+                                                            <i class="fa-solid fa-pen-to-square text-blue-500 text-[11px]"></i>
+                                                            <span>Jadwal Instalasi</span>
+                                                        </button>
+                                                    @elseif($step4_instalasiScheduled)
+                                                        @php
+                                                            $cItems = isset($installedItems) ? $installedItems->get($c->nomor_internet, collect()) : collect();
+                                                        @endphp
+                                                        <button type="button" onclick="openReportInstalasiModal(
+                                                                '{{ $c->nomor_internet }}',
+                                                                '{{ addslashes($c->nama_display) }}',
+                                                                '{{ $c->instalasi_date_finish ?? '' }}',
+                                                                '{{ addslashes($c->instalasi_note_finish ?? '') }}',
+                                                                '{{ addslashes($c->instalasi_team ?? '') }}',
+                                                                {{ json_encode($cItems) }},
+                                                                '{{ !empty($c->foto_peta) ? route('media.file', ['path' => $c->foto_peta]) : '' }}'
+                                                            )" class="flex items-center gap-1.5 text-gray-700 hover:text-blue-600 transition-colors whitespace-nowrap cursor-pointer">
+                                                            <i class="fa-solid fa-pen-to-square text-blue-500 text-[11px]"></i>
+                                                            <span>Report Instalasi</span>
+                                                        </button>
+                                                    @endif
+
+                                                    <a href="{{ route('pendaftaran.edit', $c->nomor_internet) }}" class="flex items-center gap-1.5 text-gray-700 hover:text-emerald-600 transition-colors font-medium">
+                                                        <i class="fa-solid fa-pen-to-square text-emerald-500 text-[11px]"></i>
+                                                        <span>Edit</span>
+                                                    </a>
+                                                    <button type="button" onclick="openModalHapus('{{ $c->nomor_internet }}', '{{ addslashes($c->nama_display) }}')" class="flex items-center gap-1.5 text-gray-700 hover:text-rose-600 transition-colors font-medium text-left cursor-pointer">
+                                                        <i class="fa-solid fa-trash-can text-rose-500 text-[11px]"></i>
+                                                        <span>Hapus</span>
+                                                    </button>
+                                                @else
+                                                    <a href="{{ route('pendaftaran.edit', $c->nomor_internet) }}" class="flex items-center gap-1.5 text-gray-700 hover:text-emerald-600 transition-colors font-medium">
+                                                        <i class="fa-solid fa-pen-to-square text-emerald-500 text-[11px]"></i>
+                                                        <span>Edit</span>
+                                                    </a>
+                                                    <button type="button" onclick="openModalHapus('{{ $c->nomor_internet }}', '{{ addslashes($c->nama_display) }}')" class="flex items-center gap-1.5 text-gray-700 hover:text-rose-600 transition-colors font-medium text-left cursor-pointer">
+                                                        <i class="fa-solid fa-trash-can text-rose-500 text-[11px]"></i>
+                                                        <span>Hapus</span>
+                                                    </button>
+                                                @endif
+                                            @elseif($isAdmin || $isNoc || $isTeknik)
                                                 {{-- Role NOC, ADMIN, TEKNIK: Hanya Edit dan Hapus --}}
                                                 <a href="{{ route('pendaftaran.edit', $c->nomor_internet) }}" class="flex items-center gap-1.5 text-gray-700 hover:text-emerald-600 transition-colors font-medium">
                                                     <i class="fa-solid fa-pen-to-square text-emerald-500 text-[11px]"></i>
@@ -1400,4 +1517,6 @@
             els.forEach(function (e) { io.observe(e); });
         });
     </script>
+
+    @include('partials.teknik-workflow-modals')
 @endsection
