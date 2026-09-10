@@ -575,8 +575,8 @@ class BillingController extends Controller
         $totalLayanan = (float)($billing->total_layanan ?? 0);
         $terbilangText = $this->terbilang($totalLayanan);
 
-        // Cari data PIC Keuangan dari session atau default
-        $financeName = session('user.nama_karyawan') ?? session('user.nama_lengkap') ?? session('user.username') ?? 'AMELIA AGUSTINA PUTRI';
+        // PIC Keuangan selalu IDA MAYASARI
+        $financeName = 'IDA MAYASARI';
 
         // Payment URL (jika ada midtrans / custom link)
         $paymentUrl = null;
