@@ -544,4 +544,95 @@ class BillingController extends Controller
 
         return back()->with('success', 'Payment Method berhasil diperbarui.');
     }
+
+    /**
+     * Download / Stream PDF Invoice Layanan
+     */
+    public function downloadPdf($kode_billing)
+    {
+        $this->authorizeFinance();
+
+        $billing = DB::table('view_billing_layanan')
+            ->where('kode_billing_layanan', $kode_billing)
+            ->first();
+
+        if (!$billing) {
+            // fallback jika kode_billing berupa nomor_internet atau di trx_billing_layanan
+            $billing = DB::table('trx_billing_layanan as bl')
+                ->leftJoin('view_batchjob as vb', 'bl.nomor_internet', '=', 'vb.nomor_internet')
+                ->leftJoin('m_status_bill_lay as sbl', 'bl.status_bill_lay', '=', 'sbl.status_bill_lay')
+                ->leftJoin('m_payment_type as pt', 'bl.payment_type', '=', 'pt.payment_type')
+                ->leftJoin('m_bank as mb', 'mb.no_rekening', '=', 'bl.no_rekening')
+                ->where('bl.kode_billing_layanan', $kode_billing)
+                ->orWhere('bl.nomor_internet', $kode_billing)
+                ->first();
+        }
+
+        if (!$billing) {
+            abort(404, 'Data Invoice Layanan tidak ditemukan.');
+        }
+
+        $totalLayanan = (float)($billing->total_layanan ?? 0);
+        $terbilangText = $this->terbilang($totalLayanan);
+
+        // Cari data PIC Keuangan dari session atau default
+        $financeName = session('user.nama_karyawan') ?? session('user.nama_lengkap') ?? session('user.username') ?? 'AMELIA AGUSTINA PUTRI';
+
+        // Payment URL (jika ada midtrans / custom link)
+        $paymentUrl = null;
+        if (!empty($billing->payment_post)) {
+            $paymentUrl = $billing->payment_post;
+        }
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.invoice-layanan', compact(
+            'billing',
+            'terbilangText',
+            'financeName',
+            'paymentUrl'
+        ));
+
+        $pdf->setPaper('a4', 'portrait');
+
+        $slugFile = !empty($billing->invoice_file) ? $billing->invoice_file : ('Invoice_' . str_replace('/', '_', $billing->kode_billing_layanan) . '.pdf');
+
+        return $pdf->stream($slugFile);
+    }
+
+    /**
+     * Helper Konversi Angka ke Terbilang Bahasa Indonesia
+     */
+    private function terbilang($nilai)
+    {
+        $nilai = abs((float)$nilai);
+        $huruf = ["", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas"];
+        $temp = "";
+
+        if ($nilai < 12) {
+            $temp = " " . ($huruf[(int)$nilai] ?? '');
+        } else if ($nilai < 20) {
+            $temp = $this->terbilang($nilai - 10) . " Belas";
+        } else if ($nilai < 100) {
+            $temp = $this->terbilang(floor($nilai / 10)) . " Puluh " . $this->terbilang($nilai % 10);
+        } else if ($nilai < 200) {
+            $temp = " Seratus " . $this->terbilang($nilai - 100);
+        } else if ($nilai < 1000) {
+            $temp = $this->terbilang(floor($nilai / 100)) . " Ratus " . $this->terbilang($nilai % 100);
+        } else if ($nilai < 2000) {
+            $temp = " Seribu " . $this->terbilang($nilai - 1000);
+        } else if ($nilai < 1000000) {
+            $temp = $this->terbilang(floor($nilai / 1000)) . " Ribu " . $this->terbilang(fmod($nilai, 1000));
+        } else if ($nilai < 1000000000) {
+            $temp = $this->terbilang(floor($nilai / 1000000)) . " Juta " . $this->terbilang(fmod($nilai, 1000000));
+        } else if ($nilai < 1000000000000) {
+            $temp = $this->terbilang(floor($nilai / 1000000000)) . " Milyar " . $this->terbilang(fmod($nilai, 1000000000));
+        } else if ($nilai < 1000000000000000) {
+            $temp = $this->terbilang(floor($nilai / 1000000000000)) . " Triliun " . $this->terbilang(fmod($nilai, 1000000000000));
+        }
+
+        $cleaned = trim(preg_replace('/\s+/', ' ', str_replace('Rupiah', '', $temp)));
+        if (empty($cleaned)) {
+            $cleaned = "Nol";
+        }
+        return $cleaned . " Rupiah";
+    }
 }

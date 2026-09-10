@@ -264,7 +264,8 @@
                                 @endif
 
                                 @if($row->invoice_file)
-                                    <a href="#" class="text-[11px] text-blue-600 hover:underline font-medium block mt-1">
+                                    <a href="{{ route('billing.layanan.pdf', $row->kode_billing_layanan) }}" target="_blank" class="text-[11px] text-blue-600 hover:underline font-medium block mt-1 inline-flex items-center gap-1" title="Lihat / Download PDF Invoice">
+                                        <i class="fa-solid fa-file-pdf text-rose-500 text-[11px]"></i>
                                         {{ $row->invoice_file }}
                                     </a>
                                 @endif

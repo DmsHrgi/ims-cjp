@@ -164,6 +164,7 @@ Route::middleware(\App\Http\Middleware\EnsureAuthenticated::class)->group(functi
     Route::delete('/billing/registrasi/{kode_billing}', [BillingController::class, 'destroyRegistrasi'])->where('kode_billing', '.*');
 
     Route::get('/billing/layanan', [BillingController::class, 'layanan'])->name('billing.layanan');
+    Route::get('/billing/layanan/{kode_billing}/pdf', [BillingController::class, 'downloadPdf'])->name('billing.layanan.pdf')->where('kode_billing', '.*');
     Route::post('/billing/layanan/publish', [BillingController::class, 'publishLayanan'])->name('billing.layanan.publish');
     Route::post('/billing/layanan/renew-link', [BillingController::class, 'renewLinkLayanan'])->name('billing.layanan.renew-link');
     Route::post('/billing/layanan/accept', [BillingController::class, 'acceptLayanan'])->name('billing.layanan.accept');
