@@ -578,9 +578,12 @@ class BillingController extends Controller
         // PIC Keuangan selalu IDA MAYASARI
         $financeName = 'IDA MAYASARI';
 
-        // Payment URL (jika ada midtrans / custom link)
-        $paymentUrl = null;
-        if (!empty($billing->payment_post)) {
+        // Payment URL
+        $isManualOrCash = ($billing->payment_type == '2' || $billing->payment_type == '3' || str_contains(strtolower($billing->desc_payment_type ?? ''), 'manual') || str_contains(strtolower($billing->desc_payment_type ?? ''), 'collector') || str_contains(strtolower($billing->desc_payment_type ?? ''), 'cash'));
+        
+        if ($isManualOrCash || empty($billing->payment_post)) {
+            $paymentUrl = route('payment.info', ['kode_billing' => $billing->kode_billing_layanan]);
+        } else {
             $paymentUrl = $billing->payment_post;
         }
 
@@ -596,6 +599,17 @@ class BillingController extends Controller
         $slugFile = !empty($billing->invoice_file) ? $billing->invoice_file : ('Invoice_' . str_replace('/', '_', $billing->kode_billing_layanan) . '.pdf');
 
         return $pdf->stream($slugFile);
+    }
+
+    /**
+     * Halaman / Pesan Instruksi Pembayaran (Manual Transfer / Cash to Collector)
+     */
+    public function paymentInfo(Request $request, $kode_billing = null)
+    {
+        $message = "Pembayaran anda kami rubah menjadi transfer ke rekening Bank Mandiri 1310055566642 a.n. CONNECTI JELAJAH PRIANGAN (dicek manual), lakukan konfirmasi pembayaran dengan cara kirim bukti transfer ke nomor wa 085220137627";
+
+        return response($message, 200)
+            ->header('Content-Type', 'text/html; charset=utf-8');
     }
 
     /**
