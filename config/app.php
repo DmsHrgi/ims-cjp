@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Connecti Jelajah Priangan'),
+    'name' => env('APP_NAME', 'IMS | Connecti Jelajah Priangan'),
 
     /*
     |--------------------------------------------------------------------------
