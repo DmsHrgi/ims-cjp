@@ -241,7 +241,7 @@
                             {{-- 1. Billing Info --}}
                             <td class="py-4 px-5">
                                 <p class="font-mono font-bold text-gray-800 text-[13px]">
-                                    BL-{{ $row->nomor_internet ?: $row->kode_billing_layanan }}
+                                    INV-{{ $row->nomor_internet ?: $row->kode_billing_layanan }}
                                 </p>
                                 <p class="font-semibold text-gray-700 mt-0.5">
                                     <span class="underline decoration-gray-300">{{ $row->nomor_internet }}</span> / {{ strtoupper($row->nama_pelanggan ?: ($row->nama_penduduk ?: 'PELANGGAN')) }} {{ $jkStr }}
