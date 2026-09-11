@@ -1424,6 +1424,40 @@
         }
 
         document.addEventListener('DOMContentLoaded', function () {
+            // Format otomatis ' Mbps' pada Kapasitas Layanan Up/Downgrade (sama seperti pendaftaran baru)
+            const pktInput = document.getElementById('updown-paket-input');
+            if (pktInput) {
+                pktInput.addEventListener('input', function() {
+                    const cursor = this.selectionStart;
+                    const digits = this.value.replace(/\D/g, '');
+                    if (!digits) {
+                        this.value = '';
+                        return;
+                    }
+                    this.value = digits + ' Mbps';
+                    const digitsLen = digits.length;
+                    if (cursor <= digitsLen) {
+                        this.setSelectionRange(cursor, cursor);
+                    } else {
+                        this.setSelectionRange(digitsLen, digitsLen);
+                    }
+                });
+
+                pktInput.addEventListener('keydown', function(e) {
+                    const digits = this.value.replace(/\D/g, '');
+                    if (e.key === 'Backspace' && digits.length > 0) {
+                        const cursor = this.selectionStart;
+                        if (cursor > digits.length) {
+                            e.preventDefault();
+                            const newDigits = digits.slice(0, -1);
+                            this.value = newDigits ? newDigits + ' Mbps' : '';
+                            const newPos = newDigits.length;
+                            this.setSelectionRange(newPos, newPos);
+                        }
+                    }
+                });
+            }
+
             // Format otomatis titik setiap 3 angka pada Harga Layanan Up/Downgrade (sama seperti pendaftaran baru)
             const hrgInput = document.getElementById('updown-harga-input');
             if (hrgInput) {
