@@ -769,21 +769,30 @@
                                 <label class="block text-[11px] font-bold text-gray-700 mb-1">
                                     Kategori Layanan <span class="text-rose-500">*</span>
                                 </label>
-                                <input type="text" id="updown-kategori-input" name="kode_kategori" autocomplete="off" required placeholder="KETIK KATEGORI LAYANAN (MISAL: BROADBAND, DEDICATED)" class="w-full bg-white border border-gray-200 focus:border-blue-500 text-gray-700 py-2 px-3 text-xs font-medium rounded-lg outline-none uppercase placeholder-gray-400">
+                                <div class="relative">
+                                    <select name="kode_kategori" id="updown-kategori-input" required class="w-full appearance-none bg-white border border-gray-200 focus:border-blue-500 text-gray-700 py-2 pl-3 pr-8 text-xs font-medium rounded-lg outline-none transition-all cursor-pointer">
+                                        <option value="">-- PILIH KATEGORI LAYANAN --</option>
+                                        <option value="LOCALLOOP">LOCALLOOP</option>
+                                        <option value="METRO E">METRO E</option>
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-gray-400">
+                                        <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                                    </div>
+                                </div>
                             </div>
 
                             <div>
                                 <label class="block text-[11px] font-bold text-gray-700 mb-1">
                                     Kapasitas Layanan <span class="text-rose-500">*</span>
                                 </label>
-                                <input type="text" id="updown-paket-input" name="kode_bandwith_baru" autocomplete="off" required placeholder="KETIK KAPASITAS LAYANAN / BANDWIDTH (MISAL: 100 MBPS)" class="w-full bg-white border border-gray-200 focus:border-blue-500 text-gray-700 py-2 px-3 text-xs font-medium rounded-lg outline-none placeholder-gray-400">
+                                <input type="text" name="kode_bandwith_baru" id="updown-paket-input" autocomplete="off" required placeholder="Ketik kapasitas layanan / bandwidth (misal: 100 Mbps)" class="w-full bg-white border border-gray-200 focus:border-blue-500 text-gray-700 py-2 px-3 text-xs font-medium rounded-lg outline-none transition-all placeholder-gray-400">
                             </div>
 
                             <div>
                                 <label class="block text-[11px] font-bold text-gray-700 mb-1">
                                     Harga Layanan <span class="text-rose-500">*</span>
                                 </label>
-                                <input type="text" id="updown-harga-input" name="harga_paket" autocomplete="off" required placeholder="KETIK HARGA LAYANAN (CONTOH: 500.000)" class="w-full bg-white border border-gray-200 focus:border-blue-500 text-gray-700 py-2 px-3 text-xs font-semibold rounded-lg outline-none placeholder-gray-400">
+                                <input type="text" name="harga_paket" id="updown-harga-input" autocomplete="off" required placeholder="Ketik harga layanan (contoh: 500.000)" class="w-full bg-white border border-gray-200 focus:border-blue-500 text-gray-700 py-2 px-3 text-xs font-semibold rounded-lg outline-none transition-all placeholder-gray-400">
                             </div>
                         </div>
                     </div>
@@ -1176,25 +1185,6 @@
         // -------------------------------------------------------------
         // 2. MODAL UP/DOWNGRADE
         // -------------------------------------------------------------
-        let globalUpdownPakets = [];
-        let globalUpdownLayanans = [];
-
-        function renderUpdownPaketDatalist(selectedKategori = '') {
-            const listPaketEl = document.getElementById('listUpdownPaket');
-            if (!listPaketEl) return;
-            listPaketEl.innerHTML = '';
-
-            const filtered = selectedKategori 
-                ? globalUpdownPakets.filter(p => !p.nama_kategori_bandwith || p.nama_kategori_bandwith.toLowerCase().includes(selectedKategori.toLowerCase()) || (p.kode_kategori_bandwith && p.kode_kategori_bandwith.toLowerCase().includes(selectedKategori.toLowerCase())))
-                : globalUpdownPakets;
-
-            filtered.forEach(p => {
-                const opt = document.createElement('option');
-                opt.value = `${p.nominal_bandwith} Mbps - ${p.nama_kategori_bandwith || ''}`;
-                listPaketEl.appendChild(opt);
-            });
-        }
-
         function openModalUpDowngrade(nomorInternet, namaDisplay) {
             closeAllModals();
             const modal = document.getElementById('modal-updowngrade');
@@ -1234,23 +1224,6 @@
                             histHtml = '<tr><td colspan="3" class="py-4 text-center text-gray-400">No data available in table</td></tr>';
                         }
                         document.getElementById('updown-history-tbody').innerHTML = histHtml;
-
-                        // Simpan master paket & layanan
-                        globalUpdownPakets = d.paket_list || [];
-                        globalUpdownLayanans = d.layanan_list || [];
-
-                        // Populate datalist kategori
-                        const listKatEl = document.getElementById('listUpdownKategori');
-                        if (listKatEl && globalUpdownLayanans.length > 0) {
-                            listKatEl.innerHTML = '';
-                            globalUpdownLayanans.forEach(k => {
-                                const opt = document.createElement('option');
-                                opt.value = k.nama_kategori_bandwith;
-                                listKatEl.appendChild(opt);
-                            });
-                        }
-
-                        renderUpdownPaketDatalist();
                     }
                 })
                 .catch(err => {
@@ -1451,43 +1424,8 @@
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            // Up/Downgrade form interactive listeners
-            const katInput = document.getElementById('updown-kategori-input');
-            const pktInput = document.getElementById('updown-paket-input');
+            // Format otomatis titik setiap 3 angka pada Harga Layanan Up/Downgrade (sama seperti pendaftaran baru)
             const hrgInput = document.getElementById('updown-harga-input');
-
-            if (katInput) {
-                katInput.addEventListener('input', function() {
-                    renderUpdownPaketDatalist(this.value);
-                });
-            }
-
-            if (pktInput) {
-                pktInput.addEventListener('input', function() {
-                    const val = this.value.trim();
-                    if (!val) return;
-
-                    // Match paket
-                    const matched = globalUpdownPakets.find(p => {
-                        const label1 = `${p.nominal_bandwith} Mbps - ${p.nama_kategori_bandwith || ''}`;
-                        const label2 = `${p.nominal_bandwith} Mbps`;
-                        return label1.toLowerCase() === val.toLowerCase() 
-                            || label2.toLowerCase() === val.toLowerCase()
-                            || (p.kode_bandwith && p.kode_bandwith.toLowerCase() === val.toLowerCase())
-                            || (p.nominal_bandwith && val.startsWith(p.nominal_bandwith));
-                    });
-
-                    if (matched) {
-                        if (katInput && !katInput.value && matched.nama_kategori_bandwith) {
-                            katInput.value = matched.nama_kategori_bandwith;
-                        }
-                        if (hrgInput && matched.harga_bandwith) {
-                            hrgInput.value = 'Rp ' + parseInt(matched.harga_bandwith).toLocaleString('id-ID');
-                        }
-                    }
-                });
-            }
-
             if (hrgInput) {
                 function formatRibuanPelanggan(val) {
                     const num = (val || '').toString().replace(/\D/g, '');
