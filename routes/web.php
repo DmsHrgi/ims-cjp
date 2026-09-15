@@ -7,6 +7,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\PermintaanController;
 use App\Http\Controllers\PendaftaranController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\OltController;
 
 // --- AUTENTIKASI (terbuka) ---
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -70,6 +71,24 @@ Route::get('/fix-database-schema', function () {
         "ALTER TABLE `trx_batchjob_register` ADD `pppoe_password` VARCHAR(50) NULL DEFAULT NULL",
         "ALTER TABLE `m_pelanggan` ADD `pppoe_username` VARCHAR(50) NULL DEFAULT NULL",
         "ALTER TABLE `m_pelanggan` ADD `pppoe_password` VARCHAR(50) NULL DEFAULT NULL",
+        "CREATE TABLE IF NOT EXISTS `m_olt` (
+            `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            `name` VARCHAR(100) NOT NULL,
+            `hostname` VARCHAR(100) NULL,
+            `ip_address` VARCHAR(50) NOT NULL,
+            `vendor` VARCHAR(100) NOT NULL,
+            `model` VARCHAR(100) NULL,
+            `status` VARCHAR(20) NOT NULL DEFAULT 'Up',
+            `snmp_port` INT NOT NULL DEFAULT 161,
+            `snmp_version` VARCHAR(20) NOT NULL DEFAULT 'v2c',
+            `snmp_community` VARCHAR(100) NOT NULL DEFAULT 'public',
+            `location` VARCHAR(255) NULL,
+            `description` TEXT NULL,
+            `user_create` VARCHAR(50) NULL,
+            `user_update` VARCHAR(50) NULL,
+            `created_at` TIMESTAMP NULL DEFAULT NULL,
+            `updated_at` TIMESTAMP NULL DEFAULT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
     ];
 
     foreach ($queries as $q) {
@@ -243,6 +262,13 @@ Route::middleware(\App\Http\Middleware\EnsureAuthenticated::class)->group(functi
     Route::put('/manajemen-user/{kode_pengguna}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/manajemen-user/{kode_pengguna}', [UserController::class, 'destroy'])->name('users.destroy');
     Route::patch('/manajemen-user/{kode_pengguna}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
+
+    // OLT Device (Role Admin)
+    Route::get('/olt', [OltController::class, 'index'])->name('olt.index');
+    Route::post('/olt', [OltController::class, 'store'])->name('olt.store');
+    Route::put('/olt/{id}', [OltController::class, 'update'])->name('olt.update');
+    Route::delete('/olt/{id}', [OltController::class, 'destroy'])->name('olt.destroy');
+    Route::get('/olt/{id}/test-connection', [OltController::class, 'testConnection'])->name('olt.test-connection');
 });
 
 // Route penayangan berkas media (foto PO, foto bangunan, dokumen) tanpa ketergantungan symlink hosting

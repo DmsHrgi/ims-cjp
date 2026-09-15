@@ -20,6 +20,7 @@
     ];
 
     if ($isAdmin) {
+        $allNavItems[] = ['route' => 'olt.index',   'icon' => 'fa-server',    'label' => 'OLT DEVICE'];
         $allNavItems[] = ['route' => 'users.index', 'icon' => 'fa-user-gear', 'label' => 'Manajemen User'];
     }
 
@@ -93,7 +94,11 @@
 
     {{-- Regular items --}}
     @foreach ($navItems as $item)
-        @php $active = $currentRoute === $item['route']; @endphp
+        @php
+            $active = $currentRoute === $item['route'] 
+                || ($item['route'] === 'olt.index' && str_starts_with($currentRoute, 'olt.'))
+                || ($item['route'] === 'users.index' && str_starts_with($currentRoute, 'users.'));
+        @endphp
         <a href="{{ route($item['route']) }}"
            class="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-150 mb-0.5
                   {{ $active
