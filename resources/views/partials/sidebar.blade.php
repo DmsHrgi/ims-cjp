@@ -20,7 +20,7 @@
     ];
 
     if ($isAdmin) {
-        $allNavItems[] = ['route' => 'olt.index',   'icon' => 'fa-server',    'label' => 'OLT DEVICE'];
+        $allNavItems[] = ['route' => 'olt.index',   'icon' => 'fa-server',    'label' => 'OLT Device'];
         $allNavItems[] = ['route' => 'users.index', 'icon' => 'fa-user-gear', 'label' => 'Manajemen User'];
     }
 
