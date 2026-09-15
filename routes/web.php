@@ -104,6 +104,7 @@ Route::get('/fix-database-schema', function () {
         "ALTER TABLE `m_olt` ADD `user_update` VARCHAR(50) NULL",
         "ALTER TABLE `m_olt` ADD `created_at` TIMESTAMP NULL DEFAULT NULL",
         "ALTER TABLE `m_olt` ADD `updated_at` TIMESTAMP NULL DEFAULT NULL",
+        "ALTER TABLE `m_olt` MODIFY `kode_olt` VARCHAR(50) NULL DEFAULT NULL",
     ];
 
     foreach ($queries as $q) {

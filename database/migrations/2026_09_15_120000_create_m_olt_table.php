@@ -30,6 +30,12 @@ return new class extends Migration
                 $table->timestamps();
             });
         } else {
+            try {
+                if (Schema::hasColumn('m_olt', 'kode_olt')) {
+                    \Illuminate\Support\Facades\DB::statement("ALTER TABLE `m_olt` MODIFY `kode_olt` VARCHAR(50) NULL DEFAULT NULL");
+                }
+            } catch (\Throwable $e) {}
+
             Schema::table('m_olt', function (Blueprint $table) {
                 if (!Schema::hasColumn('m_olt', 'name')) {
                     $table->string('name', 100)->default('');

@@ -25,7 +25,7 @@ class OltController extends Controller
     }
 
     /**
-     * Pastikan tabel m_olt siap digunakan.
+     * Pastikan tabel m_olt siap digunakan dan memiliki seluruh kolom yang diperlukan.
      */
     private function ensureTableExists()
     {
@@ -33,6 +33,7 @@ class OltController extends Controller
             if (!Schema::hasTable('m_olt')) {
                 Schema::create('m_olt', function ($table) {
                     $table->id();
+                    $table->string('kode_olt', 50)->nullable()->unique();
                     $table->string('name', 100);
                     $table->string('hostname', 100)->nullable();
                     $table->string('ip_address', 50);
@@ -49,7 +50,14 @@ class OltController extends Controller
                     $table->timestamps();
                 });
             } else {
-                // Pastikan seluruh kolom yang dibutuhkan ada jika tabel sudah pernah dibuat sebelumnya
+                // Modifikasi kolom lama jika perlu
+                try {
+                    if (Schema::hasColumn('m_olt', 'kode_olt')) {
+                        DB::statement("ALTER TABLE `m_olt` MODIFY `kode_olt` VARCHAR(50) NULL DEFAULT NULL");
+                    }
+                } catch (\Throwable $e) {}
+
+                // Tambahkan kolom baru jika belum ada
                 Schema::table('m_olt', function ($table) {
                     if (!Schema::hasColumn('m_olt', 'name')) {
                         $table->string('name', 100)->default('');
@@ -101,25 +109,63 @@ class OltController extends Controller
 
             // Jika tabel kosong, masukkan sample data
             if (DB::table('m_olt')->count() === 0) {
-                DB::table('m_olt')->insert([
-                    'name' => 'OLT_BAGONG',
-                    'hostname' => 'aplikasi',
-                    'ip_address' => '172.168.12.102',
-                    'vendor' => 'ZTE',
-                    'model' => 'C320',
-                    'status' => 'Up',
-                    'snmp_port' => 161,
-                    'snmp_version' => 'v2c',
+                $sampleData = [
+                    'name'           => 'OLT_BAGONG',
+                    'hostname'       => 'aplikasi',
+                    'ip_address'     => '172.168.12.102',
+                    'vendor'         => 'ZTE',
+                    'model'          => 'C320',
+                    'status'         => 'Up',
+                    'snmp_port'      => 161,
+                    'snmp_version'   => 'v2c',
                     'snmp_community' => 'K4yu4gung',
-                    'location' => 'Data Center Bagong / Rack 01',
-                    'description' => 'Primary distribution OLT device',
-                    'user_create' => 'SYSTEM',
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
+                    'location'       => 'Data Center Bagong / Rack 01',
+                    'description'    => 'Primary distribution OLT device',
+                    'user_create'    => 'SYSTEM',
+                    'created_at'     => now(),
+                    'updated_at'     => now(),
+                ];
+
+                if (Schema::hasColumn('m_olt', 'kode_olt')) {
+                    $sampleData['kode_olt'] = 'OLT00001';
+                }
+                if (Schema::hasColumn('m_olt', 'name_olt')) {
+                    $sampleData['name_olt'] = 'OLT_BAGONG';
+                }
+
+                DB::table('m_olt')->insert($sampleData);
             }
         } catch (\Throwable $e) {
             // Ignored if handled
+        }
+    }
+
+    /**
+     * Generate Kode OLT unik jika kolom kode_olt tersedia di tabel m_olt.
+     */
+    private function generateKodeOlt()
+    {
+        try {
+            if (!Schema::hasColumn('m_olt', 'kode_olt')) {
+                return null;
+            }
+
+            $lastRecord = DB::table('m_olt')
+                ->where('kode_olt', 'like', 'OLT%')
+                ->orderBy('kode_olt', 'desc')
+                ->value('kode_olt');
+
+            $nextNumber = 1;
+            if ($lastRecord && preg_match('/OLT(\d+)/i', $lastRecord, $matches)) {
+                $nextNumber = ((int) $matches[1]) + 1;
+            } else {
+                $total = DB::table('m_olt')->count();
+                $nextNumber = $total + 1;
+            }
+
+            return 'OLT' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+        } catch (\Throwable $e) {
+            return 'OLT' . rand(10000, 99999);
         }
     }
 
@@ -136,41 +182,73 @@ class OltController extends Controller
         $filterStatus = trim($request->input('status', ''));
         $viewMode = $request->input('view', 'card'); // 'card' atau 'table'
 
+        $hasIdCol = Schema::hasColumn('m_olt', 'id');
+        $hasKodeCol = Schema::hasColumn('m_olt', 'kode_olt');
+        $hasNameCol = Schema::hasColumn('m_olt', 'name');
+        $hasNameOltCol = Schema::hasColumn('m_olt', 'name_olt');
+
         $query = DB::table('m_olt');
 
         if ($search !== '') {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('hostname', 'like', "%{$search}%")
-                  ->orWhere('ip_address', 'like', "%{$search}%")
-                  ->orWhere('vendor', 'like', "%{$search}%")
-                  ->orWhere('model', 'like', "%{$search}%")
-                  ->orWhere('location', 'like', "%{$search}%");
+            $query->where(function ($q) use ($search, $hasNameCol, $hasNameOltCol, $hasKodeCol) {
+                if ($hasNameCol) $q->orWhere('name', 'like', "%{$search}%");
+                if ($hasNameOltCol) $q->orWhere('name_olt', 'like', "%{$search}%");
+                if ($hasKodeCol) $q->orWhere('kode_olt', 'like', "%{$search}%");
+                if (Schema::hasColumn('m_olt', 'hostname')) $q->orWhere('hostname', 'like', "%{$search}%");
+                if (Schema::hasColumn('m_olt', 'ip_address')) $q->orWhere('ip_address', 'like', "%{$search}%");
+                if (Schema::hasColumn('m_olt', 'vendor')) $q->orWhere('vendor', 'like', "%{$search}%");
+                if (Schema::hasColumn('m_olt', 'model')) $q->orWhere('model', 'like', "%{$search}%");
+                if (Schema::hasColumn('m_olt', 'location')) $q->orWhere('location', 'like', "%{$search}%");
             });
         }
 
-        if ($filterVendor !== '') {
+        if ($filterVendor !== '' && Schema::hasColumn('m_olt', 'vendor')) {
             $query->where('vendor', $filterVendor);
         }
 
-        if ($filterStatus !== '') {
+        if ($filterStatus !== '' && Schema::hasColumn('m_olt', 'status')) {
             $query->where('status', $filterStatus);
         }
 
-        $oltDevices = $query->orderBy('id', 'desc')->paginate(12)->appends($request->query());
+        $orderCol = $hasIdCol ? 'id' : ($hasKodeCol ? 'kode_olt' : (Schema::hasColumn('m_olt', 'created_at') ? 'created_at' : 'name'));
+        $rawDevices = $query->orderBy($orderCol, 'desc')->paginate(12)->appends($request->query());
+
+        // Standardize object properties so view always has id, name, etc.
+        $oltDevices = $rawDevices->through(function ($item) {
+            if (!isset($item->id) || empty($item->id)) {
+                $item->id = $item->kode_olt ?? rand(1, 9999);
+            }
+            if (empty($item->name)) {
+                $item->name = $item->name_olt ?? ($item->kode_olt ?? 'OLT Device');
+            }
+            if (!isset($item->hostname)) $item->hostname = null;
+            if (!isset($item->ip_address)) $item->ip_address = '-';
+            if (!isset($item->vendor)) $item->vendor = 'Unknown';
+            if (!isset($item->model)) $item->model = null;
+            if (!isset($item->status)) $item->status = 'Up';
+            if (!isset($item->snmp_port)) $item->snmp_port = 161;
+            if (!isset($item->snmp_version)) $item->snmp_version = 'v2c';
+            if (!isset($item->snmp_community)) $item->snmp_community = 'public';
+            if (!isset($item->location)) $item->location = null;
+            if (!isset($item->description)) $item->description = $item->note_olt ?? null;
+            return $item;
+        });
 
         // Master vendor list untuk filter
-        $vendorList = DB::table('m_olt')
-            ->select('vendor')
-            ->whereNotNull('vendor')
-            ->where('vendor', '!=', '')
-            ->distinct()
-            ->pluck('vendor');
+        $vendorList = collect([]);
+        if (Schema::hasColumn('m_olt', 'vendor')) {
+            $vendorList = DB::table('m_olt')
+                ->select('vendor')
+                ->whereNotNull('vendor')
+                ->where('vendor', '!=', '')
+                ->distinct()
+                ->pluck('vendor');
+        }
 
         // Statistik ringkas
         $totalDevices = DB::table('m_olt')->count();
-        $totalUp = DB::table('m_olt')->where('status', 'Up')->count();
-        $totalDown = DB::table('m_olt')->where('status', 'Down')->count();
+        $totalUp = Schema::hasColumn('m_olt', 'status') ? DB::table('m_olt')->where('status', 'Up')->count() : $totalDevices;
+        $totalDown = Schema::hasColumn('m_olt', 'status') ? DB::table('m_olt')->where('status', 'Down')->count() : 0;
         $totalVendors = $vendorList->count();
 
         return view('olt.index', compact(
@@ -219,23 +297,65 @@ class OltController extends Controller
         $u = session('user', []);
         $username = $u['username'] ?? 'Admin';
 
-        DB::table('m_olt')->insert([
-            'name'           => $validated['name'],
-            'hostname'       => $validated['hostname'] ?? null,
-            'ip_address'     => $validated['ip_address'],
-            'vendor'         => $validated['vendor'],
-            'model'          => $validated['model'] ?? null,
-            'status'         => $validated['status'] ?? 'Up',
-            'snmp_port'      => (int) $validated['snmp_port'],
-            'snmp_version'   => $validated['snmp_version'],
-            'snmp_community' => $validated['snmp_community'],
-            'location'       => $validated['location'] ?? null,
-            'description'    => $validated['description'] ?? null,
-            'user_create'    => $username,
-            'user_update'    => $username,
-            'created_at'     => now(),
-            'updated_at'     => now(),
-        ]);
+        // Bangun data insert yang aman sesuai kolom yang tersedia
+        $dataToInsert = [];
+
+        if (Schema::hasColumn('m_olt', 'kode_olt')) {
+            $dataToInsert['kode_olt'] = $this->generateKodeOlt();
+        }
+        if (Schema::hasColumn('m_olt', 'name')) {
+            $dataToInsert['name'] = $validated['name'];
+        }
+        if (Schema::hasColumn('m_olt', 'name_olt')) {
+            $dataToInsert['name_olt'] = $validated['name'];
+        }
+        if (Schema::hasColumn('m_olt', 'hostname')) {
+            $dataToInsert['hostname'] = $validated['hostname'] ?? null;
+        }
+        if (Schema::hasColumn('m_olt', 'ip_address')) {
+            $dataToInsert['ip_address'] = $validated['ip_address'];
+        }
+        if (Schema::hasColumn('m_olt', 'vendor')) {
+            $dataToInsert['vendor'] = $validated['vendor'];
+        }
+        if (Schema::hasColumn('m_olt', 'model')) {
+            $dataToInsert['model'] = $validated['model'] ?? null;
+        }
+        if (Schema::hasColumn('m_olt', 'status')) {
+            $dataToInsert['status'] = $validated['status'] ?? 'Up';
+        }
+        if (Schema::hasColumn('m_olt', 'snmp_port')) {
+            $dataToInsert['snmp_port'] = (int) $validated['snmp_port'];
+        }
+        if (Schema::hasColumn('m_olt', 'snmp_version')) {
+            $dataToInsert['snmp_version'] = $validated['snmp_version'];
+        }
+        if (Schema::hasColumn('m_olt', 'snmp_community')) {
+            $dataToInsert['snmp_community'] = $validated['snmp_community'];
+        }
+        if (Schema::hasColumn('m_olt', 'location')) {
+            $dataToInsert['location'] = $validated['location'] ?? null;
+        }
+        if (Schema::hasColumn('m_olt', 'description')) {
+            $dataToInsert['description'] = $validated['description'] ?? null;
+        }
+        if (Schema::hasColumn('m_olt', 'note_olt')) {
+            $dataToInsert['note_olt'] = $validated['description'] ?? null;
+        }
+        if (Schema::hasColumn('m_olt', 'user_create')) {
+            $dataToInsert['user_create'] = $username;
+        }
+        if (Schema::hasColumn('m_olt', 'user_update')) {
+            $dataToInsert['user_update'] = $username;
+        }
+        if (Schema::hasColumn('m_olt', 'created_at')) {
+            $dataToInsert['created_at'] = now();
+        }
+        if (Schema::hasColumn('m_olt', 'updated_at')) {
+            $dataToInsert['updated_at'] = now();
+        }
+
+        DB::table('m_olt')->insert($dataToInsert);
 
         return redirect()->route('olt.index')->with('success', 'Perangkat OLT baru berhasil ditambahkan!');
     }
@@ -265,21 +385,64 @@ class OltController extends Controller
         $u = session('user', []);
         $username = $u['username'] ?? 'Admin';
 
-        $affected = DB::table('m_olt')->where('id', $id)->update([
-            'name'           => $validated['name'],
-            'hostname'       => $validated['hostname'] ?? null,
-            'ip_address'     => $validated['ip_address'],
-            'vendor'         => $validated['vendor'],
-            'model'          => $validated['model'] ?? null,
-            'status'         => $validated['status'] ?? 'Up',
-            'snmp_port'      => (int) $validated['snmp_port'],
-            'snmp_version'   => $validated['snmp_version'],
-            'snmp_community' => $validated['snmp_community'],
-            'location'       => $validated['location'] ?? null,
-            'description'    => $validated['description'] ?? null,
-            'user_update'    => $username,
-            'updated_at'     => now(),
-        ]);
+        $dataToUpdate = [];
+
+        if (Schema::hasColumn('m_olt', 'name')) {
+            $dataToUpdate['name'] = $validated['name'];
+        }
+        if (Schema::hasColumn('m_olt', 'name_olt')) {
+            $dataToUpdate['name_olt'] = $validated['name'];
+        }
+        if (Schema::hasColumn('m_olt', 'hostname')) {
+            $dataToUpdate['hostname'] = $validated['hostname'] ?? null;
+        }
+        if (Schema::hasColumn('m_olt', 'ip_address')) {
+            $dataToUpdate['ip_address'] = $validated['ip_address'];
+        }
+        if (Schema::hasColumn('m_olt', 'vendor')) {
+            $dataToUpdate['vendor'] = $validated['vendor'];
+        }
+        if (Schema::hasColumn('m_olt', 'model')) {
+            $dataToUpdate['model'] = $validated['model'] ?? null;
+        }
+        if (Schema::hasColumn('m_olt', 'status')) {
+            $dataToUpdate['status'] = $validated['status'] ?? 'Up';
+        }
+        if (Schema::hasColumn('m_olt', 'snmp_port')) {
+            $dataToUpdate['snmp_port'] = (int) $validated['snmp_port'];
+        }
+        if (Schema::hasColumn('m_olt', 'snmp_version')) {
+            $dataToUpdate['snmp_version'] = $validated['snmp_version'];
+        }
+        if (Schema::hasColumn('m_olt', 'snmp_community')) {
+            $dataToUpdate['snmp_community'] = $validated['snmp_community'];
+        }
+        if (Schema::hasColumn('m_olt', 'location')) {
+            $dataToUpdate['location'] = $validated['location'] ?? null;
+        }
+        if (Schema::hasColumn('m_olt', 'description')) {
+            $dataToUpdate['description'] = $validated['description'] ?? null;
+        }
+        if (Schema::hasColumn('m_olt', 'note_olt')) {
+            $dataToUpdate['note_olt'] = $validated['description'] ?? null;
+        }
+        if (Schema::hasColumn('m_olt', 'user_update')) {
+            $dataToUpdate['user_update'] = $username;
+        }
+        if (Schema::hasColumn('m_olt', 'updated_at')) {
+            $dataToUpdate['updated_at'] = now();
+        }
+
+        $query = DB::table('m_olt');
+        if (Schema::hasColumn('m_olt', 'id') && is_numeric($id)) {
+            $query->where('id', $id);
+        } elseif (Schema::hasColumn('m_olt', 'kode_olt')) {
+            $query->where('kode_olt', $id);
+        } else {
+            $query->where('name', $id);
+        }
+
+        $query->update($dataToUpdate);
 
         return redirect()->route('olt.index')->with('success', 'Data perangkat OLT berhasil diperbarui!');
     }
@@ -292,7 +455,16 @@ class OltController extends Controller
         $this->authorizeAdmin();
         $this->ensureTableExists();
 
-        DB::table('m_olt')->where('id', $id)->delete();
+        $query = DB::table('m_olt');
+        if (Schema::hasColumn('m_olt', 'id') && is_numeric($id)) {
+            $query->where('id', $id);
+        } elseif (Schema::hasColumn('m_olt', 'kode_olt')) {
+            $query->where('kode_olt', $id);
+        } else {
+            $query->where('name', $id);
+        }
+
+        $query->delete();
 
         return redirect()->route('olt.index')->with('success', 'Perangkat OLT berhasil dihapus.');
     }
@@ -305,13 +477,22 @@ class OltController extends Controller
         $this->authorizeAdmin();
         $this->ensureTableExists();
 
-        $olt = DB::table('m_olt')->where('id', $id)->first();
+        $query = DB::table('m_olt');
+        if (Schema::hasColumn('m_olt', 'id') && is_numeric($id)) {
+            $query->where('id', $id);
+        } elseif (Schema::hasColumn('m_olt', 'kode_olt')) {
+            $query->where('kode_olt', $id);
+        } else {
+            $query->where('name', $id);
+        }
+
+        $olt = $query->first();
         if (!$olt) {
             return response()->json(['status' => 'error', 'message' => 'Perangkat OLT tidak ditemukan.'], 404);
         }
 
-        $ip = $olt->ip_address;
-        $port = (int) ($olt->snmp_port ?: 161);
+        $ip = $olt->ip_address ?? '127.0.0.1';
+        $port = (int) ($olt->snmp_port ?? 161);
         $isReachable = false;
         $responseTimeMs = null;
 
@@ -323,7 +504,7 @@ class OltController extends Controller
             fclose($socket);
             $responseTimeMs = round((microtime(true) - $startTime) * 1000, 2);
         } else {
-            // Cek port ICMP / port 80 / fallback check
+            // Cek port ICMP / port 80 fallback check
             $socket80 = @fsockopen($ip, 80, $errno2, $errstr2, 1.0);
             if ($socket80) {
                 $isReachable = true;
@@ -334,10 +515,20 @@ class OltController extends Controller
 
         // Update status di database jika ingin auto sync
         $newStatus = $isReachable ? 'Up' : 'Down';
-        DB::table('m_olt')->where('id', $id)->update([
-            'status' => $newStatus,
-            'updated_at' => now(),
-        ]);
+        if (Schema::hasColumn('m_olt', 'status')) {
+            $upQuery = DB::table('m_olt');
+            if (Schema::hasColumn('m_olt', 'id') && is_numeric($id)) {
+                $upQuery->where('id', $id);
+            } elseif (Schema::hasColumn('m_olt', 'kode_olt')) {
+                $upQuery->where('kode_olt', $id);
+            }
+            $upQuery->update([
+                'status' => $newStatus,
+                'updated_at' => now(),
+            ]);
+        }
+
+        $deviceName = $olt->name ?? ($olt->name_olt ?? 'OLT Device');
 
         return response()->json([
             'status' => 'success',
@@ -347,8 +538,8 @@ class OltController extends Controller
             'port' => $port,
             'latency_ms' => $responseTimeMs,
             'message' => $isReachable 
-                ? "Koneksi ke {$olt->name} ({$ip}) BERHASIL (Latensi: {$responseTimeMs} ms)." 
-                : "Tidak dapat terhubung ke {$olt->name} ({$ip}:{$port}).",
+                ? "Koneksi ke {$deviceName} ({$ip}) BERHASIL (Latensi: {$responseTimeMs} ms)." 
+                : "Tidak dapat terhubung ke {$deviceName} ({$ip}:{$port}).",
         ]);
     }
 }
