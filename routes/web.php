@@ -281,6 +281,7 @@ Route::middleware(\App\Http\Middleware\EnsureAuthenticated::class)->group(functi
 
     // OLT Device (Role Admin)
     Route::get('/olt', [OltController::class, 'index'])->name('olt.index');
+    Route::get('/olt/sync-status', [OltController::class, 'syncAllStatus'])->name('olt.sync-status');
     Route::post('/olt', [OltController::class, 'store'])->name('olt.store');
     Route::put('/olt/{id}', [OltController::class, 'update'])->name('olt.update');
     Route::delete('/olt/{id}', [OltController::class, 'destroy'])->name('olt.destroy');

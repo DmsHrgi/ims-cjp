@@ -26,6 +26,7 @@ class OltController extends Controller
 
     /**
      * Pastikan tabel m_olt siap digunakan dan memiliki seluruh kolom yang diperlukan.
+     * Tidak menyisipkan data dummy/palsu.
      */
     private function ensureTableExists()
     {
@@ -39,7 +40,7 @@ class OltController extends Controller
                     $table->string('ip_address', 50);
                     $table->string('vendor', 100);
                     $table->string('model', 100)->nullable();
-                    $table->string('status', 20)->default('Up');
+                    $table->string('status', 20)->default('Down');
                     $table->integer('snmp_port')->default(161);
                     $table->string('snmp_version', 20)->default('v2c');
                     $table->string('snmp_community', 100)->default('public');
@@ -75,7 +76,7 @@ class OltController extends Controller
                         $table->string('model', 100)->nullable();
                     }
                     if (!Schema::hasColumn('m_olt', 'status')) {
-                        $table->string('status', 20)->default('Up');
+                        $table->string('status', 20)->default('Down');
                     }
                     if (!Schema::hasColumn('m_olt', 'snmp_port')) {
                         $table->integer('snmp_port')->default(161);
@@ -106,38 +107,95 @@ class OltController extends Controller
                     }
                 });
             }
-
-            // Jika tabel kosong, masukkan sample data
-            if (DB::table('m_olt')->count() === 0) {
-                $sampleData = [
-                    'name'           => 'OLT_BAGONG',
-                    'hostname'       => 'aplikasi',
-                    'ip_address'     => '172.168.12.102',
-                    'vendor'         => 'ZTE',
-                    'model'          => 'C320',
-                    'status'         => 'Up',
-                    'snmp_port'      => 161,
-                    'snmp_version'   => 'v2c',
-                    'snmp_community' => 'K4yu4gung',
-                    'location'       => 'Data Center Bagong / Rack 01',
-                    'description'    => 'Primary distribution OLT device',
-                    'user_create'    => 'SYSTEM',
-                    'created_at'     => now(),
-                    'updated_at'     => now(),
-                ];
-
-                if (Schema::hasColumn('m_olt', 'kode_olt')) {
-                    $sampleData['kode_olt'] = 'OLT00001';
-                }
-                if (Schema::hasColumn('m_olt', 'name_olt')) {
-                    $sampleData['name_olt'] = 'OLT_BAGONG';
-                }
-
-                DB::table('m_olt')->insert($sampleData);
-            }
         } catch (\Throwable $e) {
             // Ignored if handled
         }
+    }
+
+    /**
+     * Uji konektivitas aktual perangkat OLT secara nyata (SNMP Query, UDP Probe, ICMP Ping, dan Port Probe).
+     */
+    public function pingDevice($ip, $port = 161, $community = 'public', $version = 'v2c', $timeoutSec = 1.0)
+    {
+        $ip = trim((string) $ip);
+        if (empty($ip) || $ip === '-') {
+            return ['status' => 'Down', 'latency_ms' => null, 'method' => 'none', 'message' => 'IP Address belum diatur'];
+        }
+
+        $port = (int) ($port ?: 161);
+        $community = (string) ($community ?: 'public');
+        $version = (string) ($version ?: 'v2c');
+
+        $startTime = microtime(true);
+        $latency = null;
+
+        // 1. Uji SNMP jika modul PHP SNMP terpasang
+        if (function_exists('snmp2_get') && in_array(strtolower($version), ['v2c', 'v2', '2c'])) {
+            try {
+                // sysUpTime OID: .1.3.6.1.2.1.1.3.0
+                $snmpResult = @snmp2_get($ip . ':' . $port, $community, '.1.3.6.1.2.1.1.3.0', (int) ($timeoutSec * 1000000), 1);
+                if ($snmpResult !== false) {
+                    $latency = round((microtime(true) - $startTime) * 1000, 1);
+                    return ['status' => 'Up', 'latency_ms' => $latency, 'method' => 'snmp_v2c', 'message' => 'Respon SNMP v2c Terverifikasi'];
+                }
+            } catch (\Throwable $e) {}
+        } elseif (function_exists('snmpget') && strtolower($version) === 'v1') {
+            try {
+                $snmpResult = @snmpget($ip . ':' . $port, $community, '.1.3.6.1.2.1.1.3.0', (int) ($timeoutSec * 1000000), 1);
+                if ($snmpResult !== false) {
+                    $latency = round((microtime(true) - $startTime) * 1000, 1);
+                    return ['status' => 'Up', 'latency_ms' => $latency, 'method' => 'snmp_v1', 'message' => 'Respon SNMP v1 Terverifikasi'];
+                }
+            } catch (\Throwable $e) {}
+        }
+
+        // 2. Uji SNMP UDP Probe langsung via Socket
+        try {
+            $sock = @fsockopen("udp://$ip", $port, $errno, $errstr, $timeoutSec);
+            if ($sock) {
+                stream_set_timeout($sock, 1);
+                $commLen = chr(strlen($community));
+                // SNMP packet request
+                $packet = "\x30" . chr(29 + strlen($community)) . "\x02\x01\x01\x04" . $commLen . $community . "\xa0\x18\x02\x04\x12\x34\x56\x78\x02\x01\x00\x02\x01\x00\x30\x0a\x30\x08\x06\x04\x2b\x06\x01\x02\x05\x00";
+                @fwrite($sock, $packet);
+                $resp = @fread($sock, 512);
+                fclose($sock);
+                if (!empty($resp)) {
+                    $latency = round((microtime(true) - $startTime) * 1000, 1);
+                    return ['status' => 'Up', 'latency_ms' => $latency, 'method' => 'snmp_udp', 'message' => 'Respon UDP SNMP Aktif'];
+                }
+            }
+        } catch (\Throwable $e) {}
+
+        // 3. Uji ICMP Ping (OS Ping)
+        try {
+            $isWindows = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
+            $pingCmd = $isWindows 
+                ? "ping -n 1 -w 1000 " . escapeshellarg($ip)
+                : "ping -c 1 -W 1 " . escapeshellarg($ip);
+            
+            $output = [];
+            $resultCode = 1;
+            @exec($pingCmd, $output, $resultCode);
+
+            if ($resultCode === 0) {
+                $latency = round((microtime(true) - $startTime) * 1000, 1);
+                return ['status' => 'Up', 'latency_ms' => $latency, 'method' => 'icmp_ping', 'message' => 'ICMP Ping Terhubung'];
+            }
+        } catch (\Throwable $e) {}
+
+        // 4. Uji Port Management OLT (Telnet 23, HTTP 80, SSH 22, HTTPS 443, port 8080)
+        $commonPorts = [23, 80, 22, 443, 8080];
+        foreach ($commonPorts as $p) {
+            $sock = @fsockopen($ip, $p, $errno, $errstr, 0.4);
+            if ($sock) {
+                fclose($sock);
+                $latency = round((microtime(true) - $startTime) * 1000, 1);
+                return ['status' => 'Up', 'latency_ms' => $latency, 'method' => "tcp_port_{$p}", 'message' => "Port {$p} Aktif"];
+            }
+        }
+
+        return ['status' => 'Down', 'latency_ms' => null, 'method' => 'timeout', 'message' => 'Perangkat Offline / Tidak Merespons'];
     }
 
     /**
@@ -225,7 +283,7 @@ class OltController extends Controller
             if (!isset($item->ip_address)) $item->ip_address = '-';
             if (!isset($item->vendor)) $item->vendor = 'Unknown';
             if (!isset($item->model)) $item->model = null;
-            if (!isset($item->status)) $item->status = 'Up';
+            if (!isset($item->status)) $item->status = 'Down';
             if (!isset($item->snmp_port)) $item->snmp_port = 161;
             if (!isset($item->snmp_version)) $item->snmp_version = 'v2c';
             if (!isset($item->snmp_community)) $item->snmp_community = 'public';
@@ -245,10 +303,10 @@ class OltController extends Controller
                 ->pluck('vendor');
         }
 
-        // Statistik ringkas
+        // Statistik ringkas berdasarkan kondisi riil database
         $totalDevices = DB::table('m_olt')->count();
-        $totalUp = Schema::hasColumn('m_olt', 'status') ? DB::table('m_olt')->where('status', 'Up')->count() : $totalDevices;
-        $totalDown = Schema::hasColumn('m_olt', 'status') ? DB::table('m_olt')->where('status', 'Down')->count() : 0;
+        $totalUp = Schema::hasColumn('m_olt', 'status') ? DB::table('m_olt')->where('status', 'Up')->count() : 0;
+        $totalDown = Schema::hasColumn('m_olt', 'status') ? DB::table('m_olt')->where('status', 'Down')->count() : $totalDevices;
         $totalVendors = $vendorList->count();
 
         return view('olt.index', compact(
@@ -266,7 +324,7 @@ class OltController extends Controller
     }
 
     /**
-     * Simpan data OLT baru ke database.
+     * Simpan data OLT baru ke database dengan pengecekan status riil saat disimpan.
      */
     public function store(Request $request)
     {
@@ -293,6 +351,15 @@ class OltController extends Controller
             'snmp_version.required'   => 'SNMP Version wajib dipilih.',
             'snmp_community.required' => 'SNMP Community wajib diisi.',
         ]);
+
+        // Cek status konektivitas riil ke perangkat OLT saat disimpan
+        $pingResult = $this->pingDevice(
+            $validated['ip_address'],
+            (int) $validated['snmp_port'],
+            $validated['snmp_community'],
+            $validated['snmp_version']
+        );
+        $realStatus = $pingResult['status']; // 'Up' jika terhubung, 'Down' jika offline
 
         $u = session('user', []);
         $username = $u['username'] ?? 'Admin';
@@ -322,7 +389,7 @@ class OltController extends Controller
             $dataToInsert['model'] = $validated['model'] ?? null;
         }
         if (Schema::hasColumn('m_olt', 'status')) {
-            $dataToInsert['status'] = $validated['status'] ?? 'Up';
+            $dataToInsert['status'] = $realStatus;
         }
         if (Schema::hasColumn('m_olt', 'snmp_port')) {
             $dataToInsert['snmp_port'] = (int) $validated['snmp_port'];
@@ -357,7 +424,11 @@ class OltController extends Controller
 
         DB::table('m_olt')->insert($dataToInsert);
 
-        return redirect()->route('olt.index')->with('success', 'Perangkat OLT baru berhasil ditambahkan!');
+        $statusMsg = $realStatus === 'Up' 
+            ? "Status: ONLINE ({$pingResult['latency_ms']} ms via {$pingResult['method']})" 
+            : "Status: OFFLINE (Belum merespons jaringan)";
+
+        return redirect()->route('olt.index')->with('success', "Perangkat OLT berhasil disimpan! {$statusMsg}");
     }
 
     /**
@@ -381,6 +452,15 @@ class OltController extends Controller
             'location'       => 'nullable|string|max:255',
             'description'    => 'nullable|string|max:500',
         ]);
+
+        // Cek status konektivitas riil ke perangkat OLT saat di-update
+        $pingResult = $this->pingDevice(
+            $validated['ip_address'],
+            (int) $validated['snmp_port'],
+            $validated['snmp_community'],
+            $validated['snmp_version']
+        );
+        $realStatus = $pingResult['status'];
 
         $u = session('user', []);
         $username = $u['username'] ?? 'Admin';
@@ -406,7 +486,7 @@ class OltController extends Controller
             $dataToUpdate['model'] = $validated['model'] ?? null;
         }
         if (Schema::hasColumn('m_olt', 'status')) {
-            $dataToUpdate['status'] = $validated['status'] ?? 'Up';
+            $dataToUpdate['status'] = $realStatus;
         }
         if (Schema::hasColumn('m_olt', 'snmp_port')) {
             $dataToUpdate['snmp_port'] = (int) $validated['snmp_port'];
@@ -444,7 +524,7 @@ class OltController extends Controller
 
         $query->update($dataToUpdate);
 
-        return redirect()->route('olt.index')->with('success', 'Data perangkat OLT berhasil diperbarui!');
+        return redirect()->route('olt.index')->with('success', 'Data perangkat OLT berhasil diperbarui! Status terkini: ' . $realStatus);
     }
 
     /**
@@ -470,7 +550,7 @@ class OltController extends Controller
     }
 
     /**
-     * Test koneksi / ping status OLT.
+     * Test koneksi / ping status OLT tunggal secara real-time.
      */
     public function testConnection(Request $request, $id)
     {
@@ -493,28 +573,12 @@ class OltController extends Controller
 
         $ip = $olt->ip_address ?? '127.0.0.1';
         $port = (int) ($olt->snmp_port ?? 161);
-        $isReachable = false;
-        $responseTimeMs = null;
+        $community = $olt->snmp_community ?? 'public';
+        $version = $olt->snmp_version ?? 'v2c';
 
-        // Cek soket port / ping cepat
-        $startTime = microtime(true);
-        $socket = @fsockopen($ip, $port, $errno, $errstr, 1.5);
-        if ($socket) {
-            $isReachable = true;
-            fclose($socket);
-            $responseTimeMs = round((microtime(true) - $startTime) * 1000, 2);
-        } else {
-            // Cek port ICMP / port 80 fallback check
-            $socket80 = @fsockopen($ip, 80, $errno2, $errstr2, 1.0);
-            if ($socket80) {
-                $isReachable = true;
-                fclose($socket80);
-                $responseTimeMs = round((microtime(true) - $startTime) * 1000, 2);
-            }
-        }
+        $pingResult = $this->pingDevice($ip, $port, $community, $version);
+        $newStatus = $pingResult['status'];
 
-        // Update status di database jika ingin auto sync
-        $newStatus = $isReachable ? 'Up' : 'Down';
         if (Schema::hasColumn('m_olt', 'status')) {
             $upQuery = DB::table('m_olt');
             if (Schema::hasColumn('m_olt', 'id') && is_numeric($id)) {
@@ -531,15 +595,66 @@ class OltController extends Controller
         $deviceName = $olt->name ?? ($olt->name_olt ?? 'OLT Device');
 
         return response()->json([
-            'status' => 'success',
-            'reachable' => $isReachable,
+            'status'        => 'success',
+            'reachable'     => ($newStatus === 'Up'),
             'device_status' => $newStatus,
-            'ip' => $ip,
-            'port' => $port,
-            'latency_ms' => $responseTimeMs,
-            'message' => $isReachable 
-                ? "Koneksi ke {$deviceName} ({$ip}) BERHASIL (Latensi: {$responseTimeMs} ms)." 
+            'ip'            => $ip,
+            'port'          => $port,
+            'latency_ms'    => $pingResult['latency_ms'],
+            'method'        => $pingResult['method'],
+            'message'       => $newStatus === 'Up' 
+                ? "Koneksi ke {$deviceName} ({$ip}) BERHASIL (Latensi: {$pingResult['latency_ms']} ms via {$pingResult['method']})." 
                 : "Tidak dapat terhubung ke {$deviceName} ({$ip}:{$port}).",
+        ]);
+    }
+
+    /**
+     * Sinkronisasi status riil seluruh perangkat OLT sekaligus secara paralel/cepat.
+     */
+    public function syncAllStatus(Request $request)
+    {
+        $this->authorizeAdmin();
+        $this->ensureTableExists();
+
+        $devices = DB::table('m_olt')->get();
+        $results = [];
+
+        foreach ($devices as $d) {
+            $id = $d->id ?? ($d->kode_olt ?? null);
+            $ip = $d->ip_address ?? '';
+            $port = (int) ($d->snmp_port ?? 161);
+            $comm = $d->snmp_community ?? 'public';
+            $ver = $d->snmp_version ?? 'v2c';
+
+            $ping = $this->pingDevice($ip, $port, $comm, $ver, 0.5);
+
+            if (Schema::hasColumn('m_olt', 'status') && $id) {
+                $q = DB::table('m_olt');
+                if (isset($d->id)) {
+                    $q->where('id', $d->id);
+                } else {
+                    $q->where('kode_olt', $d->kode_olt);
+                }
+                $q->update([
+                    'status' => $ping['status'],
+                    'updated_at' => now(),
+                ]);
+            }
+
+            $results[] = [
+                'id' => $id,
+                'name' => $d->name ?? ($d->name_olt ?? 'OLT'),
+                'ip' => $ip,
+                'status' => $ping['status'],
+                'latency_ms' => $ping['latency_ms'],
+                'method' => $ping['method'],
+            ];
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'total' => count($results),
+            'devices' => $results,
         ]);
     }
 }

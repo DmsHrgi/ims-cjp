@@ -19,10 +19,20 @@
                 </span>
                 OLT Device Management
             </h1>
-            <p class="text-xs text-slate-500 mt-1">Kelola dan pantau perangkat Optical Line Terminal (OLT) beserta konfigurasi SNMP.</p>
+            <p class="text-xs text-slate-500 mt-1">Monitoring dan manajemen perangkat Optical Line Terminal (OLT) berdasarkan kondisi jaringan aktual.</p>
         </div>
 
-        <div class="flex items-center gap-2.5">
+        <div class="flex items-center gap-2.5 flex-wrap">
+            {{-- Tombol Sync Status Riil --}}
+            <button type="button"
+                    id="btnSyncStatus"
+                    onclick="syncAllOltStatus(this)"
+                    class="inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200/90 text-xs font-bold px-3.5 py-2.5 rounded-xl shadow-xs transition-all duration-200 cursor-pointer">
+                <i class="fa-solid fa-arrows-rotate text-xs text-blue-600"></i>
+                <span>Cek Status Jaringan</span>
+            </button>
+
+            {{-- Tombol Tambah OLT Baru --}}
             <button type="button"
                     onclick="openCreateModal()"
                     class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer">
@@ -71,9 +81,9 @@
         {{-- Total OLT --}}
         <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs flex items-center justify-between relative overflow-hidden group hover:border-blue-300 transition-colors">
             <div class="space-y-1">
-                <p class="text-xs font-semibold text-slate-500">Total OLT Device</p>
-                <h3 class="text-2xl font-black text-slate-800 tracking-tight">{{ number_format($totalDevices, 0, ',', '.') }}</h3>
-                <p class="text-[10px] text-slate-400 font-medium">Perangkat terdaftar</p>
+                <p class="text-xs font-semibold text-slate-500">Total OLT Terdaftar</p>
+                <h3 id="statTotalDevices" class="text-2xl font-black text-slate-800 tracking-tight">{{ number_format($totalDevices, 0, ',', '.') }}</h3>
+                <p class="text-[10px] text-slate-400 font-medium">Perangkat dalam sistem</p>
             </div>
             <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg border border-blue-100 group-hover:scale-110 transition-transform">
                 <i class="fa-solid fa-server"></i>
@@ -84,9 +94,9 @@
         {{-- OLT Status Up --}}
         <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs flex items-center justify-between relative overflow-hidden group hover:border-emerald-300 transition-colors">
             <div class="space-y-1">
-                <p class="text-xs font-semibold text-slate-500">Status Online (Up)</p>
-                <h3 class="text-2xl font-black text-emerald-600 tracking-tight">{{ number_format($totalUp, 0, ',', '.') }}</h3>
-                <p class="text-[10px] text-emerald-600/80 font-medium">Perangkat aktif normal</p>
+                <p class="text-xs font-semibold text-slate-500">Kondisi Aktif (Up)</p>
+                <h3 id="statTotalUp" class="text-2xl font-black text-emerald-600 tracking-tight">{{ number_format($totalUp, 0, ',', '.') }}</h3>
+                <p class="text-[10px] text-emerald-600/80 font-medium">Merespons jaringan</p>
             </div>
             <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg border border-emerald-100 group-hover:scale-110 transition-transform">
                 <i class="fa-solid fa-circle-nodes"></i>
@@ -97,9 +107,9 @@
         {{-- OLT Status Down --}}
         <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs flex items-center justify-between relative overflow-hidden group hover:border-rose-300 transition-colors">
             <div class="space-y-1">
-                <p class="text-xs font-semibold text-slate-500">Status Offline (Down)</p>
-                <h3 class="text-2xl font-black text-rose-500 tracking-tight">{{ number_format($totalDown, 0, ',', '.') }}</h3>
-                <p class="text-[10px] text-rose-500/80 font-medium">Perangkat tidak merespons</p>
+                <p class="text-xs font-semibold text-slate-500">Kondisi Mati (Down)</p>
+                <h3 id="statTotalDown" class="text-2xl font-black text-rose-500 tracking-tight">{{ number_format($totalDown, 0, ',', '.') }}</h3>
+                <p class="text-[10px] text-rose-500/80 font-medium">Tidak terhubung / offline</p>
             </div>
             <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center text-lg border border-rose-100 group-hover:scale-110 transition-transform">
                 <i class="fa-solid fa-triangle-exclamation"></i>
@@ -112,7 +122,7 @@
             <div class="space-y-1">
                 <p class="text-xs font-semibold text-slate-500">Total Vendor</p>
                 <h3 class="text-2xl font-black text-purple-600 tracking-tight">{{ $totalVendors }}</h3>
-                <p class="text-[10px] text-purple-600/80 font-medium">Brand (ZTE, Huawei, dll)</p>
+                <p class="text-[10px] text-purple-600/80 font-medium">ZTE, Huawei, Fiberhome, dll</p>
             </div>
             <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-lg border border-purple-100 group-hover:scale-110 transition-transform">
                 <i class="fa-solid fa-microchip"></i>
@@ -133,7 +143,7 @@
                        name="q"
                        value="{{ $search }}"
                        placeholder="Cari nama OLT, IP address, hostname, vendor, model..."
-                       class="w-full pl-9 pr-4 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
+                       class="no-uppercase w-full pl-9 pr-4 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
             </div>
 
             {{-- Filter Vendor --}}
@@ -153,7 +163,7 @@
                 <select name="status"
                         onchange="this.form.submit()"
                         class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white text-slate-700">
-                    <option value="">Semua Status</option>
+                    <option value="">Semua Kondisi</option>
                     <option value="Up" {{ $filterStatus === 'Up' ? 'selected' : '' }}>Up (Online)</option>
                     <option value="Down" {{ $filterStatus === 'Down' ? 'selected' : '' }}>Down (Offline)</option>
                 </select>
@@ -181,9 +191,9 @@
             <div class="w-16 h-16 rounded-2xl bg-blue-50 text-blue-500 flex items-center justify-center mx-auto text-2xl mb-3 shadow-xs">
                 <i class="fa-solid fa-server"></i>
             </div>
-            <h3 class="text-sm font-bold text-slate-800">Belum Ada Perangkat OLT</h3>
+            <h3 class="text-sm font-bold text-slate-800">Belum Ada Perangkat OLT Terdaftar</h3>
             <p class="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
-                {{ $search !== '' || $filterVendor !== '' || $filterStatus !== '' ? 'Tidak ada perangkat OLT yang sesuai dengan filter pencarian.' : 'Mulai daftarkan perangkat OLT pertama untuk memantau status jaringan dan konfigurasi SNMP.' }}
+                {{ $search !== '' || $filterVendor !== '' || $filterStatus !== '' ? 'Tidak ada perangkat OLT yang sesuai dengan filter pencarian.' : 'Daftarkan perangkat OLT pertama untuk memantau status kondisi jaringan secara langsung.' }}
             </p>
             <div class="mt-4">
                 <button type="button"
@@ -197,15 +207,15 @@
         <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
             @foreach ($oltDevices as $device)
                 @php
-                    $isUp = strtolower($device->status ?? 'up') === 'up';
-                    $deviceJson = json_encode($device);
+                    $isUp = strtolower($device->status ?? 'down') === 'up';
+                    $deviceId = $device->id ?? ($device->kode_olt ?? $loop->index);
                 @endphp
-                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden relative group">
+                <div id="device-card-{{ $deviceId }}" class="bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden relative group">
                     
                     {{-- Card Header Banner --}}
                     <div class="px-6 py-4 bg-slate-50/80 border-b border-slate-100 flex items-center justify-between gap-3">
                         <div class="flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-xl {{ $isUp ? 'bg-emerald-50 text-emerald-600 border border-emerald-200/60' : 'bg-rose-50 text-rose-600 border border-rose-200/60' }} flex items-center justify-center text-sm shadow-xs font-bold">
+                            <div id="device-icon-{{ $deviceId }}" class="w-9 h-9 rounded-xl {{ $isUp ? 'bg-emerald-50 text-emerald-600 border border-emerald-200/60' : 'bg-rose-50 text-rose-600 border border-rose-200/60' }} flex items-center justify-center text-sm shadow-xs font-bold">
                                 <i class="fa-solid fa-server"></i>
                             </div>
                             <div>
@@ -221,18 +231,19 @@
                                     <span>Vendor: <strong class="text-slate-600">{{ $device->vendor }}</strong></span>
                                     @if ($device->hostname)
                                         <span>•</span>
-                                        <span>Host: <strong class="text-slate-600">{{ $device->hostname }}</strong></span>
+                                        <span>Host: <strong class="text-slate-600 font-mono">{{ $device->hostname }}</strong></span>
                                     @endif
                                 </p>
                             </div>
                         </div>
 
-                        {{-- Action Buttons & Status Badge --}}
+                        {{-- Action Buttons --}}
                         <div class="flex items-center gap-2">
                             {{-- Test Connection Button --}}
                             <button type="button"
-                                    onclick="testConnection({{ $device->id }}, this)"
-                                    title="Test Koneksi SNMP / Ping"
+                                    id="btn-test-{{ $deviceId }}"
+                                    onclick="testConnection('{{ $deviceId }}', this)"
+                                    title="Uji Koneksi Real-time (SNMP / Ping)"
                                     class="w-8 h-8 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-blue-600 hover:border-blue-300 flex items-center justify-center text-xs transition-all shadow-xs cursor-pointer">
                                 <i class="fa-solid fa-network-wired"></i>
                             </button>
@@ -247,7 +258,7 @@
 
                             {{-- Delete Button --}}
                             <button type="button"
-                                    onclick="confirmDelete({{ $device->id }}, '{{ addslashes($device->name) }}')"
+                                    onclick="confirmDelete('{{ $deviceId }}', '{{ addslashes($device->name) }}')"
                                     title="Hapus Perangkat OLT"
                                     class="w-8 h-8 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-rose-600 hover:border-rose-300 flex items-center justify-center text-xs transition-all shadow-xs cursor-pointer">
                                 <i class="fa-solid fa-trash-can"></i>
@@ -295,7 +306,7 @@
 
                                 <div class="flex items-center justify-between py-1">
                                     <span class="text-[11px] font-bold text-slate-500 tracking-wider uppercase">STATUS</span>
-                                    <div>
+                                    <div id="badge-wrapper-{{ $deviceId }}">
                                         @if ($isUp)
                                             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-600 text-white shadow-xs">
                                                 <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
@@ -549,11 +560,11 @@
                         </div>
                     </div>
 
-                    {{-- ── SECTION 3: Location & Status (Optional / Gambar 1-2) ── --}}
+                    {{-- ── SECTION 3: Location & Catatan (Optional / Gambar 1-2) ── --}}
                     <div class="space-y-4 pt-4 border-t border-slate-100">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {{-- Location --}}
-                            <div>
+                            <div class="sm:col-span-2">
                                 <label for="location" class="block text-xs font-bold text-slate-700 mb-1">
                                     Location / POP
                                 </label>
@@ -562,19 +573,6 @@
                                        name="location"
                                        placeholder="e.g. POP Babakan Tarogong / Rack 01"
                                        class="no-uppercase w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
-                            </div>
-
-                            {{-- Status --}}
-                            <div>
-                                <label for="status" class="block text-xs font-bold text-slate-700 mb-1">
-                                    Initial Status
-                                </label>
-                                <select id="status"
-                                        name="status"
-                                        class="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white">
-                                    <option value="Up" selected>Up (Online)</option>
-                                    <option value="Down">Down (Offline)</option>
-                                </select>
                             </div>
 
                             {{-- Description --}}
@@ -626,11 +624,11 @@
                 </div>
                 <div>
                     <h3 class="text-sm font-extrabold text-slate-800 tracking-tight">Hapus Perangkat OLT?</h3>
-                    <p class="text-xs text-slate-500">Tindakan ini tidak dapat dibatalkan.</p>
+                    <p class="text-xs text-slate-500">Tindakan ini akan menghapus data perangkat.</p>
                 </div>
             </div>
             <p class="text-xs text-slate-600 mb-6">
-                Apakah Anda yakin ingin menghapus perangkat <strong id="deleteDeviceName" class="text-slate-800 font-bold"></strong> dari sistem?
+                Apakah Anda yakin ingin menghapus perangkat <strong id="deleteDeviceName" class="text-slate-800 font-bold"></strong>?
             </p>
             <form id="deleteForm" method="POST" action="">
                 @csrf
@@ -673,7 +671,6 @@
         document.getElementById('snmp_version').value = 'v2c';
         document.getElementById('snmp_community').value = 'public';
         document.getElementById('location').value = '';
-        document.getElementById('status').value = 'Up';
         document.getElementById('description').value = '';
 
         document.getElementById('oltModal').classList.remove('hidden');
@@ -684,12 +681,13 @@
         document.getElementById('modalSubtitle').textContent = 'Perbarui informasi perangkat dan konfigurasi SNMP';
         document.getElementById('btnSubmitText').textContent = 'Simpan Perubahan';
 
+        const deviceId = device.id || device.kode_olt;
         const form = document.getElementById('oltForm');
-        form.action = baseUrl + '/' + device.id;
+        form.action = baseUrl + '/' + deviceId;
         document.getElementById('formMethod').value = 'PUT';
 
         // Populate inputs
-        document.getElementById('name').value = device.name || '';
+        document.getElementById('name').value = device.name || device.name_olt || '';
         document.getElementById('hostname').value = device.hostname || '';
         document.getElementById('ip_address').value = device.ip_address || '';
         document.getElementById('vendor').value = device.vendor || '';
@@ -698,8 +696,7 @@
         document.getElementById('snmp_version').value = device.snmp_version || 'v2c';
         document.getElementById('snmp_community').value = device.snmp_community || 'public';
         document.getElementById('location').value = device.location || '';
-        document.getElementById('status').value = device.status || 'Up';
-        document.getElementById('description').value = device.description || '';
+        document.getElementById('description').value = device.description || device.note_olt || '';
 
         document.getElementById('oltModal').classList.remove('hidden');
     }
@@ -718,21 +715,22 @@
         document.getElementById('deleteModal').classList.add('hidden');
     }
 
-    // Quick Test Connection
+    // Quick Test Connection Tunggal
     function testConnection(id, btnElement) {
         const originalHtml = btnElement.innerHTML;
         btnElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-blue-600"></i>';
         btnElement.disabled = true;
 
-        fetch(baseUrl + '/' + id + '/test-connection')
+        fetch(baseUrl + '/' + encodeURIComponent(id) + '/test-connection')
             .then(res => res.json())
             .then(data => {
                 btnElement.innerHTML = originalHtml;
                 btnElement.disabled = false;
 
+                updateCardBadge(id, data.device_status);
+
                 if (data.reachable) {
                     alert('✓ ' + data.message);
-                    window.location.reload();
                 } else {
                     alert('✗ ' + data.message);
                 }
@@ -741,6 +739,73 @@
                 btnElement.innerHTML = originalHtml;
                 btnElement.disabled = false;
                 alert('Gagal menghubungi server untuk pengujian koneksi.');
+            });
+    }
+
+    // Helper update tampilan badge
+    function updateCardBadge(id, status) {
+        const badgeWrapper = document.getElementById('badge-wrapper-' + id);
+        const iconWrapper = document.getElementById('device-icon-' + id);
+
+        if (status === 'Up') {
+            if (badgeWrapper) {
+                badgeWrapper.innerHTML = `
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-600 text-white shadow-xs">
+                        <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                        Up
+                    </span>
+                `;
+            }
+            if (iconWrapper) {
+                iconWrapper.className = 'w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-200/60 flex items-center justify-center text-sm shadow-xs font-bold';
+            }
+        } else {
+            if (badgeWrapper) {
+                badgeWrapper.innerHTML = `
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-600 text-white shadow-xs">
+                        <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+                        Down
+                    </span>
+                `;
+            }
+            if (iconWrapper) {
+                iconWrapper.className = 'w-9 h-9 rounded-xl bg-rose-50 text-rose-600 border border-rose-200/60 flex items-center justify-center text-sm shadow-xs font-bold';
+            }
+        }
+    }
+
+    // Sinkronisasi status riil seluruh OLT sekaligus
+    function syncAllOltStatus(btn) {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-arrows-rotate fa-spin text-blue-600 text-xs mr-1"></i> Sedang Memeriksa...';
+        btn.disabled = true;
+
+        fetch(baseUrl + '/sync-status')
+            .then(res => res.json())
+            .then(data => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+
+                if (data.status === 'success' && Array.isArray(data.devices)) {
+                    let totalUp = 0;
+                    let totalDown = 0;
+
+                    data.devices.forEach(dev => {
+                        updateCardBadge(dev.id, dev.status);
+                        if (dev.status === 'Up') totalUp++;
+                        else totalDown++;
+                    });
+
+                    // Update widget counters jika ada
+                    const statUpEl = document.getElementById('statTotalUp');
+                    const statDownEl = document.getElementById('statTotalDown');
+                    if (statUpEl) statUpEl.textContent = totalUp;
+                    if (statDownEl) statDownEl.textContent = totalDown;
+                }
+            })
+            .catch(err => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
             });
     }
 
