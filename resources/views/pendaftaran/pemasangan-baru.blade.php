@@ -1209,14 +1209,26 @@
                                             <label class="block text-xs font-semibold text-slate-700">
                                                 Pilih Server OLT (FTTH)<span class="text-red-500">*</span>
                                             </label>
-                                            <span class="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">4 OLT Tersedia</span>
+                                            <span class="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">{{ count($oltList ?? []) }} OLT Tersedia</span>
                                         </div>
                                         <select name="olt" id="aktivasiOltSelect" onchange="onOltChanged('aktivasi')" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-700 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none">
                                             <option value="" disabled selected>Pilih Server OLT (FTTH)</option>
-                                            <option value="OLT KAYU AGUNG">OLT KAYU AGUNG</option>
-                                            <option value="OLT BABAKAN TAROGONG">OLT BABAKAN TAROGONG</option>
-                                            <option value="OLT BBU">OLT BBU</option>
-                                            <option value="OLT SOREANG">OLT SOREANG</option>
+                                            @if(isset($oltList) && count($oltList) > 0)
+                                                @foreach($oltList as $olt)
+                                                    <option value="{{ $olt->name ?? $olt->name_olt ?? $olt->kode_olt }}"
+                                                            data-vendor="{{ $olt->vendor ?? '' }}"
+                                                            data-model="{{ $olt->model ?? '' }}"
+                                                            data-ip="{{ $olt->ip_address ?? '' }}"
+                                                            data-status="{{ $olt->status ?? '' }}">
+                                                        {{ $olt->name ?? $olt->name_olt ?? $olt->kode_olt }}@if(!empty($olt->vendor)) ({{ $olt->vendor }}{{ !empty($olt->model) ? ' - ' . $olt->model : '' }})@endif
+                                                    </option>
+                                                @endforeach
+                                            @else
+                                                <option value="OLT KAYU AGUNG">OLT KAYU AGUNG</option>
+                                                <option value="OLT BABAKAN TAROGONG">OLT BABAKAN TAROGONG</option>
+                                                <option value="OLT BBU">OLT BBU</option>
+                                                <option value="OLT SOREANG">OLT SOREANG</option>
+                                            @endif
                                         </select>
                                     </div>
 
@@ -2140,14 +2152,26 @@
                                             <label class="block text-xs font-semibold text-slate-700">
                                                 Pilih Server OLT (FTTH)<span class="text-rose-500">*</span>
                                             </label>
-                                            <span class="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">4 OLT Tersedia</span>
+                                            <span class="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">{{ count($oltList ?? []) }} OLT Tersedia</span>
                                         </div>
                                         <select name="olt" id="reportAktivasiOltSelect" onchange="onOltChanged('reportAktivasi')" class="w-full bg-white border border-slate-200 focus:border-blue-500 text-slate-800 py-2 px-3 text-xs rounded-lg outline-none">
                                             <option value="" disabled selected>Pilih Server OLT (FTTH)</option>
-                                            <option value="OLT KAYU AGUNG">OLT KAYU AGUNG</option>
-                                            <option value="OLT BABAKAN TAROGONG">OLT BABAKAN TAROGONG</option>
-                                            <option value="OLT BBU">OLT BBU</option>
-                                            <option value="OLT SOREANG">OLT SOREANG</option>
+                                            @if(isset($oltList) && count($oltList) > 0)
+                                                @foreach($oltList as $olt)
+                                                    <option value="{{ $olt->name ?? $olt->name_olt ?? $olt->kode_olt }}"
+                                                            data-vendor="{{ $olt->vendor ?? '' }}"
+                                                            data-model="{{ $olt->model ?? '' }}"
+                                                            data-ip="{{ $olt->ip_address ?? '' }}"
+                                                            data-status="{{ $olt->status ?? '' }}">
+                                                        {{ $olt->name ?? $olt->name_olt ?? $olt->kode_olt }}@if(!empty($olt->vendor)) ({{ $olt->vendor }}{{ !empty($olt->model) ? ' - ' . $olt->model : '' }})@endif
+                                                    </option>
+                                                @endforeach
+                                            @else
+                                                <option value="OLT KAYU AGUNG">OLT KAYU AGUNG</option>
+                                                <option value="OLT BABAKAN TAROGONG">OLT BABAKAN TAROGONG</option>
+                                                <option value="OLT BBU">OLT BBU</option>
+                                                <option value="OLT SOREANG">OLT SOREANG</option>
+                                            @endif
                                         </select>
                                     </div>
 

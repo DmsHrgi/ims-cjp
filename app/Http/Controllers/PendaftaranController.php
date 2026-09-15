@@ -366,8 +366,27 @@ class PendaftaranController extends Controller
 
         $autoIdPerusahaan = self::generateIdPerusahaan();
 
+        $oltList = collect();
+        try {
+            if (Schema::hasTable('m_olt')) {
+                $hasNameCol = Schema::hasColumn('m_olt', 'name');
+                $hasNameOltCol = Schema::hasColumn('m_olt', 'name_olt');
+                $hasKodeCol = Schema::hasColumn('m_olt', 'kode_olt');
+                $orderCol = $hasNameCol ? 'name' : ($hasNameOltCol ? 'name_olt' : ($hasKodeCol ? 'kode_olt' : 'id'));
+                
+                $oltList = DB::table('m_olt')
+                    ->orderBy($orderCol)
+                    ->get()
+                    ->map(function ($olt) {
+                        $name = $olt->name ?? $olt->name_olt ?? $olt->kode_olt ?? 'OLT Device';
+                        $olt->name = $name;
+                        return $olt;
+                    });
+            }
+        } catch (\Exception $e) {}
+
         return view('pendaftaran.pemasangan-baru', compact(
-            'bangunan', 'kategori', 'groupLayanan', 'sales', 'provinsi', 'rows', 'statusList', 'wilayahList', 'isAdmin', 'isNoc', 'isFinance', 'teamAktivasiList', 'teamTeknisList', 'popList', 'mediaAksesList', 'barangList', 'installedItems', 'paketList', 'existingCompanies', 'autoIdPerusahaan'
+            'bangunan', 'kategori', 'groupLayanan', 'sales', 'provinsi', 'rows', 'statusList', 'wilayahList', 'isAdmin', 'isNoc', 'isFinance', 'teamAktivasiList', 'teamTeknisList', 'popList', 'mediaAksesList', 'barangList', 'installedItems', 'paketList', 'existingCompanies', 'autoIdPerusahaan', 'oltList'
         ));
     }
 

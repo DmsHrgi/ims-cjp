@@ -818,7 +818,26 @@ class PageController extends Controller
             ->orderBy('nama_pop')
             ->get();
 
-        return view('pelanggan.detail', compact('customer', 'logs', 'ubahLayanan', 'suspends', 'billings', 'pengaduan', 'perangkat', 'popList'));
+        $oltList = collect();
+        try {
+            if (Schema::hasTable('m_olt')) {
+                $hasNameCol = Schema::hasColumn('m_olt', 'name');
+                $hasNameOltCol = Schema::hasColumn('m_olt', 'name_olt');
+                $hasKodeCol = Schema::hasColumn('m_olt', 'kode_olt');
+                $orderCol = $hasNameCol ? 'name' : ($hasNameOltCol ? 'name_olt' : ($hasKodeCol ? 'kode_olt' : 'id'));
+                
+                $oltList = DB::table('m_olt')
+                    ->orderBy($orderCol)
+                    ->get()
+                    ->map(function ($olt) {
+                        $name = $olt->name ?? $olt->name_olt ?? $olt->kode_olt ?? 'OLT Device';
+                        $olt->name = $name;
+                        return $olt;
+                    });
+            }
+        } catch (\Exception $e) {}
+
+        return view('pelanggan.detail', compact('customer', 'logs', 'ubahLayanan', 'suspends', 'billings', 'pengaduan', 'perangkat', 'popList', 'oltList'));
     }
 
     public function downloadPelangganPdf($nomorInternet)

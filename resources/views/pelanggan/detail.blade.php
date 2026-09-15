@@ -1472,14 +1472,30 @@
                             <label class="block text-xs font-semibold text-slate-700">
                                 Pilih Server OLT (FTTH)<span class="text-rose-500">*</span>
                             </label>
-                            <span class="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">4 OLT Tersedia</span>
+                            <span class="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">{{ count($oltList ?? []) }} OLT Tersedia</span>
                         </div>
                         <select name="olt" id="modalInfraOltSelect" onchange="onDetailInfraOltChanged()" class="w-full bg-white border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 text-slate-800 py-2 px-3 text-xs rounded-xl outline-none transition-all">
                             <option value="" disabled>Pilih Server OLT (FTTH)</option>
-                            <option value="OLT KAYU AGUNG" {{ str_contains(strtoupper($customer->olt ?? ''), 'KAYU AGUNG') ? 'selected' : '' }}>OLT KAYU AGUNG</option>
-                            <option value="OLT BABAKAN TAROGONG" {{ str_contains(strtoupper($customer->olt ?? ''), 'BABAKAN') ? 'selected' : '' }}>OLT BABAKAN TAROGONG</option>
-                            <option value="OLT BBU" {{ str_contains(strtoupper($customer->olt ?? ''), 'BBU') ? 'selected' : '' }}>OLT BBU</option>
-                            <option value="OLT SOREANG" {{ str_contains(strtoupper($customer->olt ?? ''), 'SOREANG') ? 'selected' : '' }}>OLT SOREANG</option>
+                            @if(isset($oltList) && count($oltList) > 0)
+                                @foreach($oltList as $olt)
+                                    @php
+                                        $oltName = $olt->name ?? $olt->name_olt ?? $olt->kode_olt;
+                                        $isSelected = (trim(strtoupper($customer->olt ?? '')) === trim(strtoupper($oltName)))
+                                            || (!empty($customer->olt) && str_contains(strtoupper($customer->olt), strtoupper($oltName)));
+                                    @endphp
+                                    <option value="{{ $oltName }}" {{ $isSelected ? 'selected' : '' }}
+                                            data-vendor="{{ $olt->vendor ?? '' }}"
+                                            data-model="{{ $olt->model ?? '' }}"
+                                            data-ip="{{ $olt->ip_address ?? '' }}">
+                                        {{ $oltName }}@if(!empty($olt->vendor)) ({{ $olt->vendor }}{{ !empty($olt->model) ? ' - ' . $olt->model : '' }})@endif
+                                    </option>
+                                @endforeach
+                            @else
+                                <option value="OLT KAYU AGUNG" {{ str_contains(strtoupper($customer->olt ?? ''), 'KAYU AGUNG') ? 'selected' : '' }}>OLT KAYU AGUNG</option>
+                                <option value="OLT BABAKAN TAROGONG" {{ str_contains(strtoupper($customer->olt ?? ''), 'BABAKAN') ? 'selected' : '' }}>OLT BABAKAN TAROGONG</option>
+                                <option value="OLT BBU" {{ str_contains(strtoupper($customer->olt ?? ''), 'BBU') ? 'selected' : '' }}>OLT BBU</option>
+                                <option value="OLT SOREANG" {{ str_contains(strtoupper($customer->olt ?? ''), 'SOREANG') ? 'selected' : '' }}>OLT SOREANG</option>
+                            @endif
                         </select>
                     </div>
 
