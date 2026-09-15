@@ -26,7 +26,6 @@ class OltController extends Controller
 
     /**
      * Pastikan tabel m_olt siap digunakan dan memiliki seluruh kolom yang diperlukan.
-     * Tidak menyisipkan data dummy/palsu.
      */
     private function ensureTableExists()
     {
@@ -44,6 +43,10 @@ class OltController extends Controller
                     $table->integer('snmp_port')->default(161);
                     $table->string('snmp_version', 20)->default('v2c');
                     $table->string('snmp_community', 100)->default('public');
+                    $table->integer('telnet_port')->default(23)->nullable();
+                    $table->string('telnet_username', 100)->default('admin')->nullable();
+                    $table->text('telnet_password')->nullable();
+                    $table->integer('telnet_timeout')->default(10)->nullable();
                     $table->string('location', 255)->nullable();
                     $table->text('description')->nullable();
                     $table->string('user_create', 50)->nullable();
@@ -87,6 +90,18 @@ class OltController extends Controller
                     if (!Schema::hasColumn('m_olt', 'snmp_community')) {
                         $table->string('snmp_community', 100)->default('public');
                     }
+                    if (!Schema::hasColumn('m_olt', 'telnet_port')) {
+                        $table->integer('telnet_port')->default(23)->nullable();
+                    }
+                    if (!Schema::hasColumn('m_olt', 'telnet_username')) {
+                        $table->string('telnet_username', 100)->default('admin')->nullable();
+                    }
+                    if (!Schema::hasColumn('m_olt', 'telnet_password')) {
+                        $table->text('telnet_password')->nullable();
+                    }
+                    if (!Schema::hasColumn('m_olt', 'telnet_timeout')) {
+                        $table->integer('telnet_timeout')->default(10)->nullable();
+                    }
                     if (!Schema::hasColumn('m_olt', 'location')) {
                         $table->string('location', 255)->nullable();
                     }
@@ -113,7 +128,7 @@ class OltController extends Controller
     }
 
     /**
-     * Uji konektivitas aktual perangkat OLT secara nyata (SNMP Query, UDP Probe, ICMP Ping, dan Port Probe).
+     * Uji konektivitas aktual perangkat OLT secara nyata.
      */
     public function pingDevice($ip, $port = 161, $community = 'public', $version = 'v2c', $timeoutSec = 1.0)
     {
@@ -155,7 +170,6 @@ class OltController extends Controller
             if ($sock) {
                 stream_set_timeout($sock, 1);
                 $commLen = chr(strlen($community));
-                // SNMP packet request
                 $packet = "\x30" . chr(29 + strlen($community)) . "\x02\x01\x01\x04" . $commLen . $community . "\xa0\x18\x02\x04\x12\x34\x56\x78\x02\x01\x00\x02\x01\x00\x30\x0a\x30\x08\x06\x04\x2b\x06\x01\x02\x05\x00";
                 @fwrite($sock, $packet);
                 $resp = @fread($sock, 512);
@@ -238,7 +252,7 @@ class OltController extends Controller
         $search = trim($request->input('q', ''));
         $filterVendor = trim($request->input('vendor', ''));
         $filterStatus = trim($request->input('status', ''));
-        $viewMode = $request->input('view', 'card'); // 'card' atau 'table'
+        $viewMode = $request->input('view', 'card');
 
         $hasIdCol = Schema::hasColumn('m_olt', 'id');
         $hasKodeCol = Schema::hasColumn('m_olt', 'kode_olt');
@@ -256,6 +270,7 @@ class OltController extends Controller
                 if (Schema::hasColumn('m_olt', 'ip_address')) $q->orWhere('ip_address', 'like', "%{$search}%");
                 if (Schema::hasColumn('m_olt', 'vendor')) $q->orWhere('vendor', 'like', "%{$search}%");
                 if (Schema::hasColumn('m_olt', 'model')) $q->orWhere('model', 'like', "%{$search}%");
+                if (Schema::hasColumn('m_olt', 'telnet_username')) $q->orWhere('telnet_username', 'like', "%{$search}%");
                 if (Schema::hasColumn('m_olt', 'location')) $q->orWhere('location', 'like', "%{$search}%");
             });
         }
@@ -271,7 +286,7 @@ class OltController extends Controller
         $orderCol = $hasIdCol ? 'id' : ($hasKodeCol ? 'kode_olt' : (Schema::hasColumn('m_olt', 'created_at') ? 'created_at' : 'name'));
         $rawDevices = $query->orderBy($orderCol, 'desc')->paginate(12)->appends($request->query());
 
-        // Standardize object properties so view always has id, name, etc.
+        // Standardize object properties so view always has id, name, telnet, etc.
         $oltDevices = $rawDevices->through(function ($item) {
             if (!isset($item->id) || empty($item->id)) {
                 $item->id = $item->kode_olt ?? rand(1, 9999);
@@ -287,6 +302,10 @@ class OltController extends Controller
             if (!isset($item->snmp_port)) $item->snmp_port = 161;
             if (!isset($item->snmp_version)) $item->snmp_version = 'v2c';
             if (!isset($item->snmp_community)) $item->snmp_community = 'public';
+            if (!isset($item->telnet_port)) $item->telnet_port = 23;
+            if (!isset($item->telnet_username)) $item->telnet_username = 'admin';
+            if (!isset($item->telnet_password)) $item->telnet_password = null;
+            if (!isset($item->telnet_timeout)) $item->telnet_timeout = 10;
             if (!isset($item->location)) $item->location = null;
             if (!isset($item->description)) $item->description = $item->note_olt ?? null;
             return $item;
@@ -332,17 +351,21 @@ class OltController extends Controller
         $this->ensureTableExists();
 
         $validated = $request->validate([
-            'name'           => 'required|string|max:100',
-            'hostname'       => 'nullable|string|max:100',
-            'ip_address'     => 'required|string|max:50',
-            'vendor'         => 'required|string|max:100',
-            'model'          => 'nullable|string|max:100',
-            'status'         => 'nullable|string|in:Up,Down',
-            'snmp_port'      => 'required|integer|min:1|max:65535',
-            'snmp_version'   => 'required|string|in:v1,v2c,v3',
-            'snmp_community' => 'required|string|max:100',
-            'location'       => 'nullable|string|max:255',
-            'description'    => 'nullable|string|max:500',
+            'name'            => 'required|string|max:100',
+            'hostname'        => 'nullable|string|max:100',
+            'ip_address'      => 'required|string|max:50',
+            'vendor'          => 'required|string|max:100',
+            'model'           => 'nullable|string|max:100',
+            'status'          => 'nullable|string|in:Up,Down',
+            'snmp_port'       => 'required|integer|min:1|max:65535',
+            'snmp_version'    => 'required|string|in:v1,v2c,v3',
+            'snmp_community'  => 'required|string|max:100',
+            'telnet_port'     => 'nullable|integer|min:1|max:65535',
+            'telnet_username' => 'nullable|string|max:100',
+            'telnet_password' => 'nullable|string|max:255',
+            'telnet_timeout'  => 'nullable|integer|min:1|max:300',
+            'location'        => 'nullable|string|max:255',
+            'description'     => 'nullable|string|max:500',
         ], [
             'name.required'           => 'Nama OLT (Name) wajib diisi.',
             'ip_address.required'     => 'IP Address wajib diisi.',
@@ -359,7 +382,7 @@ class OltController extends Controller
             $validated['snmp_community'],
             $validated['snmp_version']
         );
-        $realStatus = $pingResult['status']; // 'Up' jika terhubung, 'Down' jika offline
+        $realStatus = $pingResult['status'];
 
         $u = session('user', []);
         $username = $u['username'] ?? 'Admin';
@@ -399,6 +422,18 @@ class OltController extends Controller
         }
         if (Schema::hasColumn('m_olt', 'snmp_community')) {
             $dataToInsert['snmp_community'] = $validated['snmp_community'];
+        }
+        if (Schema::hasColumn('m_olt', 'telnet_port')) {
+            $dataToInsert['telnet_port'] = isset($validated['telnet_port']) && $validated['telnet_port'] !== '' ? (int) $validated['telnet_port'] : 23;
+        }
+        if (Schema::hasColumn('m_olt', 'telnet_username')) {
+            $dataToInsert['telnet_username'] = $validated['telnet_username'] ?: 'admin';
+        }
+        if (Schema::hasColumn('m_olt', 'telnet_password')) {
+            $dataToInsert['telnet_password'] = $validated['telnet_password'] ?? null;
+        }
+        if (Schema::hasColumn('m_olt', 'telnet_timeout')) {
+            $dataToInsert['telnet_timeout'] = isset($validated['telnet_timeout']) && $validated['telnet_timeout'] !== '' ? (int) $validated['telnet_timeout'] : 10;
         }
         if (Schema::hasColumn('m_olt', 'location')) {
             $dataToInsert['location'] = $validated['location'] ?? null;
@@ -440,17 +475,21 @@ class OltController extends Controller
         $this->ensureTableExists();
 
         $validated = $request->validate([
-            'name'           => 'required|string|max:100',
-            'hostname'       => 'nullable|string|max:100',
-            'ip_address'     => 'required|string|max:50',
-            'vendor'         => 'required|string|max:100',
-            'model'          => 'nullable|string|max:100',
-            'status'         => 'nullable|string|in:Up,Down',
-            'snmp_port'      => 'required|integer|min:1|max:65535',
-            'snmp_version'   => 'required|string|in:v1,v2c,v3',
-            'snmp_community' => 'required|string|max:100',
-            'location'       => 'nullable|string|max:255',
-            'description'    => 'nullable|string|max:500',
+            'name'            => 'required|string|max:100',
+            'hostname'        => 'nullable|string|max:100',
+            'ip_address'      => 'required|string|max:50',
+            'vendor'          => 'required|string|max:100',
+            'model'           => 'nullable|string|max:100',
+            'status'          => 'nullable|string|in:Up,Down',
+            'snmp_port'       => 'required|integer|min:1|max:65535',
+            'snmp_version'    => 'required|string|in:v1,v2c,v3',
+            'snmp_community'  => 'required|string|max:100',
+            'telnet_port'     => 'nullable|integer|min:1|max:65535',
+            'telnet_username' => 'nullable|string|max:100',
+            'telnet_password' => 'nullable|string|max:255',
+            'telnet_timeout'  => 'nullable|integer|min:1|max:300',
+            'location'        => 'nullable|string|max:255',
+            'description'     => 'nullable|string|max:500',
         ]);
 
         // Cek status konektivitas riil ke perangkat OLT saat di-update
@@ -496,6 +535,18 @@ class OltController extends Controller
         }
         if (Schema::hasColumn('m_olt', 'snmp_community')) {
             $dataToUpdate['snmp_community'] = $validated['snmp_community'];
+        }
+        if (Schema::hasColumn('m_olt', 'telnet_port')) {
+            $dataToUpdate['telnet_port'] = isset($validated['telnet_port']) && $validated['telnet_port'] !== '' ? (int) $validated['telnet_port'] : 23;
+        }
+        if (Schema::hasColumn('m_olt', 'telnet_username')) {
+            $dataToUpdate['telnet_username'] = $validated['telnet_username'] ?: 'admin';
+        }
+        if (Schema::hasColumn('m_olt', 'telnet_password') && !empty($validated['telnet_password'])) {
+            $dataToUpdate['telnet_password'] = $validated['telnet_password'];
+        }
+        if (Schema::hasColumn('m_olt', 'telnet_timeout')) {
+            $dataToUpdate['telnet_timeout'] = isset($validated['telnet_timeout']) && $validated['telnet_timeout'] !== '' ? (int) $validated['telnet_timeout'] : 10;
         }
         if (Schema::hasColumn('m_olt', 'location')) {
             $dataToUpdate['location'] = $validated['location'] ?? null;

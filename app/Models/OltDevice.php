@@ -21,6 +21,10 @@ class OltDevice extends Model
         'snmp_port',
         'snmp_version',
         'snmp_community',
+        'telnet_port',
+        'telnet_username',
+        'telnet_password',
+        'telnet_timeout',
         'location',
         'description',
         'user_create',
@@ -29,6 +33,8 @@ class OltDevice extends Model
 
     protected $casts = [
         'snmp_port' => 'integer',
+        'telnet_port' => 'integer',
+        'telnet_timeout' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

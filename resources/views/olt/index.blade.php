@@ -19,7 +19,7 @@
                 </span>
                 OLT Device Management
             </h1>
-            <p class="text-xs text-slate-500 mt-1">Monitoring dan manajemen perangkat Optical Line Terminal (OLT) berdasarkan kondisi jaringan aktual.</p>
+            <p class="text-xs text-slate-500 mt-1">Monitoring dan manajemen perangkat Optical Line Terminal (OLT) beserta konfigurasi SNMP & Telnet.</p>
         </div>
 
         <div class="flex items-center gap-2.5 flex-wrap">
@@ -266,7 +266,7 @@
                         </div>
                     </div>
 
-                    {{-- Card Body (2 Columns Layout persis Gambar 1) --}}
+                    {{-- Card Body (2 Columns Layout persis Gambar 1 + Telnet info) --}}
                     <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
 
                         {{-- Left Column: Device Information (Gambar 1) --}}
@@ -323,7 +323,7 @@
                             </div>
                         </div>
 
-                        {{-- Right Column: SNMP Configuration (Gambar 1) --}}
+                        {{-- Right Column: SNMP & Telnet Configuration --}}
                         <div class="space-y-3">
                             <h4 class="text-sm font-bold text-slate-800 tracking-tight pb-1 border-b border-slate-100 flex items-center gap-2">
                                 <i class="fa-solid fa-sliders text-indigo-500 text-xs"></i>
@@ -333,26 +333,36 @@
                             <div class="space-y-2.5 text-xs">
                                 <div class="flex items-center justify-between py-1 border-b border-slate-50">
                                     <span class="text-[11px] font-bold text-slate-500 tracking-wider uppercase">SNMP PORT</span>
-                                    <span class="font-bold font-mono text-slate-800">{{ $device->snmp_port }}</span>
+                                    <span class="font-bold font-mono text-slate-800">{{ $device->snmp_port ?? 161 }}</span>
                                 </div>
 
                                 <div class="flex items-center justify-between py-1 border-b border-slate-50">
                                     <span class="text-[11px] font-bold text-slate-500 tracking-wider uppercase">SNMP VERSION</span>
                                     <span class="font-semibold px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 font-mono text-[11px] border border-indigo-100">
-                                        {{ $device->snmp_version }}
+                                        {{ $device->snmp_version ?? 'v2c' }}
                                     </span>
                                 </div>
 
                                 <div class="flex items-center justify-between py-1 border-b border-slate-50">
                                     <span class="text-[11px] font-bold text-slate-500 tracking-wider uppercase">COMMUNITY</span>
                                     <span class="font-bold font-mono text-slate-800 bg-slate-100 px-2 py-0.5 rounded-md">
-                                        {{ $device->snmp_community }}
+                                        {{ $device->snmp_community ?? 'public' }}
+                                    </span>
+                                </div>
+
+                                {{-- Telnet Info summary --}}
+                                <div class="flex items-center justify-between py-1 border-b border-slate-50">
+                                    <span class="text-[11px] font-bold text-slate-500 tracking-wider uppercase flex items-center gap-1">
+                                        <i class="fa-solid fa-terminal text-emerald-600 text-[10px]"></i> TELNET
+                                    </span>
+                                    <span class="font-mono font-semibold text-slate-700 bg-slate-50 px-2 py-0.5 rounded-md text-[11px] border border-slate-100">
+                                        Port {{ $device->telnet_port ?? 23 }} • {{ $device->telnet_username ?? 'admin' }}
                                     </span>
                                 </div>
                             </div>
 
                             {{-- Location Section (Gambar 1) --}}
-                            <div class="pt-3 border-t border-slate-100">
+                            <div class="pt-2 border-t border-slate-100">
                                 <h4 class="text-xs font-bold text-slate-700 tracking-tight mb-1.5 flex items-center gap-1.5">
                                     <i class="fa-solid fa-location-dot text-rose-500 text-[11px]"></i>
                                     Location
@@ -386,7 +396,7 @@
 </div>
 
 {{-- ──────────────────────────────────────────────────────────
-     MODAL TAMBAH & EDIT OLT (SESUAI GAMBAR 2)
+     MODAL TAMBAH & EDIT OLT (SESUAI GAMBAR LENGKAP)
 ────────────────────────────────────────────────────────── --}}
 <div id="oltModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
     {{-- Backdrop --}}
@@ -403,7 +413,7 @@
                     </div>
                     <div>
                         <h3 id="modalTitle" class="text-sm font-extrabold text-slate-800 tracking-tight">Tambah Perangkat OLT</h3>
-                        <p id="modalSubtitle" class="text-[11px] text-slate-400">Masukkan informasi perangkat dan konfigurasi SNMP</p>
+                        <p id="modalSubtitle" class="text-[11px] text-slate-400">Masukkan informasi perangkat, konfigurasi SNMP, dan Telnet</p>
                     </div>
                 </div>
                 <button type="button" onclick="closeOltModal()" class="w-8 h-8 rounded-xl bg-white text-slate-400 hover:text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-all cursor-pointer">
@@ -418,7 +428,7 @@
 
                 <div class="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
 
-                    {{-- ── SECTION 1: Device Information (Gambar 2) ── --}}
+                    {{-- ── SECTION 1: Device Information ── --}}
                     <div class="space-y-4">
                         <h4 class="text-xs font-bold text-slate-800 tracking-tight flex items-center gap-2 text-[13px]">
                             <i class="fa-solid fa-circle-info text-blue-600 text-xs"></i>
@@ -501,7 +511,7 @@
                         </div>
                     </div>
 
-                    {{-- ── SECTION 2: SNMP Configuration (Gambar 2) ── --}}
+                    {{-- ── SECTION 2: SNMP Configuration ── --}}
                     <div class="space-y-3 pt-4 border-t border-slate-100">
                         <div>
                             <h4 class="text-xs font-bold text-slate-800 tracking-tight flex items-center gap-2 text-[13px]">
@@ -560,7 +570,82 @@
                         </div>
                     </div>
 
-                    {{-- ── SECTION 3: Location & Catatan (Optional / Gambar 1-2) ── --}}
+                    {{-- ── SECTION 3: Telnet Configuration (Sesuai Gambar Terbaru) ── --}}
+                    <div class="space-y-3 pt-4 border-t border-slate-100">
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-800 tracking-tight flex items-center gap-2 text-[13px]">
+                                <i class="fa-solid fa-terminal text-emerald-600 text-xs"></i>
+                                Telnet Configuration
+                            </h4>
+                            <p class="text-[11px] text-slate-400 mt-0.5">Digunakan untuk akses command line ke OLT via Telnet (seperti PuTTY)</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                            {{-- Telnet Port --}}
+                            <div>
+                                <label for="telnet_port" class="block text-xs font-bold text-slate-700 mb-1">
+                                    Telnet Port
+                                </label>
+                                <input type="number"
+                                       id="telnet_port"
+                                       name="telnet_port"
+                                       value="23"
+                                       placeholder="23"
+                                       class="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono">
+                                <p class="text-[10px] text-slate-400 mt-1 font-medium">Default: 23</p>
+                            </div>
+
+                            {{-- Telnet Username --}}
+                            <div>
+                                <label for="telnet_username" class="block text-xs font-bold text-slate-700 mb-1">
+                                    Telnet Username
+                                </label>
+                                <input type="text"
+                                       id="telnet_username"
+                                       name="telnet_username"
+                                       value="admin"
+                                       placeholder="admin"
+                                       class="no-uppercase w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono">
+                                <p class="text-[10px] text-slate-400 mt-1 font-medium">Default: admin</p>
+                            </div>
+
+                            {{-- Telnet Password --}}
+                            <div>
+                                <label for="telnet_password" class="block text-xs font-bold text-slate-700 mb-1">
+                                    Telnet Password
+                                </label>
+                                <div class="relative">
+                                    <input type="password"
+                                           id="telnet_password"
+                                           name="telnet_password"
+                                           placeholder="••••••••"
+                                           class="no-uppercase w-full pl-3.5 pr-8 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono bg-blue-50/20">
+                                    <button type="button"
+                                            onclick="togglePasswordVisibility('telnet_password', this)"
+                                            class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 text-xs cursor-pointer">
+                                        <i class="fa-regular fa-eye"></i>
+                                    </button>
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-1 font-medium">Akan dienkripsi</p>
+                            </div>
+
+                            {{-- Timeout --}}
+                            <div>
+                                <label for="telnet_timeout" class="block text-xs font-bold text-slate-700 mb-1">
+                                    Timeout (detik)
+                                </label>
+                                <input type="number"
+                                       id="telnet_timeout"
+                                       name="telnet_timeout"
+                                       value="10"
+                                       placeholder="10"
+                                       class="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono">
+                                <p class="text-[10px] text-slate-400 mt-1 font-medium">Default: 10 detik</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- ── SECTION 4: Location & Catatan ── --}}
                     <div class="space-y-4 pt-4 border-t border-slate-100">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {{-- Location --}}
@@ -652,9 +737,23 @@
 <script>
     const baseUrl = "{{ url('/olt') }}";
 
+    function togglePasswordVisibility(inputId, btn) {
+        const input = document.getElementById(inputId);
+        const icon = btn.querySelector('i');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+
     function openCreateModal() {
         document.getElementById('modalTitle').textContent = 'Tambah Perangkat OLT';
-        document.getElementById('modalSubtitle').textContent = 'Masukkan informasi perangkat dan konfigurasi SNMP';
+        document.getElementById('modalSubtitle').textContent = 'Masukkan informasi perangkat, konfigurasi SNMP, dan Telnet';
         document.getElementById('btnSubmitText').textContent = 'Simpan Perangkat';
         
         const form = document.getElementById('oltForm');
@@ -670,6 +769,10 @@
         document.getElementById('snmp_port').value = '161';
         document.getElementById('snmp_version').value = 'v2c';
         document.getElementById('snmp_community').value = 'public';
+        document.getElementById('telnet_port').value = '23';
+        document.getElementById('telnet_username').value = 'admin';
+        document.getElementById('telnet_password').value = '';
+        document.getElementById('telnet_timeout').value = '10';
         document.getElementById('location').value = '';
         document.getElementById('description').value = '';
 
@@ -677,8 +780,8 @@
     }
 
     function openEditModal(device) {
-        document.getElementById('modalTitle').textContent = 'Edit Perangkat OLT: ' + device.name;
-        document.getElementById('modalSubtitle').textContent = 'Perbarui informasi perangkat dan konfigurasi SNMP';
+        document.getElementById('modalTitle').textContent = 'Edit Perangkat OLT: ' + (device.name || device.name_olt || '');
+        document.getElementById('modalSubtitle').textContent = 'Perbarui informasi perangkat, konfigurasi SNMP, dan Telnet';
         document.getElementById('btnSubmitText').textContent = 'Simpan Perubahan';
 
         const deviceId = device.id || device.kode_olt;
@@ -695,6 +798,10 @@
         document.getElementById('snmp_port').value = device.snmp_port || '161';
         document.getElementById('snmp_version').value = device.snmp_version || 'v2c';
         document.getElementById('snmp_community').value = device.snmp_community || 'public';
+        document.getElementById('telnet_port').value = device.telnet_port || '23';
+        document.getElementById('telnet_username').value = device.telnet_username || 'admin';
+        document.getElementById('telnet_password').value = device.telnet_password || '';
+        document.getElementById('telnet_timeout').value = device.telnet_timeout || '10';
         document.getElementById('location').value = device.location || '';
         document.getElementById('description').value = device.description || device.note_olt || '';
 

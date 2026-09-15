@@ -102,8 +102,8 @@
             box-shadow: 0 0 0 3px rgba(59,130,246,.15);
         }
 
-        /* Auto uppercase preview for text inputs and textareas (except sharelock, lon_lat, hostname, snmp_community, etc) */
-        input[type="text"]:not(.no-uppercase):not([name="sharelock"]):not([name="lon_lat"]):not([name="hostname"]):not([name="snmp_community"]), 
+        /* Auto uppercase preview for text inputs and textareas (except sharelock, lon_lat, hostname, snmp_community, telnet, etc) */
+        input[type="text"]:not(.no-uppercase):not([name="sharelock"]):not([name="lon_lat"]):not([name="hostname"]):not([name="snmp_community"]):not([name="telnet_username"]):not([name="telnet_password"]), 
         input[type="search"]:not(.no-uppercase), 
         textarea:not(.no-uppercase):not([name="permintaan_khusus"]) {
             text-transform: uppercase;
@@ -231,7 +231,9 @@
                         || name === 'permintaan_khusus' 
                         || name === 'lon_lat'
                         || name === 'hostname'
-                        || name === 'snmp_community';
+                        || name === 'snmp_community'
+                        || name === 'telnet_username'
+                        || name === 'telnet_password';
                     if (!isExcluded && !el.readOnly && !el.disabled) {
                         const start = el.selectionStart;
                         const end = el.selectionEnd;

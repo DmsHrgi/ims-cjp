@@ -23,6 +23,10 @@ return new class extends Migration
                 $table->integer('snmp_port')->default(161);
                 $table->string('snmp_version', 20)->default('v2c');
                 $table->string('snmp_community', 100)->default('public');
+                $table->integer('telnet_port')->default(23)->nullable();
+                $table->string('telnet_username', 100)->default('admin')->nullable();
+                $table->text('telnet_password')->nullable();
+                $table->integer('telnet_timeout')->default(10)->nullable();
                 $table->string('location', 255)->nullable();
                 $table->text('description')->nullable();
                 $table->string('user_create', 50)->nullable();
@@ -53,7 +57,7 @@ return new class extends Migration
                     $table->string('model', 100)->nullable();
                 }
                 if (!Schema::hasColumn('m_olt', 'status')) {
-                    $table->string('status', 20)->default('Up');
+                    $table->string('status', 20)->default('Down');
                 }
                 if (!Schema::hasColumn('m_olt', 'snmp_port')) {
                     $table->integer('snmp_port')->default(161);
@@ -63,6 +67,18 @@ return new class extends Migration
                 }
                 if (!Schema::hasColumn('m_olt', 'snmp_community')) {
                     $table->string('snmp_community', 100)->default('public');
+                }
+                if (!Schema::hasColumn('m_olt', 'telnet_port')) {
+                    $table->integer('telnet_port')->default(23)->nullable();
+                }
+                if (!Schema::hasColumn('m_olt', 'telnet_username')) {
+                    $table->string('telnet_username', 100)->default('admin')->nullable();
+                }
+                if (!Schema::hasColumn('m_olt', 'telnet_password')) {
+                    $table->text('telnet_password')->nullable();
+                }
+                if (!Schema::hasColumn('m_olt', 'telnet_timeout')) {
+                    $table->integer('telnet_timeout')->default(10)->nullable();
                 }
                 if (!Schema::hasColumn('m_olt', 'location')) {
                     $table->string('location', 255)->nullable();
