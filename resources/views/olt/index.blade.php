@@ -425,7 +425,7 @@
                                        name="name"
                                        required
                                        placeholder="OLT Jakarta 01"
-                                       class="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium">
+                                       class="no-uppercase w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium">
                             </div>
 
                             {{-- Hostname --}}
@@ -437,7 +437,7 @@
                                        id="hostname"
                                        name="hostname"
                                        placeholder="olt-jkt-01"
-                                       class="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono">
+                                       class="no-uppercase w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono">
                             </div>
 
                             {{-- IP Address * --}}
@@ -450,7 +450,7 @@
                                        name="ip_address"
                                        required
                                        placeholder="192.168.1.1"
-                                       class="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono">
+                                       class="no-uppercase w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono">
                             </div>
 
                             {{-- Vendor * --}}
@@ -464,7 +464,7 @@
                                        list="vendorSuggestions"
                                        required
                                        placeholder="ZTE, Huawei, Fiberhome..."
-                                       class="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium">
+                                       class="no-uppercase w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium">
                                 <datalist id="vendorSuggestions">
                                     <option value="ZTE">
                                     <option value="Huawei">
@@ -485,7 +485,7 @@
                                        id="model"
                                        name="model"
                                        placeholder="C320, MA5608T..."
-                                       class="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium">
+                                       class="no-uppercase w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium">
                             </div>
                         </div>
                     </div>
@@ -543,7 +543,7 @@
                                        value="public"
                                        required
                                        placeholder="public"
-                                       class="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono">
+                                       class="no-uppercase w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono">
                                 <p class="text-[10px] text-slate-400 mt-1 font-medium">Contoh: public, private</p>
                             </div>
                         </div>
@@ -561,7 +561,7 @@
                                        id="location"
                                        name="location"
                                        placeholder="e.g. POP Babakan Tarogong / Rack 01"
-                                       class="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
+                                       class="no-uppercase w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
                             </div>
 
                             {{-- Status --}}
@@ -586,7 +586,7 @@
                                           name="description"
                                           rows="2"
                                           placeholder="Catatan tambahan mengenai perangkat OLT ini..."
-                                          class="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"></textarea>
+                                          class="no-uppercase w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"></textarea>
                             </div>
                         </div>
                     </div>
