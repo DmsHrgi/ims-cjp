@@ -89,6 +89,21 @@ Route::get('/fix-database-schema', function () {
             `created_at` TIMESTAMP NULL DEFAULT NULL,
             `updated_at` TIMESTAMP NULL DEFAULT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+        "ALTER TABLE `m_olt` ADD `name` VARCHAR(100) NOT NULL DEFAULT ''",
+        "ALTER TABLE `m_olt` ADD `hostname` VARCHAR(100) NULL",
+        "ALTER TABLE `m_olt` ADD `ip_address` VARCHAR(50) NOT NULL DEFAULT ''",
+        "ALTER TABLE `m_olt` ADD `vendor` VARCHAR(100) NOT NULL DEFAULT ''",
+        "ALTER TABLE `m_olt` ADD `model` VARCHAR(100) NULL",
+        "ALTER TABLE `m_olt` ADD `status` VARCHAR(20) NOT NULL DEFAULT 'Up'",
+        "ALTER TABLE `m_olt` ADD `snmp_port` INT NOT NULL DEFAULT 161",
+        "ALTER TABLE `m_olt` ADD `snmp_version` VARCHAR(20) NOT NULL DEFAULT 'v2c'",
+        "ALTER TABLE `m_olt` ADD `snmp_community` VARCHAR(100) NOT NULL DEFAULT 'public'",
+        "ALTER TABLE `m_olt` ADD `location` VARCHAR(255) NULL",
+        "ALTER TABLE `m_olt` ADD `description` TEXT NULL",
+        "ALTER TABLE `m_olt` ADD `user_create` VARCHAR(50) NULL",
+        "ALTER TABLE `m_olt` ADD `user_update` VARCHAR(50) NULL",
+        "ALTER TABLE `m_olt` ADD `created_at` TIMESTAMP NULL DEFAULT NULL",
+        "ALTER TABLE `m_olt` ADD `updated_at` TIMESTAMP NULL DEFAULT NULL",
     ];
 
     foreach ($queries as $q) {
