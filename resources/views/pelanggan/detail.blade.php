@@ -1432,12 +1432,23 @@
                         Point of Presence (POP)<span class="text-rose-500">*</span>
                     </label>
                     <select name="kode_pop" id="modalInfraPop" required class="w-full bg-white border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 text-slate-800 py-2 px-3 text-xs rounded-xl outline-none transition-all">
-                        <option value="" disabled>Pilih POP / ODN</option>
-                        <option value="POP MSN" {{ ($customer->kode_pop == 'POP MSN' || $customer->nama_pop == 'POP MSN') ? 'selected' : '' }}>POP MSN</option>
-                        <option value="POP Babakan Tarogong" {{ ($customer->kode_pop == 'POP Babakan Tarogong' || $customer->nama_pop == 'POP Babakan Tarogong') ? 'selected' : '' }}>POP Babakan Tarogong</option>
-                        <option value="POP Bojong Sayang" {{ ($customer->kode_pop == 'POP Bojong Sayang' || $customer->nama_pop == 'POP Bojong Sayang') ? 'selected' : '' }}>POP Bojong Sayang</option>
-                        @if(!in_array($customer->kode_pop ?: $customer->nama_pop, ['POP MSN', 'POP Babakan Tarogong', 'POP Bojong Sayang']) && !empty($customer->kode_pop ?: $customer->nama_pop))
-                            <option value="{{ $customer->kode_pop ?: $customer->nama_pop }}" selected>{{ $customer->nama_pop ?: $customer->kode_pop }}</option>
+                        <option value="" disabled {{ empty($customer->kode_pop) && empty($customer->nama_pop) ? 'selected' : '' }}>Pilih POP / ODN</option>
+                        @if(isset($popList) && count($popList) > 0)
+                            @foreach($popList as $pop)
+                                <option value="{{ $pop->kode_pop }}" {{ ($customer->kode_pop == $pop->kode_pop || $customer->nama_pop == $pop->nama_pop || $customer->kode_pop == $pop->nama_pop) ? 'selected' : '' }}>
+                                    {{ $pop->nama_pop ?: $pop->kode_pop }}
+                                </option>
+                            @endforeach
+                            @if(!empty($customer->kode_pop ?: $customer->nama_pop) && !$popList->contains('kode_pop', $customer->kode_pop ?: $customer->nama_pop) && !$popList->contains('nama_pop', $customer->kode_pop ?: $customer->nama_pop))
+                                <option value="{{ $customer->kode_pop ?: $customer->nama_pop }}" selected>{{ $customer->nama_pop ?: $customer->kode_pop }}</option>
+                            @endif
+                        @else
+                            <option value="POP MSN" {{ ($customer->kode_pop == 'POP MSN' || $customer->nama_pop == 'POP MSN') ? 'selected' : '' }}>POP MSN</option>
+                            <option value="POP Babakan Tarogong" {{ ($customer->kode_pop == 'POP Babakan Tarogong' || $customer->nama_pop == 'POP Babakan Tarogong') ? 'selected' : '' }}>POP Babakan Tarogong</option>
+                            <option value="POP Bojong Sayang" {{ ($customer->kode_pop == 'POP Bojong Sayang' || $customer->nama_pop == 'POP Bojong Sayang') ? 'selected' : '' }}>POP Bojong Sayang</option>
+                            @if(!in_array($customer->kode_pop ?: $customer->nama_pop, ['POP MSN', 'POP Babakan Tarogong', 'POP Bojong Sayang']) && !empty($customer->kode_pop ?: $customer->nama_pop))
+                                <option value="{{ $customer->kode_pop ?: $customer->nama_pop }}" selected>{{ $customer->nama_pop ?: $customer->kode_pop }}</option>
+                            @endif
                         @endif
                     </select>
                 </div>

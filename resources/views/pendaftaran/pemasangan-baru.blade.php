@@ -1177,9 +1177,15 @@
                                     </label>
                                     <select name="kode_pop" id="aktivasiPop" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-700 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none">
                                         <option value="" disabled selected>Pilih POP / ODN</option>
-                                        <option value="POP MSN">POP MSN</option>
-                                        <option value="POP Babakan Tarogong">POP Babakan Tarogong</option>
-                                        <option value="POP Bojong Sayang">POP Bojong Sayang</option>
+                                        @if(isset($popList) && count($popList) > 0)
+                                            @foreach($popList as $pop)
+                                                <option value="{{ $pop->kode_pop }}">{{ $pop->nama_pop ?: $pop->kode_pop }}</option>
+                                            @endforeach
+                                        @else
+                                            <option value="POP MSN">POP MSN</option>
+                                            <option value="POP Babakan Tarogong">POP Babakan Tarogong</option>
+                                            <option value="POP Bojong Sayang">POP Bojong Sayang</option>
+                                        @endif
                                     </select>
                                 </div>
 
@@ -2106,9 +2112,15 @@
                                         <label class="block text-xs font-semibold text-slate-700 mb-1">POP/ODN<span class="text-rose-500">*</span></label>
                                         <select name="kode_pop" id="reportAktivasiPop" required class="w-full bg-white border border-slate-200 focus:border-blue-500 text-slate-800 py-2 px-3 text-xs rounded-lg outline-none">
                                             <option value="" disabled selected>Pilih POP / ODN</option>
-                                            <option value="POP MSN">POP MSN</option>
-                                            <option value="POP Babakan Tarogong">POP Babakan Tarogong</option>
-                                            <option value="POP Bojong Sayang">POP Bojong Sayang</option>
+                                            @if(isset($popList) && count($popList) > 0)
+                                                @foreach($popList as $pop)
+                                                    <option value="{{ $pop->kode_pop }}">{{ $pop->nama_pop ?: $pop->kode_pop }}</option>
+                                                @endforeach
+                                            @else
+                                                <option value="POP MSN">POP MSN</option>
+                                                <option value="POP Babakan Tarogong">POP Babakan Tarogong</option>
+                                                <option value="POP Bojong Sayang">POP Bojong Sayang</option>
+                                            @endif
                                         </select>
                                     </div>
                                     <div>

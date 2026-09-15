@@ -811,7 +811,14 @@ class PageController extends Controller
                 return $item;
             });
 
-        return view('pelanggan.detail', compact('customer', 'logs', 'ubahLayanan', 'suspends', 'billings', 'pengaduan', 'perangkat'));
+        $popList = DB::table('m_pop')
+            ->where(function ($q) {
+                $q->where('hide', '0')->orWhereNull('hide');
+            })
+            ->orderBy('nama_pop')
+            ->get();
+
+        return view('pelanggan.detail', compact('customer', 'logs', 'ubahLayanan', 'suspends', 'billings', 'pengaduan', 'perangkat', 'popList'));
     }
 
     public function downloadPelangganPdf($nomorInternet)

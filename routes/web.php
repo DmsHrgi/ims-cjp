@@ -88,6 +88,62 @@ Route::get('/fix-database-schema', function () {
     ], 200, [], JSON_PRETTY_PRINT);
 });
 
+// Route pengujian status POP dari database
+Route::get('/test-pop-status', function () {
+    $results = [];
+    try {
+        // 1. Pastikan tabel m_pop dapat diakses
+        $tableExists = \Illuminate\Support\Facades\Schema::hasTable('m_pop');
+        if (!$tableExists) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Tabel m_pop tidak ditemukan di database.',
+            ], 500, [], JSON_PRETTY_PRINT);
+        }
+
+        // 2. Pastikan POP default ada di m_pop jika belum ada
+        $defaultPops = [
+            ['kode_pop' => 'POP MSN', 'nama_pop' => 'POP MSN'],
+            ['kode_pop' => 'POP Babakan Tarogong', 'nama_pop' => 'POP Babakan Tarogong'],
+            ['kode_pop' => 'POP Bojong Sayang', 'nama_pop' => 'POP Bojong Sayang'],
+        ];
+
+        foreach ($defaultPops as $dp) {
+            \Illuminate\Support\Facades\DB::table('m_pop')->updateOrInsert(
+                ['kode_pop' => $dp['kode_pop']],
+                [
+                    'nama_pop'    => $dp['nama_pop'],
+                    'hide'        => '0',
+                    'date_create' => now(),
+                    'user_create' => 'SYSTEM_INIT'
+                ]
+            );
+        }
+
+        // 3. Ambil data POP yang aktif
+        $popList = \Illuminate\Support\Facades\DB::table('m_pop')
+            ->where(function ($q) {
+                $q->where('hide', '0')->orWhereNull('hide');
+            })
+            ->orderBy('nama_pop')
+            ->get();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Data POP berhasil diambil dari database (tabel m_pop)!',
+            'source' => 'DATABASE (table: m_pop)',
+            'total_pop_aktif' => $popList->count(),
+            'daftar_pop' => $popList,
+        ], 200, [], JSON_PRETTY_PRINT);
+
+    } catch (\Throwable $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Gagal mengambil data POP: ' . $e->getMessage(),
+        ], 500, [], JSON_PRETTY_PRINT);
+    }
+});
+
 // --- APLIKASI (wajib login) ---
 Route::middleware(\App\Http\Middleware\EnsureAuthenticated::class)->group(function () {
 
