@@ -24,9 +24,25 @@ Route::get('/clear-cache', function () {
     } catch (\Throwable $e) {
         $results[] = 'Optimize Clear error: ' . $e->getMessage();
     }
+
+    // Pembersihan manual file .php di storage/framework/views untuk memastikan view cache benar-benar terhapus
+    try {
+        $viewFiles = glob(storage_path('framework/views/*.php'));
+        $deleted = 0;
+        foreach ($viewFiles as $file) {
+            if (is_file($file)) {
+                @unlink($file);
+                $deleted++;
+            }
+        }
+        $results[] = "Manual delete compiled views: {$deleted} files removed.";
+    } catch (\Throwable $e) {
+        $results[] = 'Manual view clear error: ' . $e->getMessage();
+    }
+
     return response()->json([
         'status' => 'success',
-        'message' => 'Cache aplikasi berhasil dibersihkan!',
+        'message' => 'Cache aplikasi dan compiled views berhasil dibersihkan!',
         'details' => $results
     ], 200, [], JSON_PRETTY_PRINT);
 });
