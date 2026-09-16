@@ -327,21 +327,18 @@
                                 $rawTipe = strtolower(trim((string)($c->tipe_pelanggan ?? '')));
                                 if (in_array($rawTipe, ['lama', 'kuning', 'yellow'], true)) {
                                     $borderBarColor = 'bg-amber-400';
-                                    $borderLeftClass = 'border-l-[5px] border-l-amber-400 group-hover:border-l-amber-500';
                                     $rowHoverClass = 'hover:bg-amber-50/30';
                                 } elseif (in_array($rawTipe, ['baru', 'biru', 'blue'], true)) {
                                     $borderBarColor = 'bg-blue-500';
-                                    $borderLeftClass = 'border-l-[5px] border-l-blue-500 group-hover:border-l-blue-600';
                                     $rowHoverClass = 'hover:bg-blue-50/30';
                                 } else {
                                     $borderBarColor = 'bg-transparent';
-                                    $borderLeftClass = 'border-l-[5px] border-l-transparent group-hover:border-l-slate-300';
                                     $rowHoverClass = 'hover:bg-slate-50/60';
                                 }
                             @endphp
                             <tr class="group {{ $rowHoverClass }} transition-colors duration-150">
                                 <!-- Col 1: Pelanggan -->
-                                <td class="relative py-4 px-6 align-top space-y-1 {{ $borderLeftClass }} transition-all">
+                                <td class="relative py-4 px-6 align-top space-y-1">
                                     @if($borderBarColor !== 'bg-transparent')
                                         <span class="absolute left-0 top-0 bottom-0 w-1.5 {{ $borderBarColor }} opacity-80 group-hover:opacity-100 transition-all duration-200"></span>
                                     @endif
