@@ -55,27 +55,10 @@
              style="background: radial-gradient(circle, #3b82f6, transparent 70%);"></div>
 
         {{-- Content --}}
-        <div class="relative flex items-center gap-3 px-3.5 py-3">
-            {{-- Logo bubble --}}
-            <div class="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center"
-                 style="background: rgba(255,255,255,0.97); box-shadow: 0 2px 12px rgba(0,0,0,0.25);">
-                <img src="{{ asset('img/logo.png') }}"
-                     alt="Logo Connecti Jelajah"
-                     class="w-9 h-9 object-contain">
-            </div>
-
-            {{-- Brand text --}}
-            <div class="leading-tight min-w-0">
-                <p class="text-white font-extrabold text-[12.5px] tracking-wide truncate drop-shadow-sm">
-                    CONNECTI JELAJAH
-                </p>
-                <div class="flex items-center gap-1.5 mt-0.5">
-                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
-                    <p class="text-cyan-300 text-[9.5px] font-semibold tracking-widest uppercase">
-                        Koneksi Cepat
-                    </p>
-                </div>
-            </div>
+        <div class="relative flex items-center justify-center px-4 py-2.5">
+            <img src="{{ asset('img/logo-white.png') }}"
+                 alt="Logo Connecti Jelajah"
+                 class="h-11 w-auto max-w-full object-contain filter drop-shadow-md transition-transform duration-200 hover:scale-105">
         </div>
     </div>
 
