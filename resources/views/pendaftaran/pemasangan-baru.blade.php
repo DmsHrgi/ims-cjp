@@ -177,6 +177,7 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
+                    @forelse ($rows ?? [] as $r)
                         @php
                             $rawTipe = strtolower(trim((string)($r->tipe_pelanggan ?? '')));
                             if (in_array($rawTipe, ['lama', 'kuning', 'yellow'], true)) {
