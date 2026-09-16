@@ -474,10 +474,6 @@
                         </div>
                         <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider">3. Alamat & Lokasi Pemasangan</h4>
                     </div>
-                    <label class="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 cursor-pointer bg-slate-50 hover:bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200 transition-colors">
-                        <input type="checkbox" id="editCheckboxSamaKTP" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer">
-                        <span>Sama dengan Alamat Perusahaan</span>
-                    </label>
                 </div>
 
                 <!-- Cascading Dropdown Wilayah Pemasangan -->
@@ -738,108 +734,6 @@
 
         setupEditCascading('Ktp');
         setupEditCascading('Pasang');
-
-        // ============================================
-        // CHECKBOX "SAMA DENGAN ALAMAT PERUSAHAAN" - AUTO FILL (EDIT PAGE)
-        // ============================================
-        document.addEventListener('DOMContentLoaded', function() {
-            const editCheckbox = document.getElementById('editCheckboxSamaKTP');
-            if (editCheckbox) {
-                editCheckbox.addEventListener('change', function() {
-                    if (this.checked) {
-                        const provKtp = document.getElementById('editProvKtp');
-                        const provPasang = document.getElementById('editProvPasang');
-                        if (provKtp && provPasang && provKtp.value) {
-                            provPasang.value = provKtp.value;
-                            provPasang.dispatchEvent(new Event('change'));
-                        }
-                        
-                        setTimeout(() => {
-                            const kotaKtp = document.getElementById('editKotaKtp');
-                            const kotaPasang = document.getElementById('editKotaPasang');
-                            if (kotaKtp && kotaPasang && kotaKtp.value) {
-                                kotaPasang.value = kotaKtp.value;
-                                kotaPasang.dispatchEvent(new Event('change'));
-                            }
-                            
-                            setTimeout(() => {
-                                const kecKtp = document.getElementById('editKecKtp');
-                                const kecPasang = document.getElementById('editKecPasang');
-                                if (kecKtp && kecPasang && kecKtp.value) {
-                                    kecPasang.value = kecKtp.value;
-                                    kecPasang.dispatchEvent(new Event('change'));
-                                }
-                                
-                                setTimeout(() => {
-                                    const kelKtp = document.getElementById('editKelKtp');
-                                    const kelPasang = document.getElementById('editKelPasang');
-                                    if (kelKtp && kelPasang && kelKtp.value) {
-                                        kelPasang.value = kelKtp.value;
-                                    }
-                                }, 500);
-                            }, 500);
-                        }, 500);
-                        
-                        const rtKtp = document.getElementById('editRtKtp');
-                        const rtPasang = document.getElementById('editRtPasang');
-                        if (rtKtp && rtPasang) rtPasang.value = rtKtp.value;
-                        
-                        const rwKtp = document.getElementById('editRwKtp');
-                        const rwPasang = document.getElementById('editRwPasang');
-                        if (rwKtp && rwPasang) rwPasang.value = rwKtp.value;
-                        
-                        const noBangunanCorp = document.getElementById('editNoBangunanPerusahaan');
-                        const noBangunanPasang = document.getElementById('editNoBangunanPasang');
-                        if (noBangunanCorp && noBangunanPasang) noBangunanPasang.value = noBangunanCorp.value;
-                        
-                        const alamatKtp = document.getElementById('editAlamatKtp');
-                        const alamatPasang = document.getElementById('editAlamatPasang');
-                        if (alamatKtp && alamatPasang) alamatPasang.value = alamatKtp.value;
-
-                        const lonLatCorp = document.getElementById('editLonLatPerusahaan');
-                        const lonLatPasang = document.getElementById('editLonLatPasang');
-                        if (lonLatCorp && lonLatPasang) lonLatPasang.value = lonLatCorp.value;
-
-                        const sharelockCorp = document.getElementById('editSharelockPerusahaan');
-                        const sharelockPasang = document.getElementById('editSharelockPasang');
-                        if (sharelockCorp && sharelockPasang) sharelockPasang.value = sharelockCorp.value;
-                    } else {
-                        const provPasang = document.getElementById('editProvPasang');
-                        if (provPasang) {
-                            provPasang.value = '';
-                            provPasang.dispatchEvent(new Event('change'));
-                        }
-                        
-                        const kotaPasang = document.getElementById('editKotaPasang');
-                        if (kotaPasang) kotaPasang.value = '';
-                        
-                        const kecPasang = document.getElementById('editKecPasang');
-                        if (kecPasang) kecPasang.value = '';
-                        
-                        const kelPasang = document.getElementById('editKelPasang');
-                        if (kelPasang) kelPasang.value = '';
-                        
-                        const rtPasang = document.getElementById('editRtPasang');
-                        if (rtPasang) rtPasang.value = '';
-                        
-                        const rwPasang = document.getElementById('editRwPasang');
-                        if (rwPasang) rwPasang.value = '';
-                        
-                        const noBangunanPasang = document.getElementById('editNoBangunanPasang');
-                        if (noBangunanPasang) noBangunanPasang.value = '';
-
-                        const alamatPasang = document.getElementById('editAlamatPasang');
-                        if (alamatPasang) alamatPasang.value = '';
-
-                        const lonLatPasang = document.getElementById('editLonLatPasang');
-                        if (lonLatPasang) lonLatPasang.value = '';
-
-                        const sharelockPasang = document.getElementById('editSharelockPasang');
-                        if (sharelockPasang) sharelockPasang.value = '';
-                    }
-                });
-            }
-        });
 
         // Format otomatis ' Mbps' pada Kapasitas Layanan
         const editInputPaketEl = document.getElementById('editInputPaket');

@@ -3694,7 +3694,7 @@
         }
 
         // ============================================
-        // CHECKBOX "SAMA DENGAN ALAMAT PERUSAHAAN" - AUTO FILL
+        // TOGGLE CORPORATE PIC
         // ============================================
         document.addEventListener('DOMContentLoaded', function() {
             // Checkbox Corporate -> Toggle Nama PIC
@@ -3719,112 +3719,7 @@
                 updatePicState();
                 checkboxCorporate.addEventListener('change', updatePicState);
             }
-
-            const checkbox = document.getElementById('checkboxSamaKTP');
-            
-            if (checkbox) {
-                checkbox.addEventListener('change', function() {
-                    const isChecked = this.checked;
-                    
-                    if (isChecked) {
-                        // Copy Provinsi
-                        const provKtp = document.getElementById('provKtp');
-                        const provPasang = document.getElementById('provPasang');
-                        if (provKtp && provPasang && provKtp.value) {
-                            provPasang.value = provKtp.value;
-                            provPasang.dispatchEvent(new Event('change'));
-                        }
-                        
-                        // Wait for API to load, then copy Kota
-                        setTimeout(() => {
-                            const kotaKtp = document.getElementById('kotaKtp');
-                            const kotaPasang = document.getElementById('kotaPasang');
-                            if (kotaKtp && kotaPasang && kotaKtp.value) {
-                                kotaPasang.value = kotaKtp.value;
-                                kotaPasang.dispatchEvent(new Event('change'));
-                            }
-                            
-                            // Wait for API to load, then copy Kecamatan
-                            setTimeout(() => {
-                                const kecKtp = document.getElementById('kecKtp');
-                                const kecPasang = document.getElementById('kecPasang');
-                                if (kecKtp && kecPasang && kecKtp.value) {
-                                    kecPasang.value = kecKtp.value;
-                                    kecPasang.dispatchEvent(new Event('change'));
-                                }
-                                
-                                // Wait for API to load, then copy Kelurahan
-                                setTimeout(() => {
-                                    const kelKtp = document.getElementById('kelKtp');
-                                    const kelPasang = document.getElementById('kelPasang');
-                                    if (kelKtp && kelPasang && kelKtp.value) {
-                                        kelPasang.value = kelKtp.value;
-                                    }
-                                }, 500);
-                            }, 500);
-                        }, 500);
-                        
-                        // Copy RT, RW, Alamat (langsung)
-                        const rtKtp = document.getElementById('rtKtp');
-                        const rtPasang = document.getElementById('rtPasang');
-                        if (rtKtp && rtPasang) rtPasang.value = rtKtp.value;
-                        
-                        const rwKtp = document.getElementById('rwKtp');
-                        const rwPasang = document.getElementById('rwPasang');
-                        if (rwKtp && rwPasang) rwPasang.value = rwKtp.value;
-                        
-                        const noBangunanPerusahaan = document.getElementById('noBangunanPerusahaan');
-                        const noBangunanPasang = document.getElementById('noBangunanPasang');
-                        if (noBangunanPerusahaan && noBangunanPasang) noBangunanPasang.value = noBangunanPerusahaan.value;
-
-                        const alamatKtp = document.getElementById('alamatKtp');
-                        const alamatPasang = document.getElementById('alamatPasang');
-                        if (alamatKtp && alamatPasang) alamatPasang.value = alamatKtp.value;
-
-                        const lonLatCorp = document.getElementById('lonLatPerusahaan');
-                        const lonLatPasang = document.getElementById('lonLatPasang');
-                        if (lonLatCorp && lonLatPasang) lonLatPasang.value = lonLatCorp.value;
-
-                        const sharelockCorp = document.getElementById('sharelockPerusahaan');
-                        const sharelockPasang = document.getElementById('sharelockPasang');
-                        if (sharelockCorp && sharelockPasang) sharelockPasang.value = sharelockCorp.value;
-                    } else {
-                        // Clear semua field Pemasangan
-                        const provPasang = document.getElementById('provPasang');
-                        if (provPasang) {
-                            provPasang.value = '';
-                            provPasang.dispatchEvent(new Event('change'));
-                        }
-                        
-                        const kotaPasang = document.getElementById('kotaPasang');
-                        if (kotaPasang) kotaPasang.value = '';
-                        
-                        const kecPasang = document.getElementById('kecPasang');
-                        if (kecPasang) kecPasang.value = '';
-                        
-                        const kelPasang = document.getElementById('kelPasang');
-                        if (kelPasang) kelPasang.value = '';
-                        
-                        const rtPasang = document.getElementById('rtPasang');
-                        if (rtPasang) rtPasang.value = '';
-                        
-                        const rwPasang = document.getElementById('rwPasang');
-                        if (rwPasang) rwPasang.value = '';
-                        
-                        const noBangunanPasang = document.getElementById('noBangunanPasang');
-                        if (noBangunanPasang) noBangunanPasang.value = '';
-
-                        const alamatPasang = document.getElementById('alamatPasang');
-                        if (alamatPasang) alamatPasang.value = '';
-
-                        const lonLatPasang = document.getElementById('lonLatPasang');
-                        if (lonLatPasang) lonLatPasang.value = '';
-
-                        const sharelockPasang = document.getElementById('sharelockPasang');
-                        if (sharelockPasang) sharelockPasang.value = '';
-                    }
-                });
-            }
+        });
 
             // ============================================
             // HELPER: CASCADING DROPDOWN WILAYAH (ASYNC)
