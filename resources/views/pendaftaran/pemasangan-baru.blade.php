@@ -2329,6 +2329,7 @@
             </div>
         </div>
     </div>
+    @endif
 
     <!-- ============================================ -->
     <!-- MODAL KONFIRMASI AUTO-FILL PERUSAHAAN -->
@@ -3521,6 +3522,7 @@
             }
         });
 
+        @if($isNoc ?? false)
         // Stub functions so ESC handler doesn't break
         function openModal() {}
         function closeModal() {}
@@ -4319,6 +4321,7 @@
                 }
             }
         });
+        @endif
 
         // Change Entries per page
         function changeEntries(val) {
