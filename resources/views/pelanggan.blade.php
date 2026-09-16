@@ -323,9 +323,19 @@
                     </thead>
                     <tbody class="divide-y divide-gray-100 text-gray-700 font-medium">
                         @forelse($customers as $c)
-                            <tr class="hover:bg-blue-50/20 transition-colors">
+                            @php
+                                $rawTipe = strtolower(trim((string)($c->tipe_pelanggan ?? '')));
+                                $isLama = in_array($rawTipe, ['lama', 'kuning', 'yellow'], true);
+                                $borderLeftClass = $isLama 
+                                    ? 'border-l-[5px] border-l-amber-400 group-hover:border-l-amber-500' 
+                                    : 'border-l-[5px] border-l-blue-500 group-hover:border-l-blue-600';
+                                $rowHoverClass = $isLama 
+                                    ? 'hover:bg-amber-50/20' 
+                                    : 'hover:bg-blue-50/20';
+                            @endphp
+                            <tr class="group {{ $rowHoverClass }} transition-colors duration-150">
                                 <!-- Col 1: Pelanggan -->
-                                <td class="py-4 px-6 align-top space-y-1">
+                                <td class="py-4 px-6 align-top space-y-1 {{ $borderLeftClass }} transition-all">
                                     <a href="{{ route('pelanggan.detail', $c->nomor_internet) }}" class="font-bold text-blue-600 hover:underline block text-sm">
                                         {{ $c->nomor_internet }}
                                     </a>

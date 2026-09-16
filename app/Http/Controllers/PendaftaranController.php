@@ -567,10 +567,14 @@ class PendaftaranController extends Controller
 
             // Section 5: Informasi Penugasan Sales & Sistem
             'nama_sales' => 'required|string|max:100',
+            'tipe_pelanggan' => 'nullable|string|max:50',
         ]);
 
         try {
             DB::beginTransaction();
+
+            $rawTipe = strtolower(trim((string) ($request->input('tipe_pelanggan') ?? 'baru')));
+            $tipePelanggan = in_array($rawTipe, ['lama', 'kuning', 'yellow'], true) ? 'lama' : 'baru';
 
             // Ambil NAMA kategori bandwith
             $bandwithInfo = DB::table('m_bandwith')
@@ -655,6 +659,7 @@ class PendaftaranController extends Controller
                 'rt_ktp' => substr($validated['rt_ktp'], 0, 3),
                 'rw_ktp' => substr($validated['rw_ktp'], 0, 3),
                 'alamat_ktp' => $validated['alamat_ktp'],
+                'tipe_pelanggan' => $tipePelanggan,
                 'hide' => '0',
             ];
 
@@ -772,6 +777,7 @@ class PendaftaranController extends Controller
                 'lon_lat' => !empty($validated['lon_lat']) ? substr($validated['lon_lat'], 0, 100) : null,
                 'loc_maps' => !empty($validated['sharelock']) ? substr($validated['sharelock'], 0, 500) : null,
                 'note_request' => !empty($validated['permintaan_khusus']) ? substr($validated['permintaan_khusus'], 0, 50) : null,
+                'tipe_pelanggan' => $tipePelanggan,
                 'kode_bandwith' => $kodeBandwith,
                 'status_reg' => $initialStatus,
                 'group_layanan' => substr($groupLayanan, 0, 50),
@@ -796,6 +802,9 @@ class PendaftaranController extends Controller
                 }
                 if (\Illuminate\Support\Facades\Schema::hasColumn('trx_batchjob_register', 'pppoe_password')) {
                     $regInsertData['pppoe_password'] = $pppoePassword;
+                }
+                if (!\Illuminate\Support\Facades\Schema::hasColumn('trx_batchjob_register', 'tipe_pelanggan')) {
+                    unset($regInsertData['tipe_pelanggan']);
                 }
             } catch (\Throwable $e) {}
 
@@ -1078,10 +1087,14 @@ class PendaftaranController extends Controller
 
             // Section 5: Informasi Penugasan Sales & Sistem
             'nama_sales' => 'required|string|max:100',
+            'tipe_pelanggan' => 'nullable|string|max:50',
         ]);
 
         try {
             DB::beginTransaction();
+
+            $rawTipe = strtolower(trim((string) ($request->input('tipe_pelanggan') ?? 'baru')));
+            $tipePelanggan = in_array($rawTipe, ['lama', 'kuning', 'yellow'], true) ? 'lama' : 'baru';
 
             $creatorName = session('user.nama_karyawan') ?? session('user.nama') ?? session('user.username') ?? 'SYSTEM';
             if (str_contains($creatorName, '@')) {
@@ -1180,6 +1193,10 @@ class PendaftaranController extends Controller
                 'user_update' => substr($currentUser, 0, 15),
             ];
 
+            if (\Illuminate\Support\Facades\Schema::hasColumn('m_pelanggan', 'tipe_pelanggan')) {
+                $pelangganUpdate['tipe_pelanggan'] = $tipePelanggan;
+            }
+
             if ($request->filled('pppoe_username') && \Illuminate\Support\Facades\Schema::hasColumn('m_pelanggan', 'pppoe_username')) {
                 $pelangganUpdate['pppoe_username'] = trim($request->input('pppoe_username'));
             }
@@ -1218,6 +1235,10 @@ class PendaftaranController extends Controller
                 'date_update' => now(),
                 'user_update' => substr($currentUser, 0, 15),
             ];
+
+            if (\Illuminate\Support\Facades\Schema::hasColumn('trx_batchjob_register', 'tipe_pelanggan')) {
+                $batchjobUpdate['tipe_pelanggan'] = $tipePelanggan;
+            }
 
             if ($request->filled('pppoe_username') && \Illuminate\Support\Facades\Schema::hasColumn('trx_batchjob_register', 'pppoe_username')) {
                 $batchjobUpdate['pppoe_username'] = trim($request->input('pppoe_username'));

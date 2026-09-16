@@ -29,6 +29,8 @@
 
         $valJenisPerusahaan = !empty($pelanggan->jenis_perusahaan) ? $pelanggan->jenis_perusahaan : (!empty($reg->jenis_perusahaan) ? $reg->jenis_perusahaan : ($data->jenis_perusahaan ?? ''));
         $valTanggalRegistrasi = $pelanggan->tanggal_registrasi ?? $data->tanggal_registrasi ?? (isset($data->date_create) ? substr($data->date_create, 0, 10) : date('Y-m-d'));
+        $rawTipeDb = $reg->tipe_pelanggan ?? ($pelanggan->tipe_pelanggan ?? ($data->tipe_pelanggan ?? 'baru'));
+        $valTipePelanggan = in_array(strtolower(trim((string)$rawTipeDb)), ['lama', 'kuning', 'yellow'], true) ? 'lama' : 'baru';
 
         // Seksi 2: Alamat Perusahaan
         $valRtKtp = $reg->rt_perusahaan ?? $pelanggan->rt_ktp ?? $data->rt_perusahaan ?? $data->rt_ktp ?? $data->rt_pasang ?? '';
@@ -243,6 +245,35 @@
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1.5">Tanggal Registrasi <span class="text-rose-500 font-bold">*</span></label>
                         <input type="date" name="tanggal_registrasi" required value="{{ old('tanggal_registrasi', $valTanggalRegistrasi) }}" onclick="this.showPicker && this.showPicker()" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 px-3.5 text-sm rounded-xl outline-none transition-all cursor-pointer">
+                    </div>
+                </div>
+
+                <!-- Baris 5: Tipe Pelanggan & Warna Border Tabel -->
+                <div class="p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/70 space-y-2">
+                    <label class="block text-xs font-bold text-slate-700">
+                        <i class="fa-solid fa-palette text-blue-500 mr-1"></i> Tipe Pelanggan (Warna Border Tabel) <span class="text-rose-500 font-bold">*</span>
+                    </label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <label class="relative flex items-center gap-3 p-2.5 rounded-xl border border-blue-200 bg-white hover:bg-blue-50/60 cursor-pointer transition-all shadow-2xs group has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50/80 has-[:checked]:ring-2 has-[:checked]:ring-blue-400/20">
+                            <input type="radio" name="tipe_pelanggan" value="baru" {{ old('tipe_pelanggan', $valTipePelanggan) === 'baru' ? 'checked' : '' }} class="w-4 h-4 text-blue-600 focus:ring-blue-500 cursor-pointer">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-3.5 h-3.5 rounded-full bg-blue-500 ring-2 ring-blue-200 flex-shrink-0"></span>
+                                <div>
+                                    <span class="text-xs font-bold text-slate-800 group-hover:text-blue-700 block">Pelanggan Baru</span>
+                                    <span class="text-[10px] text-blue-600 font-medium block">Border Hover Warna Biru</span>
+                                </div>
+                            </div>
+                        </label>
+                        <label class="relative flex items-center gap-3 p-2.5 rounded-xl border border-amber-200 bg-white hover:bg-amber-50/60 cursor-pointer transition-all shadow-2xs group has-[:checked]:border-amber-500 has-[:checked]:bg-amber-50/80 has-[:checked]:ring-2 has-[:checked]:ring-amber-400/20">
+                            <input type="radio" name="tipe_pelanggan" value="lama" {{ old('tipe_pelanggan', $valTipePelanggan) === 'lama' ? 'checked' : '' }} class="w-4 h-4 text-amber-500 focus:ring-amber-400 cursor-pointer">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-3.5 h-3.5 rounded-full bg-amber-400 ring-2 ring-amber-200 flex-shrink-0"></span>
+                                <div>
+                                    <span class="text-xs font-bold text-slate-800 group-hover:text-amber-700 block">Pelanggan Lama</span>
+                                    <span class="text-[10px] text-amber-600 font-medium block">Border Hover Warna Kuning</span>
+                                </div>
+                            </div>
+                        </label>
                     </div>
                 </div>
             </div>

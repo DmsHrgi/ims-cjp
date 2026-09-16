@@ -1473,6 +1473,8 @@ class PageController extends Controller
         }
         $r->paket = trim(preg_replace('/\s+/', ' ', $kat . ' ' . ($r->nominal_bandwith ?? '') . ' Mbps'));
         $r->user_create_name = $this->resolveUserName($r->user_create ?? null);
+        $rawTipe = strtolower(trim((string) ($r->tipe_pelanggan ?? '')));
+        $r->tipe_pelanggan = in_array($rawTipe, ['lama', 'kuning', 'yellow'], true) ? 'lama' : 'baru';
         return $r;
     }
 

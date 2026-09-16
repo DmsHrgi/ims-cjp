@@ -178,9 +178,14 @@
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     @forelse ($rows ?? [] as $r)
-                        <tr class="group odd:bg-white even:bg-slate-50/40 hover:bg-blue-50/40 transition-colors duration-150">
+                        @php
+                            $isLama = (strtolower(trim($r->tipe_pelanggan ?? '')) === 'lama');
+                            $borderBarColor = $isLama ? 'bg-amber-400' : 'bg-blue-500';
+                            $rowHoverBg = $isLama ? 'hover:bg-amber-50/30' : 'hover:bg-blue-50/30';
+                        @endphp
+                        <tr class="group odd:bg-white even:bg-slate-50/40 {{ $rowHoverBg }} transition-colors duration-150">
                             <td class="relative py-4 px-4 align-top">
-                                <span class="absolute left-0 top-0 h-full w-1 bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></span>
+                                <span class="absolute left-0 top-0 h-full w-1 {{ $borderBarColor }} opacity-0 group-hover:opacity-100 transition-opacity duration-200"></span>
                                 <a href="{{ route('pelanggan.detail', $r->nomor_internet) }}" class="block font-bold text-blue-600 text-sm hover:underline">{{ $r->nomor_internet }}</a>
                                 <a href="{{ route('pelanggan.detail', $r->nomor_internet) }}" class="block text-sm font-semibold text-gray-800 underline decoration-gray-300 hover:decoration-blue-500 hover:text-blue-700 mt-1">{{ $r->nama_pelanggan ?: '-' }}</a>
                                 <a href="{{ route('pelanggan.detail', $r->nomor_internet) }}" class="block text-xs text-blue-600 hover:underline mt-1">{{ str_ireplace('UP TO NEW', 'LOCALLOOP', $r->nama_kategori_bandwith ?? '') }} {{ $r->nominal_bandwith }} Mbps</a>
@@ -757,6 +762,35 @@
                             <div>
                                 <label class="block text-xs font-semibold text-slate-700 mb-1.5">Tanggal <span class="text-rose-500 font-bold">*</span></label>
                                 <input type="date" name="tanggal_registrasi" required value="{{ old('tanggal_registrasi', date('Y-m-d')) }}" onclick="this.showPicker && this.showPicker()" class="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 py-2.5 px-3.5 text-sm rounded-xl outline-none transition-all cursor-pointer">
+                            </div>
+                        </div>
+
+                        <!-- Row 5: Pilihan Tipe Pelanggan (Warna Border Indikator) -->
+                        <div class="p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/70 space-y-2">
+                            <label class="block text-xs font-bold text-slate-700">
+                                <i class="fa-solid fa-palette text-blue-500 mr-1"></i> Tipe Pelanggan (Warna Border Tabel) <span class="text-rose-500 font-bold">*</span>
+                            </label>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <label class="relative flex items-center gap-3 p-2.5 rounded-xl border border-blue-200 bg-white hover:bg-blue-50/60 cursor-pointer transition-all shadow-2xs group has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50/80 has-[:checked]:ring-2 has-[:checked]:ring-blue-400/20">
+                                    <input type="radio" name="tipe_pelanggan" value="baru" checked class="w-4 h-4 text-blue-600 focus:ring-blue-500 cursor-pointer">
+                                    <div class="flex items-center gap-2.5">
+                                        <span class="w-3.5 h-3.5 rounded-full bg-blue-500 ring-2 ring-blue-200 flex-shrink-0"></span>
+                                        <div>
+                                            <span class="text-xs font-bold text-slate-800 group-hover:text-blue-700 block">Pelanggan Baru</span>
+                                            <span class="text-[10px] text-blue-600 font-medium block">Border Hover Warna Biru</span>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="relative flex items-center gap-3 p-2.5 rounded-xl border border-amber-200 bg-white hover:bg-amber-50/60 cursor-pointer transition-all shadow-2xs group has-[:checked]:border-amber-500 has-[:checked]:bg-amber-50/80 has-[:checked]:ring-2 has-[:checked]:ring-amber-400/20">
+                                    <input type="radio" name="tipe_pelanggan" value="lama" class="w-4 h-4 text-amber-500 focus:ring-amber-400 cursor-pointer">
+                                    <div class="flex items-center gap-2.5">
+                                        <span class="w-3.5 h-3.5 rounded-full bg-amber-400 ring-2 ring-amber-200 flex-shrink-0"></span>
+                                        <div>
+                                            <span class="text-xs font-bold text-slate-800 group-hover:text-amber-700 block">Pelanggan Lama</span>
+                                            <span class="text-[10px] text-amber-600 font-medium block">Border Hover Warna Kuning</span>
+                                        </div>
+                                    </div>
+                                </label>
                             </div>
                         </div>
                     </div>
