@@ -325,13 +325,16 @@
                         @forelse($customers as $c)
                             @php
                                 $rawTipe = strtolower(trim((string)($c->tipe_pelanggan ?? '')));
-                                $isLama = in_array($rawTipe, ['lama', 'kuning', 'yellow'], true);
-                                $borderLeftClass = $isLama 
-                                    ? 'border-l-[5px] border-l-amber-400 group-hover:border-l-amber-500' 
-                                    : 'border-l-[5px] border-l-blue-500 group-hover:border-l-blue-600';
-                                $rowHoverClass = $isLama 
-                                    ? 'hover:bg-amber-50/20' 
-                                    : 'hover:bg-blue-50/20';
+                                if (in_array($rawTipe, ['lama', 'kuning', 'yellow'], true)) {
+                                    $borderLeftClass = 'border-l-[5px] border-l-amber-400 group-hover:border-l-amber-500';
+                                    $rowHoverClass = 'hover:bg-amber-50/25';
+                                } elseif (in_array($rawTipe, ['baru', 'biru', 'blue'], true)) {
+                                    $borderLeftClass = 'border-l-[5px] border-l-blue-500 group-hover:border-l-blue-600';
+                                    $rowHoverClass = 'hover:bg-blue-50/25';
+                                } else {
+                                    $borderLeftClass = 'border-l-[5px] border-l-transparent group-hover:border-l-slate-300';
+                                    $rowHoverClass = 'hover:bg-slate-50/60';
+                                }
                             @endphp
                             <tr class="group {{ $rowHoverClass }} transition-colors duration-150">
                                 <!-- Col 1: Pelanggan -->

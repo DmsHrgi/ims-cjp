@@ -177,11 +177,18 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
-                    @forelse ($rows ?? [] as $r)
                         @php
-                            $isLama = (strtolower(trim($r->tipe_pelanggan ?? '')) === 'lama');
-                            $borderBarColor = $isLama ? 'bg-amber-400' : 'bg-blue-500';
-                            $rowHoverBg = $isLama ? 'hover:bg-amber-50/30' : 'hover:bg-blue-50/30';
+                            $rawTipe = strtolower(trim((string)($r->tipe_pelanggan ?? '')));
+                            if (in_array($rawTipe, ['lama', 'kuning', 'yellow'], true)) {
+                                $borderBarColor = 'bg-amber-400';
+                                $rowHoverBg = 'hover:bg-amber-50/30';
+                            } elseif (in_array($rawTipe, ['baru', 'biru', 'blue'], true)) {
+                                $borderBarColor = 'bg-blue-500';
+                                $rowHoverBg = 'hover:bg-blue-50/30';
+                            } else {
+                                $borderBarColor = 'bg-transparent';
+                                $rowHoverBg = 'hover:bg-blue-50/30';
+                            }
                         @endphp
                         <tr class="group odd:bg-white even:bg-slate-50/40 {{ $rowHoverBg }} transition-colors duration-150">
                             <td class="relative py-4 px-4 align-top">
@@ -765,29 +772,42 @@
                             </div>
                         </div>
 
-                        <!-- Row 5: Pilihan Tipe Pelanggan (Warna Border Indikator) -->
+                        <!-- Row 5: Pilihan Tipe Pelanggan (Warna Border Indikator - Opsional) -->
                         <div class="p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/70 space-y-2">
-                            <label class="block text-xs font-bold text-slate-700">
-                                <i class="fa-solid fa-palette text-blue-500 mr-1"></i> Tipe Pelanggan (Warna Border Tabel) <span class="text-rose-500 font-bold">*</span>
-                            </label>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <label class="relative flex items-center gap-3 p-2.5 rounded-xl border border-blue-200 bg-white hover:bg-blue-50/60 cursor-pointer transition-all shadow-2xs group has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50/80 has-[:checked]:ring-2 has-[:checked]:ring-blue-400/20">
-                                    <input type="radio" name="tipe_pelanggan" value="baru" checked class="w-4 h-4 text-blue-600 focus:ring-blue-500 cursor-pointer">
-                                    <div class="flex items-center gap-2.5">
-                                        <span class="w-3.5 h-3.5 rounded-full bg-blue-500 ring-2 ring-blue-200 flex-shrink-0"></span>
-                                        <div>
-                                            <span class="text-xs font-bold text-slate-800 group-hover:text-blue-700 block">Pelanggan Baru</span>
-                                            <span class="text-[10px] text-blue-600 font-medium block">Border Hover Warna Biru</span>
+                            <div class="flex items-center justify-between">
+                                <label class="block text-xs font-bold text-slate-700">
+                                    <i class="fa-solid fa-palette text-blue-500 mr-1"></i> Tipe Pelanggan (Warna Border Tabel)
+                                </label>
+                                <span class="text-[10px] text-slate-400 font-medium">Opsional / Bisa Dikosongkan</span>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                                <label class="relative flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer transition-all shadow-2xs group has-[:checked]:border-slate-500 has-[:checked]:bg-slate-100 has-[:checked]:ring-2 has-[:checked]:ring-slate-300/40">
+                                    <input type="radio" name="tipe_pelanggan" value="" {{ old('tipe_pelanggan') == '' ? 'checked' : '' }} class="w-4 h-4 text-slate-600 focus:ring-slate-500 cursor-pointer">
+                                    <div class="flex items-center gap-2 min-w-0">
+                                        <span class="w-3.5 h-3.5 rounded-full bg-slate-300 ring-2 ring-slate-200 flex-shrink-0"></span>
+                                        <div class="truncate">
+                                            <span class="text-xs font-bold text-slate-700 block truncate">Belum Ditentukan</span>
+                                            <span class="text-[10px] text-slate-400 font-medium block truncate">Tanpa Border</span>
                                         </div>
                                     </div>
                                 </label>
-                                <label class="relative flex items-center gap-3 p-2.5 rounded-xl border border-amber-200 bg-white hover:bg-amber-50/60 cursor-pointer transition-all shadow-2xs group has-[:checked]:border-amber-500 has-[:checked]:bg-amber-50/80 has-[:checked]:ring-2 has-[:checked]:ring-amber-400/20">
-                                    <input type="radio" name="tipe_pelanggan" value="lama" class="w-4 h-4 text-amber-500 focus:ring-amber-400 cursor-pointer">
-                                    <div class="flex items-center gap-2.5">
+                                <label class="relative flex items-center gap-2.5 p-2.5 rounded-xl border border-blue-200 bg-white hover:bg-blue-50/60 cursor-pointer transition-all shadow-2xs group has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50/80 has-[:checked]:ring-2 has-[:checked]:ring-blue-400/20">
+                                    <input type="radio" name="tipe_pelanggan" value="baru" {{ old('tipe_pelanggan') == 'baru' ? 'checked' : '' }} class="w-4 h-4 text-blue-600 focus:ring-blue-500 cursor-pointer">
+                                    <div class="flex items-center gap-2 min-w-0">
+                                        <span class="w-3.5 h-3.5 rounded-full bg-blue-500 ring-2 ring-blue-200 flex-shrink-0"></span>
+                                        <div class="truncate">
+                                            <span class="text-xs font-bold text-slate-800 group-hover:text-blue-700 block truncate">Pelanggan Baru</span>
+                                            <span class="text-[10px] text-blue-600 font-medium block truncate">Border Warna Biru</span>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="relative flex items-center gap-2.5 p-2.5 rounded-xl border border-amber-200 bg-white hover:bg-amber-50/60 cursor-pointer transition-all shadow-2xs group has-[:checked]:border-amber-500 has-[:checked]:bg-amber-50/80 has-[:checked]:ring-2 has-[:checked]:ring-amber-400/20">
+                                    <input type="radio" name="tipe_pelanggan" value="lama" {{ old('tipe_pelanggan') == 'lama' ? 'checked' : '' }} class="w-4 h-4 text-amber-500 focus:ring-amber-400 cursor-pointer">
+                                    <div class="flex items-center gap-2 min-w-0">
                                         <span class="w-3.5 h-3.5 rounded-full bg-amber-400 ring-2 ring-amber-200 flex-shrink-0"></span>
-                                        <div>
-                                            <span class="text-xs font-bold text-slate-800 group-hover:text-amber-700 block">Pelanggan Lama</span>
-                                            <span class="text-[10px] text-amber-600 font-medium block">Border Hover Warna Kuning</span>
+                                        <div class="truncate">
+                                            <span class="text-xs font-bold text-slate-800 group-hover:text-amber-700 block truncate">Pelanggan Lama</span>
+                                            <span class="text-[10px] text-amber-600 font-medium block truncate">Border Warna Kuning</span>
                                         </div>
                                     </div>
                                 </label>

@@ -1474,7 +1474,13 @@ class PageController extends Controller
         $r->paket = trim(preg_replace('/\s+/', ' ', $kat . ' ' . ($r->nominal_bandwith ?? '') . ' Mbps'));
         $r->user_create_name = $this->resolveUserName($r->user_create ?? null);
         $rawTipe = strtolower(trim((string) ($r->tipe_pelanggan ?? '')));
-        $r->tipe_pelanggan = in_array($rawTipe, ['lama', 'kuning', 'yellow'], true) ? 'lama' : 'baru';
+        if (in_array($rawTipe, ['lama', 'kuning', 'yellow'], true)) {
+            $r->tipe_pelanggan = 'lama';
+        } elseif (in_array($rawTipe, ['baru', 'biru', 'blue'], true)) {
+            $r->tipe_pelanggan = 'baru';
+        } else {
+            $r->tipe_pelanggan = null;
+        }
         return $r;
     }
 

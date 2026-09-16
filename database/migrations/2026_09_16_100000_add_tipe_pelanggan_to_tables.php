@@ -15,7 +15,7 @@ return new class extends Migration
         if (Schema::hasTable('trx_batchjob_register')) {
             if (!Schema::hasColumn('trx_batchjob_register', 'tipe_pelanggan')) {
                 try {
-                    DB::statement("ALTER TABLE `trx_batchjob_register` ADD `tipe_pelanggan` VARCHAR(50) NULL DEFAULT 'baru' AFTER `note_request`");
+                    DB::statement("ALTER TABLE `trx_batchjob_register` ADD `tipe_pelanggan` VARCHAR(50) NULL DEFAULT NULL AFTER `note_request`");
                 } catch (\Throwable $e) {}
             }
         }
@@ -23,7 +23,7 @@ return new class extends Migration
         if (Schema::hasTable('m_pelanggan')) {
             if (!Schema::hasColumn('m_pelanggan', 'tipe_pelanggan')) {
                 try {
-                    DB::statement("ALTER TABLE `m_pelanggan` ADD `tipe_pelanggan` VARCHAR(50) NULL DEFAULT 'baru'");
+                    DB::statement("ALTER TABLE `m_pelanggan` ADD `tipe_pelanggan` VARCHAR(50) NULL DEFAULT NULL");
                 } catch (\Throwable $e) {}
             }
         }

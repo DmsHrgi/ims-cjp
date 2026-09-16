@@ -573,8 +573,14 @@ class PendaftaranController extends Controller
         try {
             DB::beginTransaction();
 
-            $rawTipe = strtolower(trim((string) ($request->input('tipe_pelanggan') ?? 'baru')));
-            $tipePelanggan = in_array($rawTipe, ['lama', 'kuning', 'yellow'], true) ? 'lama' : 'baru';
+            $rawTipe = strtolower(trim((string) ($request->input('tipe_pelanggan') ?? '')));
+            if (in_array($rawTipe, ['lama', 'kuning', 'yellow'], true)) {
+                $tipePelanggan = 'lama';
+            } elseif (in_array($rawTipe, ['baru', 'biru', 'blue'], true)) {
+                $tipePelanggan = 'baru';
+            } else {
+                $tipePelanggan = null;
+            }
 
             // Ambil NAMA kategori bandwith
             $bandwithInfo = DB::table('m_bandwith')
@@ -1093,8 +1099,14 @@ class PendaftaranController extends Controller
         try {
             DB::beginTransaction();
 
-            $rawTipe = strtolower(trim((string) ($request->input('tipe_pelanggan') ?? 'baru')));
-            $tipePelanggan = in_array($rawTipe, ['lama', 'kuning', 'yellow'], true) ? 'lama' : 'baru';
+            $rawTipe = strtolower(trim((string) ($request->input('tipe_pelanggan') ?? '')));
+            if (in_array($rawTipe, ['lama', 'kuning', 'yellow'], true)) {
+                $tipePelanggan = 'lama';
+            } elseif (in_array($rawTipe, ['baru', 'biru', 'blue'], true)) {
+                $tipePelanggan = 'baru';
+            } else {
+                $tipePelanggan = null;
+            }
 
             $creatorName = session('user.nama_karyawan') ?? session('user.nama') ?? session('user.username') ?? 'SYSTEM';
             if (str_contains($creatorName, '@')) {
