@@ -188,12 +188,14 @@
                                 $rowHoverBg = 'hover:bg-blue-50/30';
                             } else {
                                 $borderBarColor = 'bg-transparent';
-                                $rowHoverBg = 'hover:bg-blue-50/30';
+                                $rowHoverBg = 'hover:bg-slate-50/60';
                             }
                         @endphp
                         <tr class="group odd:bg-white even:bg-slate-50/40 {{ $rowHoverBg }} transition-colors duration-150">
                             <td class="relative py-4 px-4 align-top">
-                                <span class="absolute left-0 top-0 h-full w-1 {{ $borderBarColor }} opacity-0 group-hover:opacity-100 transition-opacity duration-200"></span>
+                                @if($borderBarColor !== 'bg-transparent')
+                                    <span class="absolute left-0 top-0 h-full w-1.5 {{ $borderBarColor }} opacity-80 group-hover:opacity-100 transition-all duration-200"></span>
+                                @endif
                                 <a href="{{ route('pelanggan.detail', $r->nomor_internet) }}" class="block font-bold text-blue-600 text-sm hover:underline">{{ $r->nomor_internet }}</a>
                                 <a href="{{ route('pelanggan.detail', $r->nomor_internet) }}" class="block text-sm font-semibold text-gray-800 underline decoration-gray-300 hover:decoration-blue-500 hover:text-blue-700 mt-1">{{ $r->nama_pelanggan ?: '-' }}</a>
                                 <a href="{{ route('pelanggan.detail', $r->nomor_internet) }}" class="block text-xs text-blue-600 hover:underline mt-1">{{ str_ireplace('UP TO NEW', 'LOCALLOOP', $r->nama_kategori_bandwith ?? '') }} {{ $r->nominal_bandwith }} Mbps</a>

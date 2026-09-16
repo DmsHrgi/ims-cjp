@@ -90,7 +90,7 @@ return new class extends Migration
                     `w`.`kode_wilayah_kota` AS `kode_wilayah_kota_pasang`, 
                     `w`.`nama_provinsi` AS `nama_provinsi_pasang`, 
                     `br`.`note_request` AS `note_request`, 
-                    `br`.`tipe_pelanggan` AS `tipe_pelanggan`,
+                    COALESCE(`br`.`tipe_pelanggan`, `p`.`tipe_pelanggan`) AS `tipe_pelanggan`,
                     `br`.`ppn` AS `ppn`, 
                     `br`.`ppn_nom` AS `ppn_nom`, 
                     `br`.`potongan` AS `potongan`, 

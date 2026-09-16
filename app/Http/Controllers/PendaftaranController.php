@@ -10,8 +10,24 @@ use Illuminate\Support\Str;
 
 class PendaftaranController extends Controller
 {
+    public static function ensureTipePelangganColumns()
+    {
+        try {
+            if (Schema::hasTable('trx_batchjob_register') && !Schema::hasColumn('trx_batchjob_register', 'tipe_pelanggan')) {
+                DB::statement("ALTER TABLE `trx_batchjob_register` ADD `tipe_pelanggan` VARCHAR(50) NULL DEFAULT NULL AFTER `note_request`");
+            }
+        } catch (\Throwable $e) {}
+
+        try {
+            if (Schema::hasTable('m_pelanggan') && !Schema::hasColumn('m_pelanggan', 'tipe_pelanggan')) {
+                DB::statement("ALTER TABLE `m_pelanggan` ADD `tipe_pelanggan` VARCHAR(50) NULL DEFAULT NULL");
+            }
+        } catch (\Throwable $e) {}
+    }
+
     public function create(Request $request)
     {
+        self::ensureTipePelangganColumns();
         $bangunan = DB::table('m_jns_bangunan')->where('hide', '0')->orderBy('jenis_bangunan')->get();
         $kategori = DB::table('m_bandwith_kategori')->where('hide', '0')->orderBy('nama_kategori_bandwith')->get();
         $groupFromReg = DB::table('trx_batchjob_register')->select('group_layanan')->distinct()->whereNotNull('group_layanan')->where('group_layanan', '!=', '')->pluck('group_layanan')->toArray();
@@ -199,6 +215,24 @@ class PendaftaranController extends Controller
             }
             return $r;
         });
+
+        // Bulk fallback lookup for tipe_pelanggan if missing from view_batchjob
+        $missingNomors = $rows->getCollection()->filter(fn($r) => empty($r->tipe_pelanggan) && !empty($r->nomor_internet))->pluck('nomor_internet')->toArray();
+        if (!empty($missingNomors)) {
+            try {
+                $tipes = DB::table('trx_batchjob_register')
+                    ->whereIn('nomor_internet', $missingNomors)
+                    ->whereNotNull('tipe_pelanggan')
+                    ->where('tipe_pelanggan', '!=', '')
+                    ->pluck('tipe_pelanggan', 'nomor_internet');
+
+                foreach ($rows->getCollection() as $r) {
+                    if (empty($r->tipe_pelanggan) && isset($tipes[$r->nomor_internet])) {
+                        $r->tipe_pelanggan = $tipes[$r->nomor_internet];
+                    }
+                }
+            } catch (\Throwable $e) {}
+        }
 
         // Deteksi level Admin & NOC untuk conditional rendering
         $u = session('user', []);
@@ -946,6 +980,8 @@ class PendaftaranController extends Controller
     // ============================================
     public function edit($nomorInternet)
     {
+        self::ensureTipePelangganColumns();
+
         $referer = request()->headers->get('referer');
         if ($referer && (str_contains($referer, '/pelanggan') || str_contains($referer, '/pendaftaran'))) {
             session(['pendaftaran_last_url' => $referer]);
@@ -1174,6 +1210,8 @@ class PendaftaranController extends Controller
 
             DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
+            self::ensureTipePelangganColumns();
+
             // Update m_pelanggan
             $pelangganUpdate = [
                 'nama_perusahaan' => strtoupper($validated['nama_perusahaan']),
@@ -1201,13 +1239,10 @@ class PendaftaranController extends Controller
                 'rt_ktp' => substr($validated['rt_ktp'], 0, 3),
                 'rw_ktp' => substr($validated['rw_ktp'], 0, 3),
                 'alamat_ktp' => $validated['alamat_ktp'],
+                'tipe_pelanggan' => $tipePelanggan,
                 'date_update' => now(),
                 'user_update' => substr($currentUser, 0, 15),
             ];
-
-            if (\Illuminate\Support\Facades\Schema::hasColumn('m_pelanggan', 'tipe_pelanggan')) {
-                $pelangganUpdate['tipe_pelanggan'] = $tipePelanggan;
-            }
 
             if ($request->filled('pppoe_username') && \Illuminate\Support\Facades\Schema::hasColumn('m_pelanggan', 'pppoe_username')) {
                 $pelangganUpdate['pppoe_username'] = trim($request->input('pppoe_username'));
@@ -1216,10 +1251,18 @@ class PendaftaranController extends Controller
                 $pelangganUpdate['pppoe_password'] = trim($request->input('pppoe_password'));
             }
 
-            DB::table('m_pelanggan')
-                ->where('id_perusahaan', $targetId)
-                ->orWhere('id_perusahaan', $validated['id_perusahaan'])
-                ->update($pelangganUpdate);
+            try {
+                DB::table('m_pelanggan')
+                    ->where('id_perusahaan', $targetId)
+                    ->orWhere('id_perusahaan', $validated['id_perusahaan'])
+                    ->update($pelangganUpdate);
+            } catch (\Throwable $e) {
+                unset($pelangganUpdate['tipe_pelanggan']);
+                DB::table('m_pelanggan')
+                    ->where('id_perusahaan', $targetId)
+                    ->orWhere('id_perusahaan', $validated['id_perusahaan'])
+                    ->update($pelangganUpdate);
+            }
 
             // Update trx_batchjob_register
             $batchjobUpdate = [
@@ -1234,6 +1277,7 @@ class PendaftaranController extends Controller
                 'lon_lat' => $validated['lon_lat'] ?? null,
                 'loc_maps' => $validated['sharelock'] ?? null,
                 'note_request' => $validated['permintaan_khusus'] ?? null,
+                'tipe_pelanggan' => $tipePelanggan,
                 'kode_bandwith' => $kodeBandwith,
                 'group_layanan' => $groupLayanan,
                 'nama_sales' => $validated['nama_sales'],
@@ -1247,10 +1291,6 @@ class PendaftaranController extends Controller
                 'date_update' => now(),
                 'user_update' => substr($currentUser, 0, 15),
             ];
-
-            if (\Illuminate\Support\Facades\Schema::hasColumn('trx_batchjob_register', 'tipe_pelanggan')) {
-                $batchjobUpdate['tipe_pelanggan'] = $tipePelanggan;
-            }
 
             if ($request->filled('pppoe_username') && \Illuminate\Support\Facades\Schema::hasColumn('trx_batchjob_register', 'pppoe_username')) {
                 $batchjobUpdate['pppoe_username'] = trim($request->input('pppoe_username'));
@@ -1266,9 +1306,16 @@ class PendaftaranController extends Controller
                 $batchjobUpdate['foto_bangunan'] = $fotoBangunanUpdate['foto_bangunan'];
             }
 
-            DB::table('trx_batchjob_register')
-                ->where('nomor_internet', $nomorInternet)
-                ->update($batchjobUpdate);
+            try {
+                DB::table('trx_batchjob_register')
+                    ->where('nomor_internet', $nomorInternet)
+                    ->update($batchjobUpdate);
+            } catch (\Throwable $e) {
+                unset($batchjobUpdate['tipe_pelanggan']);
+                DB::table('trx_batchjob_register')
+                    ->where('nomor_internet', $nomorInternet)
+                    ->update($batchjobUpdate);
+            }
 
             // Update foto di trx_instalasi jika ada
             if (!empty($fotoPoUpdate) || !empty($fotoBangunanUpdate)) {

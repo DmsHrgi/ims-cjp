@@ -395,6 +395,24 @@ class PageController extends Controller
             });
         }
 
+        // Bulk fallback lookup for tipe_pelanggan if missing from view_batchjob
+        $missingNomors = $allTableRows->filter(fn($r) => empty($r->tipe_pelanggan) && !empty($r->nomor_internet))->pluck('nomor_internet')->toArray();
+        if (!empty($missingNomors)) {
+            try {
+                $tipes = DB::table('trx_batchjob_register')
+                    ->whereIn('nomor_internet', $missingNomors)
+                    ->whereNotNull('tipe_pelanggan')
+                    ->where('tipe_pelanggan', '!=', '')
+                    ->pluck('tipe_pelanggan', 'nomor_internet');
+
+                foreach ($allTableRows as $r) {
+                    if (empty($r->tipe_pelanggan) && isset($tipes[$r->nomor_internet])) {
+                        $r->tipe_pelanggan = $tipes[$r->nomor_internet];
+                    }
+                }
+            } catch (\Throwable $e) {}
+        }
+
         $allTableRows->transform(function ($r) {
             $r = $this->decorate($r);
             $r->section = $this->sectionOf($r);
