@@ -105,8 +105,14 @@
             box-shadow: 0 4px 18px rgba(37, 99, 235, 0.4) !important;
         }
 
+        /* Floating Tooltips and Flyouts (hidden by default in expanded mode) */
+        .sidebar-tooltip, .sidebar-flyout {
+            display: none !important;
+        }
+
         /* Floating Tooltips when collapsed */
         #sidebar.collapsed .sidebar-tooltip {
+            display: block !important;
             position: absolute;
             left: calc(100% + 12px);
             top: 50%;
@@ -122,7 +128,7 @@
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.12);
             opacity: 0;
             pointer-events: none;
-            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: opacity 0.15s ease, transform 0.15s ease;
             z-index: 9999;
         }
         #sidebar.collapsed .sidebar-tooltip::before {
@@ -151,11 +157,11 @@
             border-radius: 12px;
             padding: 8px;
             min-width: 190px;
-            display: none;
+            display: none !important;
             z-index: 9999;
         }
         #sidebar.collapsed .group:hover .sidebar-flyout {
-            display: block;
+            display: block !important;
             animation: flyoutFadeIn 0.15s ease-out;
         }
         @keyframes flyoutFadeIn {

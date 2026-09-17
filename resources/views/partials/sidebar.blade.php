@@ -88,7 +88,7 @@
                     || ($item['route'] === 'olt.index' && str_starts_with($currentRoute, 'olt.'))
                     || ($item['route'] === 'users.index' && str_starts_with($currentRoute, 'users.'));
             @endphp
-            <div class="relative group flex justify-center">
+            <div class="relative group w-full mb-1">
                 <a href="{{ route($item['route']) }}"
                    class="sidebar-nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-150 w-full
                           {{ $active
@@ -110,7 +110,7 @@
 
         {{-- Permintaan dropdown (Hanya untuk NOC) --}}
         @if ($isNoc)
-        <div class="relative group flex flex-col items-center">
+        <div class="relative group w-full mb-1">
             <button class="dropdown-toggle sidebar-nav-item w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-150
                            {{ $isPermintaan ? 'sidebar-active-item' : 'text-gray-400 hover:bg-white/5 hover:text-white' }}">
                 <span class="flex items-center gap-3">
@@ -173,7 +173,7 @@
                 ['route' => 'billing.layanan',    'label' => 'Invoice Layanan'],
             ];
         @endphp
-        <div class="relative group flex flex-col items-center">
+        <div class="relative group w-full mb-1">
             <button class="dropdown-toggle sidebar-nav-item w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-150
                            {{ $isBilling ? 'sidebar-active-item' : 'text-gray-400 hover:bg-white/5 hover:text-white' }}">
                 <span class="flex items-center gap-3">
@@ -228,7 +228,7 @@
     <div class="px-3 pt-3 pb-4 border-t border-white/10 flex-shrink-0">
         <form method="POST" action="{{ route('logout') }}">
             @csrf
-            <div class="relative group flex justify-center">
+            <div class="relative group w-full">
                 <button type="submit"
                         class="sidebar-nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-gray-400 hover:bg-red-500/10 hover:text-red-400 transition-all duration-150 cursor-pointer">
                     <span class="icon-wrapper w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 bg-white/5 group-hover:bg-red-500/15 transition-all">
