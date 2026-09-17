@@ -20,6 +20,13 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
+    <!-- Immediate script to prevent flash of expanded sidebar on page load -->
+    <script>
+        if (localStorage.getItem('sb') === '1') {
+            document.documentElement.classList.add('sb-collapsed');
+        }
+    </script>
+
     <style>
         * { box-sizing: border-box; }
         html {
@@ -61,27 +68,37 @@
         /* Sidebar */
         #sidebar {
             width: 250px;
-            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             z-index: 40;
         }
-        #sidebar.collapsed {
+        #sidebar.collapsed,
+        html.sb-collapsed #sidebar {
             width: 76px;
+        }
+        #sidebar.collapsed,
+        html.sb-collapsed #sidebar,
+        #sidebar.collapsed #sidebar-nav,
+        html.sb-collapsed #sidebar-nav {
+            overflow: visible !important;
         }
 
         /* Collapsed behavior */
-        #sidebar.collapsed .sidebar-hide-collapsed {
+        #sidebar.collapsed .sidebar-hide-collapsed,
+        html.sb-collapsed #sidebar .sidebar-hide-collapsed {
             display: none !important;
         }
         #sidebar .sidebar-show-collapsed {
             display: none !important;
         }
-        #sidebar.collapsed .sidebar-show-collapsed {
+        #sidebar.collapsed .sidebar-show-collapsed,
+        html.sb-collapsed #sidebar .sidebar-show-collapsed {
             display: flex !important;
         }
 
         /* Item layout when collapsed */
-        #sidebar.collapsed .sidebar-nav-item {
+        #sidebar.collapsed .sidebar-nav-item,
+        html.sb-collapsed #sidebar .sidebar-nav-item {
             justify-content: center !important;
             padding-left: 0 !important;
             padding-right: 0 !important;
@@ -90,8 +107,10 @@
             margin-left: auto !important;
             margin-right: auto !important;
             border-radius: 14px !important;
+            position: relative;
         }
-        #sidebar.collapsed .sidebar-nav-item .icon-wrapper {
+        #sidebar.collapsed .sidebar-nav-item .icon-wrapper,
+        html.sb-collapsed #sidebar .sidebar-nav-item .icon-wrapper {
             width: 100% !important;
             height: 100% !important;
             background: transparent !important;
@@ -129,7 +148,7 @@
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.15s ease, transform 0.15s ease;
-            z-index: 9999;
+            z-index: 99999;
         }
         #sidebar.collapsed .sidebar-tooltip::before {
             content: '';
@@ -145,6 +164,11 @@
             transform: translateY(-50%) scale(1);
             pointer-events: auto;
         }
+        #sidebar.collapsed .group:hover .sidebar-flyout ~ .sidebar-tooltip,
+        #sidebar.collapsed .group.flyout-open .sidebar-tooltip {
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
 
         /* Collapsed Flyout Submenu for Permintaan / Billing */
         #sidebar.collapsed .sidebar-flyout {
@@ -158,9 +182,19 @@
             padding: 8px;
             min-width: 190px;
             display: none !important;
-            z-index: 9999;
+            z-index: 99999;
+            pointer-events: auto;
         }
-        #sidebar.collapsed .group:hover .sidebar-flyout {
+        #sidebar.collapsed .sidebar-flyout::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -18px;
+            width: 18px;
+            height: 100%;
+        }
+        #sidebar.collapsed .group:hover .sidebar-flyout,
+        #sidebar.collapsed .group.flyout-open .sidebar-flyout {
             display: block !important;
             animation: flyoutFadeIn 0.15s ease-out;
         }
@@ -228,6 +262,11 @@
 
         <!-- ═══════════ SIDEBAR ═══════════ -->
         <aside id="sidebar" class="flex flex-col bg-[#111827] text-white flex-shrink-0">
+            <script>
+                if (localStorage.getItem('sb') === '1') {
+                    document.getElementById('sidebar').classList.add('collapsed');
+                }
+            </script>
             @include('partials.sidebar')
         </aside>
 
@@ -270,41 +309,77 @@
             const sb = document.getElementById('sidebar');
             if (!sb) return;
             sb.classList.toggle('collapsed');
-            localStorage.setItem('sb', sb.classList.contains('collapsed') ? '1' : '0');
+            const isCol = sb.classList.contains('collapsed');
+            if (isCol) {
+                document.documentElement.classList.add('sb-collapsed');
+            } else {
+                document.documentElement.classList.remove('sb-collapsed');
+            }
+            localStorage.setItem('sb', isCol ? '1' : '0');
             updateModalOffset();
         }
         window.toggleSidebar = toggleSidebar;
 
         document.addEventListener('DOMContentLoaded', function () {
+            const sb = document.getElementById('sidebar');
             if (localStorage.getItem('sb') === '1') {
-                const sb = document.getElementById('sidebar');
                 if (sb) sb.classList.add('collapsed');
+                document.documentElement.classList.add('sb-collapsed');
+            } else {
+                if (sb) sb.classList.remove('collapsed');
+                document.documentElement.classList.remove('sb-collapsed');
             }
             updateModalOffset();
             window.addEventListener('resize', updateModalOffset);
 
-            /* ── Dropdown menus ── */
+            /* ── Dropdown menus (Expanded accordion + Collapsed flyout) ── */
             document.querySelectorAll('.dropdown-toggle').forEach(function (toggle) {
                 toggle.addEventListener('click', function (e) {
                     e.preventDefault();
-                    const menu = this.parentElement.querySelector('.dropdown-menu');
-                    const icon = this.querySelector('.dd-chevron');
-                    if (!menu) return;
-                    const isOpen = menu.classList.contains('open');
+                    e.stopPropagation();
+                    const sb = document.getElementById('sidebar');
+                    const isCollapsed = sb && sb.classList.contains('collapsed');
+                    const parentGroup = this.closest('.group');
 
-                    // close others
-                    document.querySelectorAll('.dropdown-menu.open').forEach(function (m) {
-                        m.classList.remove('open');
-                    });
-                    document.querySelectorAll('.dd-chevron').forEach(function (c) {
-                        c.style.transform = 'rotate(0deg)';
-                    });
+                    if (isCollapsed) {
+                        // Toggle flyout on click in collapsed mode
+                        const isOpen = parentGroup && parentGroup.classList.contains('flyout-open');
+                        document.querySelectorAll('.group.flyout-open').forEach(function (g) {
+                            g.classList.remove('flyout-open');
+                        });
+                        if (!isOpen && parentGroup) {
+                            parentGroup.classList.add('flyout-open');
+                        }
+                    } else {
+                        // Toggle accordion in expanded mode
+                        const menu = this.parentElement.querySelector('.dropdown-menu');
+                        const icon = this.querySelector('.dd-chevron');
+                        if (!menu) return;
+                        const isOpen = menu.classList.contains('open');
 
-                    if (!isOpen) {
-                        menu.classList.add('open');
-                        if (icon) icon.style.transform = 'rotate(180deg)';
+                        // close others
+                        document.querySelectorAll('.dropdown-menu.open').forEach(function (m) {
+                            m.classList.remove('open');
+                        });
+                        document.querySelectorAll('.dd-chevron').forEach(function (c) {
+                            c.style.transform = 'rotate(0deg)';
+                        });
+
+                        if (!isOpen) {
+                            menu.classList.add('open');
+                            if (icon) icon.style.transform = 'rotate(180deg)';
+                        }
                     }
                 });
+            });
+
+            // Close flyouts when clicking outside
+            document.addEventListener('click', function (e) {
+                if (!e.target.closest('.group')) {
+                    document.querySelectorAll('.group.flyout-open').forEach(function (g) {
+                        g.classList.remove('flyout-open');
+                    });
+                }
             });
 
             // auto-open active dropdown
