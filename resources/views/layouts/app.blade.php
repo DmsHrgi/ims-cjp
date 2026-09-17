@@ -60,13 +60,107 @@
 
         /* Sidebar */
         #sidebar {
-            width: 240px;
-            transition: width 0.25s cubic-bezier(.4,0,.2,1), transform 0.25s cubic-bezier(.4,0,.2,1);
-            will-change: width;
-            overflow: hidden;
+            width: 250px;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 40;
         }
         #sidebar.collapsed {
-            width: 0;
+            width: 76px;
+        }
+
+        /* Collapsed behavior */
+        #sidebar.collapsed .sidebar-hide-collapsed {
+            display: none !important;
+        }
+        #sidebar .sidebar-show-collapsed {
+            display: none !important;
+        }
+        #sidebar.collapsed .sidebar-show-collapsed {
+            display: flex !important;
+        }
+
+        /* Item layout when collapsed */
+        #sidebar.collapsed .sidebar-nav-item {
+            justify-content: center !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            width: 46px !important;
+            height: 46px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            border-radius: 14px !important;
+        }
+        #sidebar.collapsed .sidebar-nav-item .icon-wrapper {
+            width: 100% !important;
+            height: 100% !important;
+            background: transparent !important;
+            border-radius: 14px !important;
+        }
+
+        /* Active highlight for collapsed & expanded */
+        .sidebar-active-item {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 18px rgba(37, 99, 235, 0.4) !important;
+        }
+
+        /* Floating Tooltips when collapsed */
+        #sidebar.collapsed .sidebar-tooltip {
+            position: absolute;
+            left: calc(100% + 12px);
+            top: 50%;
+            transform: translateY(-50%) scale(0.9);
+            background: #1e293b;
+            color: #f8fafc;
+            padding: 7px 13px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            white-space: nowrap;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.12);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 9999;
+        }
+        #sidebar.collapsed .sidebar-tooltip::before {
+            content: '';
+            position: absolute;
+            right: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 5px solid transparent;
+            border-right-color: #1e293b;
+        }
+        #sidebar.collapsed .group:hover .sidebar-tooltip {
+            opacity: 1;
+            transform: translateY(-50%) scale(1);
+            pointer-events: auto;
+        }
+
+        /* Collapsed Flyout Submenu for Permintaan / Billing */
+        #sidebar.collapsed .sidebar-flyout {
+            position: absolute;
+            left: calc(100% + 12px);
+            top: 0;
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+            padding: 8px;
+            min-width: 190px;
+            display: none;
+            z-index: 9999;
+        }
+        #sidebar.collapsed .group:hover .sidebar-flyout {
+            display: block;
+            animation: flyoutFadeIn 0.15s ease-out;
+        }
+        @keyframes flyoutFadeIn {
+            from { opacity: 0; transform: translateX(-6px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         /* Sidebar nav item active bar */
@@ -128,9 +222,7 @@
 
         <!-- ═══════════ SIDEBAR ═══════════ -->
         <aside id="sidebar" class="flex flex-col bg-[#111827] text-white flex-shrink-0">
-            <div class="w-[240px] flex flex-col h-full flex-shrink-0">
-                @include('partials.sidebar')
-            </div>
+            @include('partials.sidebar')
         </aside>
 
         <!-- ═══════════ MAIN WRAPPER ═══════════ -->
@@ -158,8 +250,8 @@
             const isCollapsed = sb && sb.classList.contains('collapsed');
             const isDesktop = window.innerWidth >= 768;
             document.querySelectorAll('.modal-center-wrapper').forEach(function(el) {
-                if (isDesktop && sb && !isCollapsed) {
-                    el.style.paddingLeft = '240px';
+                if (isDesktop && sb) {
+                    el.style.paddingLeft = isCollapsed ? '76px' : '250px';
                     el.style.paddingRight = '0px';
                 } else {
                     el.style.paddingLeft = '0px';
