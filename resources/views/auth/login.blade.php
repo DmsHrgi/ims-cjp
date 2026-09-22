@@ -84,14 +84,10 @@
 
             <!-- konten -->
             <div class="relative z-10">
-                <div class="flex items-center gap-3.5 rise d1">
-                    <div class="h-12 w-12 flex items-center justify-center flex-shrink-0">
-                        <img src="{{ asset('img/logo.png') }}" alt="Connecti Jelajah Priangan Logo" class="h-full w-full object-contain">
-                    </div>
-                    <div class="leading-tight">
-                        <p class="font-display font-extrabold tracking-wide text-base text-white">CONNECTI JELAJAH PRIANGAN</p>
-                        <p class="font-display font-medium text-cyan-300 text-[11px] tracking-wider uppercase">Koneksi Cepat, Koneksi Tanpa Batas</p>
-                    </div>
+                <div class="flex items-center rise d1">
+                    <img src="{{ asset('img/logo-white.png') }}"
+                         alt="Logo Connecti Jelajah Priangan"
+                         class="h-12 w-auto max-w-[280px] object-contain filter drop-shadow-md">
                 </div>
             </div>
 
@@ -135,13 +131,12 @@
             <div class="w-full max-w-sm">
 
                 <!-- logo mobile -->
-                <div class="lg:hidden flex items-center gap-3 mb-10 rise d1">
-                    <div class="h-10 w-10 flex items-center justify-center flex-shrink-0">
-                        <img src="{{ asset('img/logo.png') }}" alt="Connecti Jelajah Priangan Logo" class="h-full w-full object-contain">
-                    </div>
-                    <div class="leading-tight">
-                        <span class="font-display font-extrabold tracking-wide text-slate-900 block text-sm">CONNECTI JELAJAH PRIANGAN</span>
-                        <span class="text-[10px] text-slate-500 font-semibold tracking-wider uppercase block">Koneksi Cepat, Koneksi Tanpa Batas</span>
+                <div class="lg:hidden mb-8 rise d1 flex justify-start">
+                    <div class="inline-flex items-center px-4 py-2.5 rounded-2xl"
+                         style="background: linear-gradient(135deg, #1e3a5f 0%, #0f2647 50%, #162d4a 100%); box-shadow: 0 4px 16px rgba(15,38,71,0.25);">
+                        <img src="{{ asset('img/logo-white.png') }}"
+                             alt="Connecti Jelajah Priangan"
+                             class="h-9 w-auto max-w-full object-contain">
                     </div>
                 </div>
 
