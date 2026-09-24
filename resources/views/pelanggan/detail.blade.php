@@ -1587,9 +1587,9 @@
             const currentVal = (hiddenIndex ? hiddenIndex.value : '{{ $customer->index_olt ?? "GPON-ONU_1/1/1:14" }}').toUpperCase();
 
             const selectedOlt = oltSelect ? oltSelect.value : '{{ $customer->olt ?? "" }}';
-            const prefix = getDetailGponPrefix(selectedOlt);
+            const defaultPrefix = getDetailGponPrefix(selectedOlt);
 
-            let targetPort = 'GPON-ONU_' + prefix + '1';
+            let targetPort = 'GPON-ONU_' + defaultPrefix + '1';
             let targetIndex = currentVal;
             if (currentVal.indexOf(':') !== -1) {
                 targetPort = currentVal.split(':')[0];
@@ -1597,27 +1597,21 @@
 
             if (portSel) {
                 portSel.innerHTML = '';
-                for (let i = 1; i <= 16; i++) {
-                    const p = 'GPON-ONU_' + prefix + i;
-                    const opt = document.createElement('option');
-                    opt.value = p;
-                    opt.textContent = p;
-                    portSel.appendChild(opt);
-                }
+                ['1/1/', '1/2/'].forEach(function(pref) {
+                    for (let i = 1; i <= 16; i++) {
+                        const p = 'GPON-ONU_' + pref + i;
+                        const opt = document.createElement('option');
+                        opt.value = p;
+                        opt.textContent = p;
+                        portSel.appendChild(opt);
+                    }
+                });
 
                 if (Array.from(portSel.options).some(function(o) { return o.value === targetPort; })) {
                     portSel.value = targetPort;
-                } else {
-                    const pNum = targetPort.split('/').pop();
-                    const adapted = 'GPON-ONU_' + prefix + pNum;
-                    if (Array.from(portSel.options).some(function(o) { return o.value === adapted; })) {
-                        portSel.value = adapted;
-                        const onuPart = currentVal.indexOf(':') !== -1 ? currentVal.split(':')[1] : '14';
-                        targetIndex = adapted + ':' + onuPart;
-                    } else if (portSel.options.length > 0) {
-                        portSel.selectedIndex = 0;
-                        targetIndex = portSel.value + ':14';
-                    }
+                } else if (portSel.options.length > 0) {
+                    portSel.selectedIndex = 0;
+                    targetIndex = portSel.value + ':14';
                 }
             }
 
@@ -1631,15 +1625,7 @@
             if (!oltSelect || !portSel) return;
 
             const selectedOlt = oltSelect.value;
-            const prefix = getDetailGponPrefix(selectedOlt);
-
-            let currentPortNum = '1';
-            if (portSel.value) {
-                const parts = portSel.value.split('/');
-                if (parts.length >= 3) {
-                    currentPortNum = parts[parts.length - 1];
-                }
-            }
+            const currentPort = portSel.value;
 
             let currentOnuNum = '14';
             if (indexSel && indexSel.value && indexSel.value.indexOf(':') !== -1) {
@@ -1647,22 +1633,23 @@
             }
 
             portSel.innerHTML = '';
-            for (let i = 1; i <= 16; i++) {
-                const p = 'GPON-ONU_' + prefix + i;
-                const opt = document.createElement('option');
-                opt.value = p;
-                opt.textContent = p;
-                portSel.appendChild(opt);
-            }
+            ['1/1/', '1/2/'].forEach(function(pref) {
+                for (let i = 1; i <= 16; i++) {
+                    const p = 'GPON-ONU_' + pref + i;
+                    const opt = document.createElement('option');
+                    opt.value = p;
+                    opt.textContent = p;
+                    portSel.appendChild(opt);
+                }
+            });
 
-            const newPort = 'GPON-ONU_' + prefix + currentPortNum;
-            if (Array.from(portSel.options).some(function(o) { return o.value === newPort; })) {
-                portSel.value = newPort;
+            if (currentPort && Array.from(portSel.options).some(function(o) { return o.value === currentPort; })) {
+                portSel.value = currentPort;
             } else if (portSel.options.length > 0) {
                 portSel.selectedIndex = 0;
             }
 
-            const newTargetIndex = (portSel.value || newPort) + ':' + currentOnuNum;
+            const newTargetIndex = (portSel.value || 'GPON-ONU_1/1/1') + ':' + currentOnuNum;
             updateDetailIndexOltOptions(newTargetIndex);
         }
 

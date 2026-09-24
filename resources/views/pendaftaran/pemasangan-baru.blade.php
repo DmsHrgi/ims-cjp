@@ -1162,7 +1162,7 @@
     <!-- ============================================ -->
     <!-- MODAL FORM AKTIVASI (NOC) -->
     <!-- ============================================ -->
-    <div id="modalAktivasi" class="hidden fixed inset-0 z-50 overflow-y-auto transition-all duration-300">
+    <div id="modalAktivasi" class="hidden fixed inset-0 z-[9999] overflow-y-auto transition-all duration-300">
         <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity" onclick="closeAktivasiModal()"></div>
         <div class="flex min-h-screen w-full items-center justify-center p-3 sm:p-4">
             <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-5xl h-[85vh] max-h-[800px] flex flex-col overflow-hidden border border-slate-200 my-auto transform transition-all">
@@ -2083,7 +2083,7 @@
     <!-- ============================================ -->
     <!-- MODAL REPORT AKTIVASI (ROLE NOC)             -->
     <!-- ============================================ -->
-    <div id="modalReportAktivasi" class="hidden fixed inset-0 z-50 overflow-y-auto transition-all duration-300">
+    <div id="modalReportAktivasi" class="hidden fixed inset-0 z-[9999] overflow-y-auto transition-all duration-300">
         <!-- Backdrop Blur -->
         <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity" onclick="closeReportAktivasiModal()"></div>
 
@@ -2960,12 +2960,14 @@
         }
 
         function getGponPortsForOlt(oltName) {
-            const prefix = getGponPrefixForOlt(oltName);
             const ports = [];
-            for (let i = 1; i <= 16; i++) {
-                const p = 'GPON-ONU_' + prefix + i;
-                ports.push({ port: p, label: p });
-            }
+            const prefixes = ['1/1/', '1/2/'];
+            prefixes.forEach(function(prefix) {
+                for (let i = 1; i <= 16; i++) {
+                    const p = 'GPON-ONU_' + prefix + i;
+                    ports.push({ port: p, label: p });
+                }
+            });
             return ports;
         }
 
@@ -2995,15 +2997,7 @@
             if (!oltSel || !portSel) return;
 
             const selectedOlt = oltSel.value;
-            const targetPrefix = getGponPrefixForOlt(selectedOlt);
-
-            let currentPortNum = '1';
-            if (portSel.value) {
-                const parts = portSel.value.split('/');
-                if (parts.length >= 3) {
-                    currentPortNum = parts[parts.length - 1];
-                }
-            }
+            const currentPort = portSel.value;
 
             let currentOnuNum = '14';
             if (indexSel && indexSel.value && indexSel.value.indexOf(':') !== -1) {
@@ -3012,14 +3006,13 @@
 
             initGponPortDropdown(prefix, selectedOlt);
 
-            const newPort = 'GPON-ONU_' + targetPrefix + currentPortNum;
-            if (Array.from(portSel.options).some(function(o) { return o.value === newPort; })) {
-                portSel.value = newPort;
+            if (currentPort && Array.from(portSel.options).some(function(o) { return o.value === currentPort; })) {
+                portSel.value = currentPort;
             } else if (portSel.options.length > 0) {
                 portSel.selectedIndex = 0;
             }
 
-            const newTargetIndex = (portSel.value || newPort) + ':' + currentOnuNum;
+            const newTargetIndex = (portSel.value || 'GPON-ONU_1/1/1') + ':' + currentOnuNum;
             updateIndexOltOptions(prefix, newTargetIndex);
         }
 
@@ -3170,11 +3163,20 @@
             }
 
             renderReportAktivasiBarangTable();
-            document.getElementById('modalReportAktivasi').classList.remove('hidden');
+            const modal = document.getElementById('modalReportAktivasi');
+            if (modal && modal.parentElement !== document.body) {
+                document.body.appendChild(modal);
+            }
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            document.body.classList.add('has-modal');
         }
 
         function closeReportAktivasiModal() {
-            document.getElementById('modalReportAktivasi').classList.add('hidden');
+            const modal = document.getElementById('modalReportAktivasi');
+            if (modal) modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            document.body.classList.remove('has-modal');
         }
 
         function toggleRescheduleAktivasi(cb) {
@@ -3379,13 +3381,20 @@
             }
             renderAktivasiBarangTable();
 
-            document.getElementById('modalAktivasi').classList.remove('hidden');
+            const modal = document.getElementById('modalAktivasi');
+            if (modal && modal.parentElement !== document.body) {
+                document.body.appendChild(modal);
+            }
+            modal.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
+            document.body.classList.add('has-modal');
         }
 
         function closeAktivasiModal() {
-            document.getElementById('modalAktivasi').classList.add('hidden');
+            const modal = document.getElementById('modalAktivasi');
+            if (modal) modal.classList.add('hidden');
             document.body.style.overflow = 'auto';
+            document.body.classList.remove('has-modal');
         }
 
         function addAktivasiBarang() {

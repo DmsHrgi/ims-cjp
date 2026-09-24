@@ -72,6 +72,18 @@
             position: relative;
             z-index: 40;
         }
+        /* When any modal is active, ensure sidebar does not overlap modals */
+        body.has-modal #sidebar,
+        body:has(#modalAktivasi:not(.hidden)) #sidebar,
+        body:has(#modalReportAktivasi:not(.hidden)) #sidebar {
+            z-index: 20 !important;
+        }
+        body.has-modal #main-content-wrapper,
+        body:has(#modalAktivasi:not(.hidden)) #main-content-wrapper,
+        body:has(#modalReportAktivasi:not(.hidden)) #main-content-wrapper {
+            position: relative;
+            z-index: 50 !important;
+        }
         #sidebar.collapsed,
         html.sb-collapsed #sidebar {
             width: 76px;
@@ -271,7 +283,7 @@
         </aside>
 
         <!-- ═══════════ MAIN WRAPPER ═══════════ -->
-        <div class="flex flex-col flex-1 overflow-hidden min-w-0">
+        <div id="main-content-wrapper" class="flex flex-col flex-1 overflow-hidden min-w-0">
 
             <!-- Navbar -->
             @include('partials.navbar')
