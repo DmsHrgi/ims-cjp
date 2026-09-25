@@ -365,7 +365,7 @@
                                                              '{{ $r->aktivasi_date_start ?? '' }}',
                                                              '{{ $r->aktivasi_time ?? '' }}',
                                                              '{{ addslashes($r->aktivasi_team ?? '') }}',
-                                                             '{{ $r->kode_pop ?? '' }}',
+                                                             '{{ $r->kode_pop ?: $r->nama_pop ?: '' }}',
                                                              '{{ addslashes($r->media_akses ?? '') }}',
                                                              '{{ addslashes($r->index_olt ?? '') }}',
                                                              '{{ addslashes($r->aktivasi_note ?? '') }}',
@@ -1232,7 +1232,14 @@
                                     <label class="block text-xs font-semibold text-slate-700 mb-1">
                                         POP/ODN<span class="text-red-500">*</span>
                                     </label>
-                                    <input type="text" name="kode_pop" id="aktivasiPop" required placeholder="Contoh: POP BABAKAN TAROGONG / ODN-01..." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-700 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none uppercase">
+                                    <select name="kode_pop" id="aktivasiPop" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-700 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none">
+                                        <option value="" disabled selected>Pilih POP / ODN</option>
+                                        @foreach($popList ?? [] as $pop)
+                                            <option value="{{ $pop->kode_pop }}" data-nama="{{ $pop->nama_pop }}">
+                                                {{ $pop->nama_pop ?: $pop->kode_pop }}@if(!empty($pop->nama_pop) && $pop->nama_pop !== $pop->kode_pop) ({{ $pop->kode_pop }})@endif
+                                            </option>
+                                        @endforeach
+                                    </select>
                                 </div>
 
                                 <!-- 5. Media Akses* -->
@@ -2168,7 +2175,14 @@
                                 <div class="grid grid-cols-2 gap-3">
                                     <div>
                                         <label class="block text-xs font-semibold text-slate-700 mb-1">POP/ODN<span class="text-rose-500">*</span></label>
-                                        <input type="text" name="kode_pop" id="reportAktivasiPop" required placeholder="Contoh: POP BABAKAN TAROGONG / ODN-01..." class="w-full bg-white border border-slate-200 focus:border-blue-500 text-slate-800 py-2 px-3 text-xs rounded-lg outline-none uppercase">
+                                        <select name="kode_pop" id="reportAktivasiPop" required class="w-full bg-white border border-slate-200 focus:border-blue-500 text-slate-800 py-2 px-3 text-xs rounded-lg outline-none">
+                                            <option value="" disabled selected>Pilih POP / ODN</option>
+                                            @foreach($popList ?? [] as $pop)
+                                                <option value="{{ $pop->kode_pop }}" data-nama="{{ $pop->nama_pop }}">
+                                                    {{ $pop->nama_pop ?: $pop->kode_pop }}@if(!empty($pop->nama_pop) && $pop->nama_pop !== $pop->kode_pop) ({{ $pop->kode_pop }})@endif
+                                                </option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                     <div>
                                         <label class="block text-xs font-semibold text-slate-700 mb-1">Media Akses<span class="text-rose-500">*</span></label>
@@ -3125,9 +3139,26 @@
             document.getElementById('reportAktivasiDateFinish').value = dateFinish || new Date().toISOString().split('T')[0];
             document.getElementById('reportAktivasiNoteFinish').value = noteFinish || '';
             
-            var popInput = document.getElementById('reportAktivasiPop');
-            if (popInput) {
-                popInput.value = kodePop || '';
+            var popSelect = document.getElementById('reportAktivasiPop');
+            if (popSelect) {
+                popSelect.value = kodePop || '';
+                if (kodePop && popSelect.value !== kodePop) {
+                    var matched = false;
+                    for (var i = 0; i < popSelect.options.length; i++) {
+                        var opt = popSelect.options[i];
+                        if (opt.value.toLowerCase() === kodePop.toLowerCase() || 
+                            (opt.getAttribute('data-nama') && opt.getAttribute('data-nama').toLowerCase() === kodePop.toLowerCase()) ||
+                            opt.text.toLowerCase().includes(kodePop.toLowerCase())) {
+                            popSelect.selectedIndex = i;
+                            matched = true;
+                            break;
+                        }
+                    }
+                    if (!matched) {
+                        var newOption = new Option(kodePop, kodePop, true, true);
+                        popSelect.add(newOption);
+                    }
+                }
             }
 
             var mediaSelect = document.getElementById('reportAktivasiMediaAkses');
@@ -3336,9 +3367,26 @@
             });
 
             // POP
-            const popInput = document.getElementById('aktivasiPop');
-            if (popInput) {
-                popInput.value = popVal || '';
+            const popSelect = document.getElementById('aktivasiPop');
+            if (popSelect) {
+                popSelect.value = popVal || '';
+                if (popVal && popSelect.value !== popVal) {
+                    let matched = false;
+                    for (let i = 0; i < popSelect.options.length; i++) {
+                        const opt = popSelect.options[i];
+                        if (opt.value.toLowerCase() === popVal.toLowerCase() || 
+                            (opt.getAttribute('data-nama') && opt.getAttribute('data-nama').toLowerCase() === popVal.toLowerCase()) ||
+                            opt.text.toLowerCase().includes(popVal.toLowerCase())) {
+                            popSelect.selectedIndex = i;
+                            matched = true;
+                            break;
+                        }
+                    }
+                    if (!matched) {
+                        const newOption = new Option(popVal, popVal, true, true);
+                        popSelect.add(newOption);
+                    }
+                }
             }
 
             // Media Akses

@@ -317,6 +317,47 @@ class PendaftaranController extends Controller
             ->orderBy('nama_pop')
             ->get();
 
+        if ($popList->isEmpty()) {
+            try {
+                $existingInTrx = DB::table('trx_batchjob_register')
+                    ->whereNotNull('kode_pop')
+                    ->where('kode_pop', '!=', '')
+                    ->distinct()
+                    ->pluck('kode_pop');
+
+                if ($existingInTrx->isNotEmpty()) {
+                    foreach ($existingInTrx as $pVal) {
+                        DB::table('m_pop')->updateOrInsert(
+                            ['kode_pop' => $pVal],
+                            ['nama_pop' => $pVal, 'hide' => '0', 'date_create' => now(), 'user_create' => 'SYSTEM']
+                        );
+                    }
+                } else {
+                    $defaultPops = [
+                        ['kode_pop' => 'POP MSN', 'nama_pop' => 'POP MSN'],
+                        ['kode_pop' => 'POP Babakan Tarogong', 'nama_pop' => 'POP Babakan Tarogong'],
+                        ['kode_pop' => 'POP Bojong Sayang', 'nama_pop' => 'POP Bojong Sayang'],
+                        ['kode_pop' => 'pop12738', 'nama_pop' => 'POP-Sukasari'],
+                        ['kode_pop' => 'pop15101', 'nama_pop' => 'PTP-Kec. Bojongloa Kidul'],
+                        ['kode_pop' => 'pop19119', 'nama_pop' => 'Lastmile SID NET'],
+                        ['kode_pop' => 'pop2444', 'nama_pop' => 'Lastmile'],
+                        ['kode_pop' => 'pop26685', 'nama_pop' => 'MediaNet FTTH'],
+                    ];
+                    foreach ($defaultPops as $dp) {
+                        DB::table('m_pop')->updateOrInsert(
+                            ['kode_pop' => $dp['kode_pop']],
+                            ['nama_pop' => $dp['nama_pop'], 'hide' => '0', 'date_create' => now(), 'user_create' => 'SYSTEM']
+                        );
+                    }
+                }
+
+                $popList = DB::table('m_pop')
+                    ->where(function ($q) { $q->where('hide', '0')->orWhereNull('hide'); })
+                    ->orderBy('nama_pop')
+                    ->get();
+            } catch (\Throwable $e) {}
+        }
+
         $mediaAksesList = DB::table('m_media_akses')
             ->where(function ($q) { $q->where('hide', '0')->orWhereNull('hide'); })
             ->orderBy('nama_media_akses')

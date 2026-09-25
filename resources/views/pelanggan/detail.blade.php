@@ -1431,7 +1431,25 @@
                     <label class="block text-xs font-semibold text-slate-700 mb-1">
                         Point of Presence (POP/ODN)<span class="text-rose-500">*</span>
                     </label>
-                    <input type="text" name="kode_pop" id="modalInfraPop" value="{{ $customer->nama_pop ?: $customer->kode_pop }}" placeholder="Contoh: POP BABAKAN TAROGONG / ODN-01..." required class="w-full bg-white border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 text-slate-800 py-2 px-3 text-xs rounded-xl outline-none transition-all uppercase">
+                    <select name="kode_pop" id="modalInfraPop" required class="w-full bg-white border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 text-slate-800 py-2 px-3 text-xs rounded-xl outline-none transition-all">
+                        <option value="" disabled {{ empty($customer->kode_pop) ? 'selected' : '' }}>Pilih Point of Presence (POP/ODN)</option>
+                        @php
+                            $selectedPop = $customer->kode_pop ?: $customer->nama_pop;
+                            $popFound = false;
+                        @endphp
+                        @foreach($popList ?? [] as $pop)
+                            @php
+                                $isSelected = ($pop->kode_pop == $selectedPop || $pop->nama_pop == $selectedPop);
+                                if ($isSelected) $popFound = true;
+                            @endphp
+                            <option value="{{ $pop->kode_pop }}" {{ $isSelected ? 'selected' : '' }}>
+                                {{ $pop->nama_pop ?: $pop->kode_pop }}@if(!empty($pop->nama_pop) && $pop->nama_pop !== $pop->kode_pop) ({{ $pop->kode_pop }})@endif
+                            </option>
+                        @endforeach
+                        @if(!empty($selectedPop) && !$popFound)
+                            <option value="{{ $selectedPop }}" selected>{{ $customer->nama_pop ?: $selectedPop }} (Tersimpan)</option>
+                        @endif
+                    </select>
                 </div>
 
                 <!-- 2. Media Akses -->
