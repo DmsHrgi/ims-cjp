@@ -8,6 +8,7 @@ use App\Http\Controllers\PermintaanController;
 use App\Http\Controllers\PendaftaranController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OltController;
+use App\Http\Controllers\BroadbandController;
 
 // --- AUTENTIKASI (terbuka) ---
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -277,6 +278,11 @@ Route::middleware(\App\Http\Middleware\EnsureAuthenticated::class)->group(functi
     Route::get('/pelanggan/{nomor_internet}/pdf-instalasi', [PageController::class, 'downloadInstalasiPdf'])->name('pelanggan.pdf-instalasi');
     Route::post('/pelanggan/{nomor_internet}/upload-scan', [PageController::class, 'uploadScanDokumen'])->name('pelanggan.upload-scan');
     Route::delete('/pelanggan/{nomor_internet}/delete-scan', [PageController::class, 'deleteScanDokumen'])->name('pelanggan.delete-scan');
+
+    // Broadband (Database ke-2: ims_v3, tabel trx_batchjob_register) - Dapat diakses semua role
+    Route::get('/broadband', [BroadbandController::class, 'index'])->name('broadband.index');
+    Route::get('/broadband/{nomor_internet}', [BroadbandController::class, 'show'])->name('broadband.show');
+    Route::get('/broadband/{nomor_internet}/modal', [BroadbandController::class, 'modal'])->name('broadband.modal');
 
     // Billing
     Route::get('/billing/registrasi', [BillingController::class, 'registrasi'])->name('billing.registrasi');
