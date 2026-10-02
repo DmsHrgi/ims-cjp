@@ -35,17 +35,44 @@
         .d4 { animation-delay: .35s; } .d5 { animation-delay: .45s; } .d6 { animation-delay: .55s; }
         .fade { opacity: 0; animation: fadeIn 1s ease forwards; }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
+                @keyframes spin { to { transform: rotate(360deg); } }
         .spin { animation: spin .7s linear infinite; }
 
-        /* animasi garis pembatas ombak & gradasi */
-        @keyframes waveDash { to { stroke-dashoffset: -44; } }
-        .wave-shimmer { stroke-dasharray: 6 12; animation: waveDash 2.5s linear infinite; }
-        @keyframes wavePulse { 0%, 100% { transform: scale(1); opacity: 0.65; } 50% { transform: scale(1.4); opacity: 1; } }
-        .wave-dot { transform-box: fill-box; transform-origin: center; animation: wavePulse 3.2s ease-in-out infinite; }
+        /* animasi fiber optic & beacon telemetry divider */
+        @keyframes fiberPulse {
+            0% { stroke-dashoffset: 600; opacity: 0; }
+            15% { opacity: 1; }
+            85% { opacity: 1; }
+            100% { stroke-dashoffset: -1200; opacity: 0; }
+        }
+        .fiber-pulse {
+            stroke-dasharray: 80 1200;
+            animation: fiberPulse 3.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+        @keyframes radarPing {
+            0% { transform: scale(0.6); opacity: 0.9; }
+            100% { transform: scale(2.6); opacity: 0; }
+        }
+        .radar-ring {
+            transform-box: fill-box;
+            transform-origin: center;
+            animation: radarPing 2.4s ease-out infinite;
+        }
+        @keyframes beaconGlow {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.3); opacity: 1; }
+        }
+        .beacon-core {
+            transform-box: fill-box;
+            transform-origin: center;
+            animation: beaconGlow 2s ease-in-out infinite;
+        }
 
         @media (prefers-reduced-motion: reduce) {
             .rise,.fade { opacity: 1 !important; animation: none !important; }
+            .net-node,.net-line,.net-halo { animation: none !important; }
+            .fiber-pulse,.radar-ring,.beacon-core { animation: none !important; }
+        }
             .net-node,.net-line,.net-halo { animation: none !important; }
             .wave-shimmer,.wave-dot { animation: none !important; }
         }
@@ -134,58 +161,108 @@
             </div>
         </aside>
 
-                <!-- ============ DIVIDER OMBAK BERLAPIS & GRADASI (Desktop) ============ -->
-        <div class="pointer-events-none absolute top-0 bottom-0 left-[46%] xl:left-1/2 -translate-x-[42%] w-56 xl:w-72 h-full z-20 hidden lg:block overflow-visible">
-            <svg class="w-full h-full" viewBox="0 0 240 1000" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- ============ DIVIDER FIBER-OPTIC & TELEMETRY BEACON (Desktop) ============ -->
+        <div class="pointer-events-none absolute top-0 bottom-0 left-[46%] xl:left-1/2 -translate-x-[45%] w-48 xl:w-56 h-full z-20 hidden lg:block overflow-visible">
+            <svg class="w-full h-full" viewBox="0 0 200 1000" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
-                    <!-- Pita 1: Biru Gelap / Royal Blue (Pita Terdekat ke Panel Gelap) -->
-                    <linearGradient id="waveRibbon1" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="#0284c7" />
-                        <stop offset="45%" stop-color="#1d4ed8" />
-                        <stop offset="100%" stop-color="#0369a1" />
-                    </linearGradient>
-
-                    <!-- Pita 2: Biru Cyan / Sky Blue (Pita Tengah) -->
-                    <linearGradient id="waveRibbon2" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <!-- Gradasi Fiber Optic Luminous Trunk -->
+                    <linearGradient id="fiberLineGrad" x1="0%" y1="0%" x2="0%" y2="100%">
                         <stop offset="0%" stop-color="#38bdf8" />
-                        <stop offset="50%" stop-color="#0284c7" />
-                        <stop offset="100%" stop-color="#0ea5e9" />
+                        <stop offset="25%" stop-color="#06b6d4" />
+                        <stop offset="55%" stop-color="#2563eb" />
+                        <stop offset="85%" stop-color="#6366f1" />
+                        <stop offset="100%" stop-color="#38bdf8" />
                     </linearGradient>
 
-                    <!-- Pita 3: Ice Blue / Aqua Muda (Pita Terluar Sesuai Gambar Referensi) -->
-                    <linearGradient id="waveRibbon3" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="#bae6fd" stop-opacity="0.9" />
-                        <stop offset="50%" stop-color="#7dd3fc" stop-opacity="0.85" />
-                        <stop offset="100%" stop-color="#a5f3fc" stop-opacity="0.9" />
+                    <!-- Gradasi Cahaya Ambient Lembut -->
+                    <linearGradient id="fiberGlowGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.3" />
+                        <stop offset="35%" stop-color="#06b6d4" stop-opacity="0.25" />
+                        <stop offset="70%" stop-color="#3b82f6" stop-opacity="0.2" />
+                        <stop offset="100%" stop-color="#6366f1" stop-opacity="0.25" />
                     </linearGradient>
 
-                    <!-- Filter Glow Halus untuk Garis Pemisah Putih -->
-                    <filter id="waveGlowFilter" x="-20%" y="-10%" width="140%" height="120%">
-                        <feGaussianBlur stdDeviation="2" result="blur" />
+                    <!-- Filter Neon Glow Kuat untuk Garis Fiber -->
+                    <filter id="fiberNeonGlow" x="-30%" y="-10%" width="160%" height="120%">
+                        <feGaussianBlur stdDeviation="3" result="blur" />
                         <feMerge>
+                            <feMergeNode in="blur" />
                             <feMergeNode in="blur" />
                             <feMergeNode in="SourceGraphic" />
                         </feMerge>
                     </filter>
+
+                    <!-- Filter Bayangan Kedalaman Panel Gelap -->
+                    <filter id="panelDropShadow" x="-20%" y="-10%" width="150%" height="120%">
+                        <feDropShadow dx="6" dy="0" stdDeviation="10" flood-color="#020617" flood-opacity="0.22" />
+                    </filter>
                 </defs>
 
-                <!-- Lapisan 4: Dasar Panel Terang (Sisi Kanan dari Batas Pita Terluar ke Ujung Kanan) -->
-                <path d="M 126 0 C 154 60, 156 140, 134 220 C 112 270, 110 320, 128 360 C 156 420, 158 500, 136 580 C 112 630, 110 680, 128 720 C 154 770, 156 840, 136 910 C 114 950, 114 980, 126 1000 L 240 1000 L 240 0 Z" fill="#f8fafc" />
+                <!-- Lapisan Dasar Panel Gelap (Melengkung Elegan dengan Bayangan Elevasi) -->
+                <path d="M 0 0 
+                         L 112 0 
+                         C 120 100, 122 220, 110 350 
+                         C 98 480, 94 560, 106 700 
+                         C 114 800, 116 920, 106 1000 
+                         L 0 1000 
+                         Z" 
+                      fill="#020617" 
+                      filter="url(#panelDropShadow)" />
 
-                <!-- Lapisan 3: Pita Ombak Terluar (Ice Blue / Aqua Muda) -->
-                <path d="M 0 0 L 126 0 C 154 60, 156 140, 134 220 C 112 270, 110 320, 128 360 C 156 420, 158 500, 136 580 C 112 630, 110 680, 128 720 C 154 770, 156 840, 136 910 C 114 950, 114 980, 126 1000 L 0 1000 Z" fill="url(#waveRibbon3)" />
+                <!-- Lapisan Dasar Panel Terang (Sisi Kanan) -->
+                <path d="M 200 0 
+                         L 112 0 
+                         C 120 100, 122 220, 110 350 
+                         C 98 480, 94 560, 106 700 
+                         C 114 800, 116 920, 106 1000 
+                         L 200 1000 
+                         Z" 
+                      fill="#f8fafc" />
 
-                <!-- Lapisan 2: Pita Ombak Tengah (Cyan / Sky Blue) -->
-                <path d="M 0 0 L 114 0 C 142 60, 144 140, 122 220 C 100 270, 98 320, 116 360 C 144 420, 146 500, 124 580 C 100 630, 98 680, 116 720 C 142 770, 144 840, 124 910 C 102 950, 102 980, 114 1000 L 0 1000 Z" fill="url(#waveRibbon2)" />
+                <!-- Pendaran Cahaya Ambient Cyan/Blue di Sepanjang Sambungan -->
+                <path d="M 112 0 
+                         C 120 100, 122 220, 110 350 
+                         C 98 480, 94 560, 106 700 
+                         C 114 800, 116 920, 106 1000" 
+                      stroke="url(#fiberGlowGrad)" 
+                      stroke-width="18" 
+                      stroke-linecap="round" 
+                      fill="none" />
 
-                <!-- Lapisan 1: Pita Ombak Terdalam (Deep Electric Blue) -->
-                <path d="M 0 0 L 102 0 C 130 60, 132 140, 110 220 C 88 270, 86 320, 104 360 C 132 420, 134 500, 112 580 C 88 630, 86 680, 104 720 C 130 770, 132 840, 112 910 C 90 950, 90 980, 102 1000 L 0 1000 Z" fill="url(#waveRibbon1)" />
+                <!-- Jalur Fiber Optic Laser Utama Bercahaya -->
+                <path d="M 112 0 
+                         C 120 100, 122 220, 110 350 
+                         C 98 480, 94 560, 106 700 
+                         C 114 800, 116 920, 106 1000" 
+                      stroke="url(#fiberLineGrad)" 
+                      stroke-width="2.6" 
+                      fill="none" 
+                      filter="url(#fiberNeonGlow)" />
 
-                <!-- Lapisan 0: Panel Gelap Utama (Slate-950 Menutup Sisi Kiri) -->
-                <path d="M 0 0 L 90 0 C 118 60, 120 140, 98 220 C 76 270, 74 320, 92 360 C 120 420, 122 500, 100 580 C 76 630, 74 680, 92 720 C 118 770, 120 840, 100 910 C 78 950, 78 980, 90 1000 L 0 1000 Z" fill="#020617" />
+                <!-- Pulsa Cahaya Data Berkecepatan Tinggi (Animasi Arus Data Paket) -->
+                <path class="fiber-pulse" 
+                      d="M 112 0 
+                         C 120 100, 122 220, 110 350 
+                         C 98 480, 94 560, 106 700 
+                         C 114 800, 116 920, 106 1000" 
+                      stroke="#ffffff" 
+                      stroke-width="2.2" 
+                      stroke-linecap="round" 
+                      fill="none" />
 
-                <!-- Garis Aksen Putih di Tepi Luar Ombak (Persis seperti Gambar Referensi) -->
-                <path d="M 126 0 C 154 60, 156 140, 134 220 C 112 270, 110 320, 128 360 C 156 420, 158 500, 136 580 C 112 630, 110 680, 128 720 C 154 770, 156 840, 136 910 C 114 950, 114 980, 126 1000" stroke="#ffffff" stroke-width="1.5" stroke-opacity="0.75" fill="none" filter="url(#waveGlowFilter)" />
+                <!-- Telemetry Beacon Node: Titik Indikator Sinyal Jaringan di Bagian Tengah -->
+                <g transform="translate(100, 520)">
+                    <!-- Radar Ring Pulsa Konsentris -->
+                    <circle class="radar-ring" cx="0" cy="0" r="10" stroke="#22d3ee" stroke-width="1.2" fill="none" />
+                    <!-- Lingkaran Luar -->
+                    <circle cx="0" cy="0" r="6" stroke="#38bdf8" stroke-width="1.5" fill="#020617" filter="url(#fiberNeonGlow)" />
+                    <!-- Inti Beacon Bercahaya -->
+                    <circle class="beacon-core" cx="0" cy="0" r="3" fill="#ffffff" />
+                </g>
+
+                <!-- Titik Sensor Optik Sekunder -->
+                <circle cx="118" cy="180" r="2.8" fill="#38bdf8" filter="url(#fiberNeonGlow)" />
+                <circle cx="114" cy="820" r="2.8" fill="#60a5fa" filter="url(#fiberNeonGlow)" />
             </svg>
         </div>
 
