@@ -84,10 +84,11 @@
 
             <!-- konten -->
             <div class="relative z-10">
-                <div class="flex items-center rise d1">
+                <div class="flex flex-col items-start rise d1">
                     <img src="{{ asset('img/logo-white.png') }}"
                          alt="Logo Connecti Jelajah Priangan"
                          class="h-12 w-auto max-w-[280px] object-contain filter drop-shadow-md">
+                    <p class="text-xs font-medium text-slate-300 mt-2 tracking-wide">Connecti Jelajah Priangan</p>
                 </div>
             </div>
 
@@ -121,8 +122,7 @@
             </div>
 
             <div class="relative z-10 rise d6 text-xs text-slate-500 flex items-center justify-between">
-                <span>&copy; 2021 Integrated Management System</span>
-                <span class="font-mono">v3.0.1</span>
+                <span>&copy; 2026 Integrated Management System</span>
             </div>
         </aside>
 

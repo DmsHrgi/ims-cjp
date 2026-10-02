@@ -48,8 +48,10 @@
         <div class="relative" id="profileContainer">
             <button id="profileToggle" type="button"
                     class="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-gray-50 transition-all group focus:outline-none">
-                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-sm">
-                    {{ $inisial }}
+                <div class="w-8 h-8 rounded-full bg-slate-100 border border-slate-200/80 flex items-center justify-center text-slate-400 overflow-hidden shadow-xs flex-shrink-0">
+                    <svg class="w-full h-full text-slate-400 pt-1" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
                 </div>
                 <div class="hidden md:block text-left">
                     <p class="text-sm font-semibold text-gray-700 leading-tight">{{ $nama }}</p>
@@ -65,8 +67,10 @@
                  class="hidden absolute right-0 top-full mt-2 w-56 bg-white rounded-xl border border-gray-100 shadow-lg shadow-gray-200/60 overflow-hidden z-50">
                 <div class="px-4 py-3 border-b border-gray-100 bg-gray-50/60">
                     <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
-                            {{ $inisial }}
+                        <div class="w-9 h-9 rounded-full bg-slate-100 border border-slate-200/80 flex items-center justify-center text-slate-400 overflow-hidden shadow-xs flex-shrink-0">
+                            <svg class="w-full h-full text-slate-400 pt-1" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
                         </div>
                         <div class="min-w-0">
                             <p class="text-sm font-semibold text-gray-800 truncate">{{ $nama }}</p>
