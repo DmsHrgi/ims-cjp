@@ -17,6 +17,7 @@
         ['route' => 'tiket',       'icon' => 'fa-ticket',         'label' => 'Tiket'],
         ['route' => 'pendaftaran', 'icon' => 'fa-user-plus',      'label' => 'Registrasi'],
         ['route' => 'pelanggan',   'icon' => 'fa-users',          'label' => 'Pelanggan'],
+        ['route' => 'broadband.index', 'icon' => 'fa-wifi',       'label' => 'Broadband'],
     ];
 
     if ($isAdmin) {
@@ -86,7 +87,8 @@
             @php
                 $active = $currentRoute === $item['route'] 
                     || ($item['route'] === 'olt.index' && str_starts_with($currentRoute, 'olt.'))
-                    || ($item['route'] === 'users.index' && str_starts_with($currentRoute, 'users.'));
+                    || ($item['route'] === 'users.index' && str_starts_with($currentRoute, 'users.'))
+                    || ($item['route'] === 'broadband.index' && str_starts_with($currentRoute, 'broadband.'));
             @endphp
             <div class="relative group w-full mb-1">
                 <a href="{{ route($item['route']) }}"
