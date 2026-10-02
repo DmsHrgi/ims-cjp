@@ -32,7 +32,7 @@ DROP TABLE IF EXISTS `view_bandwith`;
 
 -- 1. view_bandwith
 CREATE VIEW `view_bandwith` AS 
-SELECT `bk`.`kode_kategori_bandwith` AS `kode_kategori_bandwith`, `bk`.`nama_kategori_bandwith` AS `nama_kategori_bandwith`, `bk`.`alias_nama_kategori` AS `alias_nama_kategori`, `bk`.`biaya_reg` AS `biaya_reg`, `bk`.`ppn_reg` AS `ppn_reg`, `bk`.`ppn_reg_nom` AS `ppn_reg_nom`, `bk`.`ppn_bill` AS `ppn_bill`, `bk`.`ppn_bill_nom` AS `ppn_bill_nom`, `bk`.`disable_kat` AS `disable_kat`, `bk`.`hide` AS `hide_kat`, `b`.`kode_bandwith` AS `kode_bandwith`, `b`.`nominal_bandwith` AS `nominal_bandwith`, `b`.`harga_bandwith` AS `harga_bandwith`, `b`.`disable_band` AS `disable_band`, `b`.`hide` AS `hide_band`, `h`.`desc_hide` AS `desc_hide` 
+SELECT `bk`.`kode_kategori_bandwith` AS `kode_kategori_bandwith`, `bk`.`nama_kategori_bandwith` AS `nama_kategori_bandwith`, `bk`.`alias_nama_kategori` AS `alias_nama_kategori`, `bk`.`biaya_reg` AS `biaya_reg`, `bk`.`ppn_reg` AS `ppn_reg`, `bk`.`ppn_reg_nom` AS `ppn_reg_nom`, `bk`.`ppn_bill` AS `ppn_bill`, `bk`.`ppn_bill_nom` AS `ppn_bill_nom`, `bk`.`disable` AS `disable_kat`, `bk`.`hide` AS `hide_kat`, `b`.`kode_bandwith` AS `kode_bandwith`, `b`.`nominal_bandwith` AS `nominal_bandwith`, `b`.`harga_bandwith` AS `harga_bandwith`, `b`.`disable` AS `disable_band`, `b`.`hide` AS `hide_band`, `h`.`desc_hide` AS `desc_hide` 
 FROM ((`m_bandwith` `b` left join `m_bandwith_kategori` `bk` on((`b`.`kode_kategori_bandwith` = `bk`.`kode_kategori_bandwith`))) left join `m_status_hide` `h` on((`b`.`hide` = `h`.`hide`)));
 
 -- 2. view_barang
