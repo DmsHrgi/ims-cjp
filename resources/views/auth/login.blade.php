@@ -88,11 +88,14 @@
                     <img src="{{ asset('img/logo-white.png') }}"
                          alt="Logo Connecti Jelajah Priangan"
                          class="h-12 w-auto max-w-[280px] object-contain filter drop-shadow-md">
-                    <p class="text-xs font-medium text-slate-300 mt-2 tracking-wide">Connecti Jelajah Priangan</p>
+                    <h2 class="font-display font-bold text-4xl xl:text-5xl leading-[1.08] tracking-tight mt-4">
+                        <span class="bg-gradient-to-r from-cyan-300 via-sky-300 to-blue-400 bg-clip-text text-transparent drop-shadow-[0_2px_18px_rgba(56,189,248,0.25)]">Connecti</span><br>
+                        <span class="text-slate-300 font-light">Jelajah Priangan</span>
+                    </h2>
                 </div>
             </div>
 
-            <div class="relative z-10 my-auto py-16">
+            <div class="relative z-10 my-auto py-10 xl:py-12">
                 <p class="rise d2 text-cyan-300/90 text-xs font-semibold uppercase tracking-[0.25em] mb-4">Integrated Management System</p>
                 <h1 class="rise d3 font-display font-bold text-4xl xl:text-5xl leading-[1.08] text-white">
                     Kelola jaringan<br>
