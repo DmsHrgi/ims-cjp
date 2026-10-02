@@ -49,32 +49,12 @@
             stroke-dasharray: 80 1200;
             animation: fiberPulse 3.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
         }
-        @keyframes radarPing {
-            0% { transform: scale(0.6); opacity: 0.9; }
-            100% { transform: scale(2.6); opacity: 0; }
-        }
-        .radar-ring {
-            transform-box: fill-box;
-            transform-origin: center;
-            animation: radarPing 2.4s ease-out infinite;
-        }
-        @keyframes beaconGlow {
-            0%, 100% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.3); opacity: 1; }
-        }
-        .beacon-core {
-            transform-box: fill-box;
-            transform-origin: center;
-            animation: beaconGlow 2s ease-in-out infinite;
-        }
+        
 
         @media (prefers-reduced-motion: reduce) {
             .rise,.fade { opacity: 1 !important; animation: none !important; }
             .net-node,.net-line,.net-halo { animation: none !important; }
-            .fiber-pulse,.radar-ring,.beacon-core { animation: none !important; }
-        }
-            .net-node,.net-line,.net-halo { animation: none !important; }
-            .wave-shimmer,.wave-dot { animation: none !important; }
+            .fiber-pulse { animation: none !important; }
         }
     </style>
 </head>
@@ -155,9 +135,8 @@
                 </ul>
             </div>
 
-            <div class="relative z-10 rise d6 text-xs text-slate-500 flex items-center justify-between">
-                <span>&copy; 2021 Integrated Management System</span>
-                <span class="font-mono">v3.0.1</span>
+            <div class="relative z-10 rise d6 text-xs text-slate-500">
+                <span>&copy; 2026 Integrated Management System</span>
             </div>
         </aside>
 
@@ -246,19 +225,6 @@
                       stroke-linecap="round" 
                       fill="none" />
 
-                <!-- Telemetry Beacon Node: Titik Indikator Sinyal Jaringan di Bagian Tengah -->
-                <g transform="translate(68, 600)">
-                    <!-- Radar Ring Pulsa Konsentris -->
-                    <circle class="radar-ring" cx="0" cy="0" r="9" stroke="#22d3ee" stroke-width="1.2" fill="none" />
-                    <!-- Lingkaran Luar -->
-                    <circle cx="0" cy="0" r="5" stroke="#38bdf8" stroke-width="1.5" fill="#0b172a" filter="url(#fiberNeonGlow)" />
-                    <!-- Inti Beacon Bercahaya -->
-                    <circle class="beacon-core" cx="0" cy="0" r="2.5" fill="#ffffff" />
-                </g>
-
-                <!-- Titik Sensor Optik Sekunder -->
-                <circle cx="55" cy="220" r="2.5" fill="#38bdf8" filter="url(#fiberNeonGlow)" />
-                <circle cx="60" cy="920" r="2.5" fill="#60a5fa" filter="url(#fiberNeonGlow)" />
             </svg>
         </div>
 
