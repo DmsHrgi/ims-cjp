@@ -72,13 +72,13 @@
     </div>
 @endif
 
-{{-- Status Filter Cards (Semua, Aktif, Suspend, Terminasi) --}}
+{{-- Status Filter Cards (Semua, Aktif, Suspend) --}}
 @php
     $currentStatus = strtolower((string) request('status', ''));
     $isAll = empty($currentStatus) || $currentStatus === 'semua';
 @endphp
 
-<div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mb-6">
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mb-6">
     <!-- Semua Pelanggan -->
     <a href="{{ route('broadband.index', array_merge(request()->except('page', 'status'), ['status' => 'semua'])) }}"
        class="flex items-center justify-between p-4 rounded-2xl border transition-all duration-200 group {{ $isAll ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-500/20 scale-[1.01]' : 'bg-white text-gray-700 border-gray-100 hover:border-blue-300 hover:shadow-sm' }}">
@@ -121,22 +121,6 @@
             <div>
                 <p class="text-xs font-medium {{ $isSuspend ? 'text-amber-100' : 'text-gray-500' }}">Suspend</p>
                 <h4 class="text-lg font-bold leading-tight">{{ number_format($statusCounts['suspend'] ?? 0, 0, ',', '.') }}</h4>
-            </div>
-        </div>
-        <i class="fa-solid fa-chevron-right text-xs opacity-50 group-hover:opacity-100 transition-opacity"></i>
-    </a>
-
-    <!-- Terminasi -->
-    @php $isTermin = $currentStatus === 'terminasi'; @endphp
-    <a href="{{ route('broadband.index', array_merge(request()->except('page', 'status'), ['status' => 'terminasi'])) }}"
-       class="flex items-center justify-between p-4 rounded-2xl border transition-all duration-200 group {{ $isTermin ? 'bg-rose-600 text-white border-rose-600 shadow-md shadow-rose-500/20 scale-[1.01]' : 'bg-white text-gray-700 border-gray-100 hover:border-rose-300 hover:shadow-sm' }}">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm {{ $isTermin ? 'bg-white/20 text-white' : 'bg-rose-50 text-rose-600 group-hover:scale-105' }} transition-transform">
-                <i class="fa-solid fa-user-xmark"></i>
-            </div>
-            <div>
-                <p class="text-xs font-medium {{ $isTermin ? 'text-rose-100' : 'text-gray-500' }}">Terminasi</p>
-                <h4 class="text-lg font-bold leading-tight">{{ number_format($statusCounts['terminasi'] ?? 0, 0, ',', '.') }}</h4>
             </div>
         </div>
         <i class="fa-solid fa-chevron-right text-xs opacity-50 group-hover:opacity-100 transition-opacity"></i>
