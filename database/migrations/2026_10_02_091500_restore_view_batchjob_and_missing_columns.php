@@ -11,7 +11,49 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // 1. Pastikan kolom-kolom penting di trx_batchjob_register ada
+        // 1. Pastikan tabel trx_instalasi ada
+        try {
+            DB::statement("CREATE TABLE IF NOT EXISTS `trx_instalasi` (
+                `kode_instalasi` VARCHAR(50) NOT NULL PRIMARY KEY,
+                `nomor_internet` VARCHAR(50) NULL DEFAULT NULL,
+                `verifikasi_date` DATE NULL DEFAULT NULL,
+                `verifikasi_note` TEXT NULL DEFAULT NULL,
+                `survey_date_start` DATE NULL DEFAULT NULL,
+                `survey_time` VARCHAR(50) NULL DEFAULT NULL,
+                `survey_team` TEXT NULL DEFAULT NULL,
+                `survey_note` TEXT NULL DEFAULT NULL,
+                `survey_date_finish` DATE NULL DEFAULT NULL,
+                `survey_note_finish` TEXT NULL DEFAULT NULL,
+                `doc_survey` TEXT NULL DEFAULT NULL,
+                `instalasi_date_start` DATE NULL DEFAULT NULL,
+                `instalasi_time` VARCHAR(50) NULL DEFAULT NULL,
+                `instalasi_team` TEXT NULL DEFAULT NULL,
+                `instalasi_note` TEXT NULL DEFAULT NULL,
+                `instalasi_date_finish` DATE NULL DEFAULT NULL,
+                `instalasi_note_finish` TEXT NULL DEFAULT NULL,
+                `doc_instalasi` TEXT NULL DEFAULT NULL,
+                `aktivasi_date_start` DATE NULL DEFAULT NULL,
+                `aktivasi_time` VARCHAR(50) NULL DEFAULT NULL,
+                `aktivasi_team` TEXT NULL DEFAULT NULL,
+                `aktivasi_note` TEXT NULL DEFAULT NULL,
+                `aktivasi_date_finish` DATE NULL DEFAULT NULL,
+                `aktivasi_note_finish` TEXT NULL DEFAULT NULL,
+                `doc_aktivasi` TEXT NULL DEFAULT NULL,
+                `doc_terminasi` TEXT NULL DEFAULT NULL,
+                `doc_berlangganan` TEXT NULL DEFAULT NULL,
+                `foto_rumah` TEXT NULL DEFAULT NULL,
+                `foto_ktp` TEXT NULL DEFAULT NULL,
+                `foto_peta` TEXT NULL DEFAULT NULL,
+                `date_create` DATETIME NULL DEFAULT NULL,
+                `user_create` VARCHAR(50) NULL DEFAULT NULL,
+                `date_update` DATETIME NULL DEFAULT NULL,
+                `user_update` VARCHAR(50) NULL DEFAULT NULL,
+                `hide` VARCHAR(5) NULL DEFAULT NULL,
+                INDEX `idx_nomor_internet` (`nomor_internet`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+        } catch (\Throwable $e) {}
+
+        // 2. Pastikan kolom-kolom penting di trx_batchjob_register ada
         if (Schema::hasTable('trx_batchjob_register')) {
             $columns = [
                 'id_perusahaan'                     => "VARCHAR(100) NULL DEFAULT NULL AFTER `nomor_internet`",
@@ -51,7 +93,42 @@ return new class extends Migration
             } catch (\Throwable $e) {}
         }
 
-        // 2. Buat / Perbaiki VIEW view_batchjob
+        // 3. Pastikan view_bandwith ada
+        try {
+            DB::statement("DROP VIEW IF EXISTS `view_bandwith`");
+            DB::statement("CREATE VIEW `view_bandwith` AS 
+                SELECT `bk`.`kode_kategori_bandwith` AS `kode_kategori_bandwith`, `bk`.`nama_kategori_bandwith` AS `nama_kategori_bandwith`, `bk`.`alias_nama_kategori` AS `alias_nama_kategori`, `bk`.`biaya_reg` AS `biaya_reg`, `bk`.`ppn_reg` AS `ppn_reg`, `bk`.`ppn_reg_nom` AS `ppn_reg_nom`, `bk`.`ppn_bill` AS `ppn_bill`, `bk`.`ppn_bill_nom` AS `ppn_bill_nom`, `bk`.`disable_kat` AS `disable_kat`, `bk`.`hide` AS `hide_kat`, `b`.`kode_bandwith` AS `kode_bandwith`, `b`.`nominal_bandwith` AS `nominal_bandwith`, `b`.`harga_bandwith` AS `harga_bandwith`, `b`.`disable_band` AS `disable_band`, `b`.`hide` AS `hide_band`, `h`.`desc_hide` AS `desc_hide` 
+                FROM ((`m_bandwith` `b` left join `m_bandwith_kategori` `bk` on((`b`.`kode_kategori_bandwith` = `bk`.`kode_kategori_bandwith`))) left join `m_status_hide` `h` on((`b`.`hide` = `h`.`hide`)))");
+        } catch (\Throwable $e) {}
+
+        // 3b. Pastikan kolom-kolom pendukung ada di m_pelanggan
+        if (Schema::hasTable('m_pelanggan')) {
+            if (!Schema::hasColumn('m_pelanggan', 'id_perusahaan')) {
+                try { DB::statement("ALTER TABLE `m_pelanggan` ADD `id_perusahaan` VARCHAR(100) NULL DEFAULT NULL"); } catch (\Throwable $e) {}
+            }
+            if (!Schema::hasColumn('m_pelanggan', 'nik_penduduk')) {
+                try { DB::statement("ALTER TABLE `m_pelanggan` ADD `nik_penduduk` VARCHAR(50) NULL DEFAULT NULL"); } catch (\Throwable $e) {}
+            }
+            if (!Schema::hasColumn('m_pelanggan', 'tipe_pelanggan')) {
+                try { DB::statement("ALTER TABLE `m_pelanggan` ADD `tipe_pelanggan` VARCHAR(50) NULL DEFAULT NULL"); } catch (\Throwable $e) {}
+            }
+            try {
+                DB::statement("UPDATE `m_pelanggan` SET `nik_penduduk` = `id_perusahaan` WHERE (`nik_penduduk` IS NULL OR `nik_penduduk` = '') AND (`id_perusahaan` IS NOT NULL AND `id_perusahaan` != '')");
+            } catch (\Throwable $e) {}
+            try {
+                DB::statement("UPDATE `m_pelanggan` SET `id_perusahaan` = `nik_penduduk` WHERE (`id_perusahaan` IS NULL OR `id_perusahaan` = '') AND (`nik_penduduk` IS NOT NULL AND `nik_penduduk` != '')");
+            } catch (\Throwable $e) {}
+        }
+
+        // 4. Pastikan view_pelanggan ada
+        try {
+            DB::statement("DROP VIEW IF EXISTS `view_pelanggan`");
+            DB::statement("CREATE VIEW `view_pelanggan` AS 
+                SELECT COALESCE(`p`.`id_perusahaan`, `p`.`nik_penduduk`) AS `nik_penduduk`, COALESCE(`p`.`id_perusahaan`, `p`.`nik_penduduk`) AS `id_perusahaan`, `p`.`nama_perusahaan` AS `nama_perusahaan`, `p`.`no_telp_perusahaan` AS `no_telp_perusahaan`, `p`.`email_perusahaan` AS `email_perusahaan`, `p`.`nama_pic_teknis` AS `nama_pic_teknis`, `p`.`no_telp_pic_teknis` AS `no_telp_pic_teknis`, `p`.`email_pic_teknis` AS `email_pic_teknis`, `p`.`nama_pic_keuangan` AS `nama_pic_keuangan`, `p`.`no_telp_pic_keuangan` AS `no_telp_pic_keuangan`, `p`.`email_pic_keuangan` AS `email_pic_keuangan`, `p`.`jenis_perusahaan` AS `jenis_perusahaan`, `p`.`tanggal_registrasi` AS `tanggal_registrasi`, `p`.`nama_penduduk` AS `nama_penduduk`, `p`.`jenis_kelamin` AS `jenis_kelamin`, `p`.`tanggal_lahir` AS `tanggal_lahir`, `p`.`pic` AS `pic`, `p`.`email` AS `email`, `p`.`nomor_hp` AS `nomor_hp`, `p`.`nomor_hp_2` AS `nomor_hp_2`, `p`.`kode_wilayah_kelurahan_ktp` AS `kode_wilayah_kelurahan_ktp`, `p`.`rt_ktp` AS `rt_ktp`, `p`.`rw_ktp` AS `rw_ktp`, `p`.`alamat_ktp` AS `alamat_ktp`, `p`.`alamat_ktp` AS `alamat_perusahaan`, COALESCE(`p`.`tipe_pelanggan`, 'Dedicated') AS `tipe_pelanggan`, `p`.`user_create` AS `user_create`, `p`.`date_create` AS `date_create`, `p`.`date_update` AS `date_update`, `p`.`user_update` AS `user_update`, `p`.`hide` AS `hide`, `w`.`nama_kelurahan` AS `nama_kelurahan`, `w`.`nama_kecamatan` AS `nama_kecamatan`, `w`.`nama_kota` AS `nama_kota`, `w`.`nama_provinsi` AS `nama_provinsi`, `h`.`desc_hide` AS `desc_hide` 
+                FROM ((`m_pelanggan` `p` left join `m_wilayah` `w` on((`p`.`kode_wilayah_kelurahan_ktp` = `w`.`kode_wilayah_kelurahan`))) left join `m_status_hide` `h` on((`p`.`hide` = `h`.`hide`)))");
+        } catch (\Throwable $e) {}
+
+        // 5. Buat / Perbaiki VIEW view_batchjob
         try {
             DB::statement("DROP VIEW IF EXISTS `view_batchjob`");
             DB::statement("CREATE VIEW `view_batchjob` AS 
@@ -190,7 +267,7 @@ return new class extends Migration
                     LEFT JOIN `m_pop` `po` ON (`po`.`kode_pop` = `br`.`kode_pop`))");
         } catch (\Throwable $e) {}
 
-        // 3. Buat / Perbaiki VIEW view_aktif_kota
+        // 6. Buat / Perbaiki VIEW view_aktif_kota
         try {
             DB::statement("DROP VIEW IF EXISTS `view_aktif_kota`");
             DB::statement("CREATE VIEW `view_aktif_kota` AS 

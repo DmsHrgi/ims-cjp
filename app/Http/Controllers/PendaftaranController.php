@@ -27,6 +27,7 @@ class PendaftaranController extends Controller
 
     public function create(Request $request)
     {
+        PageController::ensureViewBatchjob();
         self::ensureTipePelangganColumns();
         $bangunan = DB::table('m_jns_bangunan')->where('hide', '0')->orderBy('jenis_bangunan')->get();
         $kategori = DB::table('m_bandwith_kategori')->where('hide', '0')->orderBy('nama_kategori_bandwith')->get();
@@ -56,53 +57,70 @@ class PendaftaranController extends Controller
 
         $provinsi = DB::table('m_wilayah')->select('kode_wilayah_provinsi', 'nama_provinsi')->distinct()->orderBy('nama_provinsi')->get();
 
-        $statusList = DB::table('view_batchjob')
-            ->select('status_reg', 'desc_registrasi')
-            ->where(function ($q) {
-                $q->where('hide', '0')->orWhereNull('hide');
-            })
-            ->where(function ($q) {
-                $q->whereNull('aktivasi_date_finish')
-                  ->orWhere('aktivasi_date_finish', '');
-            })
-            ->where(function ($q) {
-                $q->whereNull('status_reg')
-                  ->orWhere('status_reg', '!=', '16');
-            })
-            ->where(function ($q) {
-                $q->whereNull('desc_registrasi')
-                  ->orWhere('desc_registrasi', 'not like', '%SELESAI AKTIVASI%');
-            })
-            ->whereNotNull('status_reg')
-            ->distinct()
-            ->get();
+        try {
+            $statusList = DB::table('view_batchjob')
+                ->select('status_reg', 'desc_registrasi')
+                ->where(function ($q) {
+                    $q->where('hide', '0')->orWhereNull('hide');
+                })
+                ->where(function ($q) {
+                    $q->whereNull('aktivasi_date_finish')
+                      ->orWhere('aktivasi_date_finish', '');
+                })
+                ->where(function ($q) {
+                    $q->whereNull('status_reg')
+                      ->orWhere('status_reg', '!=', '16');
+                })
+                ->where(function ($q) {
+                    $q->whereNull('desc_registrasi')
+                      ->orWhere('desc_registrasi', 'not like', '%SELESAI AKTIVASI%');
+                })
+                ->whereNotNull('status_reg')
+                ->distinct()
+                ->get();
+        } catch (\Throwable $e) {
+            PageController::ensureViewBatchjob();
+            try {
+                $statusList = DB::table('view_batchjob')
+                    ->select('status_reg', 'desc_registrasi')
+                    ->whereNotNull('status_reg')
+                    ->distinct()
+                    ->get();
+            } catch (\Throwable $e2) {
+                $statusList = collect();
+            }
+        }
 
-        $wilayahList = DB::table('view_batchjob')
-            ->select('nama_kota_pasang')
-            ->where(function ($q) {
-                $q->where('hide', '0')->orWhereNull('hide');
-            })
-            ->where(function ($q) {
-                $q->whereNull('aktivasi_date_finish')
-                  ->orWhere('aktivasi_date_finish', '');
-            })
-            ->where(function ($q) {
-                $q->whereNull('status_reg')
-                  ->orWhereNotIn('status_reg', ['16', '17']);
-            })
-            ->where(function ($q) {
-                $q->whereNull('desc_registrasi')
-                  ->orWhere(function ($sub) {
-                      $sub->where('desc_registrasi', 'not like', '%SELESAI AKTIVASI%')
-                          ->where('desc_registrasi', 'not like', '%BATAL%')
-                          ->where('desc_registrasi', 'not like', '%GAGAL%');
-                  });
-            })
-            ->whereNotNull('nama_kota_pasang')
-            ->where('nama_kota_pasang', '!=', '')
-            ->distinct()
-            ->orderBy('nama_kota_pasang')
-            ->pluck('nama_kota_pasang');
+        try {
+            $wilayahList = DB::table('view_batchjob')
+                ->select('nama_kota_pasang')
+                ->where(function ($q) {
+                    $q->where('hide', '0')->orWhereNull('hide');
+                })
+                ->where(function ($q) {
+                    $q->whereNull('aktivasi_date_finish')
+                      ->orWhere('aktivasi_date_finish', '');
+                })
+                ->where(function ($q) {
+                    $q->whereNull('status_reg')
+                      ->orWhereNotIn('status_reg', ['16', '17']);
+                })
+                ->where(function ($q) {
+                    $q->whereNull('desc_registrasi')
+                      ->orWhere(function ($sub) {
+                          $sub->where('desc_registrasi', 'not like', '%SELESAI AKTIVASI%')
+                              ->where('desc_registrasi', 'not like', '%BATAL%')
+                              ->where('desc_registrasi', 'not like', '%GAGAL%');
+                      });
+                })
+                ->whereNotNull('nama_kota_pasang')
+                ->where('nama_kota_pasang', '!=', '')
+                ->distinct()
+                ->orderBy('nama_kota_pasang')
+                ->pluck('nama_kota_pasang');
+        } catch (\Throwable $e) {
+            $wilayahList = collect();
+        }
 
         $query = DB::table('view_batchjob')
             ->where(function ($q) {
@@ -184,9 +202,20 @@ class PendaftaranController extends Controller
             $perPage = 10;
         }
 
-        $rows = $query->orderByDesc('date_create')
-            ->paginate($perPage)
-            ->withQueryString();
+        try {
+            $rows = $query->orderByDesc('date_create')
+                ->paginate($perPage)
+                ->withQueryString();
+        } catch (\Throwable $e) {
+            PageController::ensureViewBatchjob();
+            $rows = DB::table('view_batchjob')
+                ->where(function ($q) {
+                    $q->where('hide', '0')->orWhereNull('hide');
+                })
+                ->orderByDesc('date_create')
+                ->paginate($perPage)
+                ->withQueryString();
+        }
 
         // Jika halaman yang diminta melebihi total halaman (misal setelah filter/hapus data), arahkan ke halaman terakhir yang tersedia
         if ($rows->lastPage() > 0 && $rows->currentPage() > $rows->lastPage()) {
