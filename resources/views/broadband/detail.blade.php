@@ -99,11 +99,11 @@
             <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                 <div>
                     <label class="block text-gray-400 font-medium mb-1">Nama Pelanggan</label>
-                    <p class="font-semibold text-gray-800 text-sm">{{ $item->nama_pelanggan ?: '-' }}</p>
+                    <p class="font-semibold text-gray-800 text-sm">{{ $item->nama_pelanggan ?? '-' }}</p>
                 </div>
                 <div>
                     <label class="block text-gray-400 font-medium mb-1">NIK KTP</label>
-                    <p class="font-mono font-semibold text-gray-800">{{ $item->nik_penduduk ?: '-' }}</p>
+                    <p class="font-mono font-semibold text-gray-800">{{ $item->nik_penduduk ?? '-' }}</p>
                 </div>
                 <div>
                     <label class="block text-gray-400 font-medium mb-1">No. Telepon / WhatsApp</label>
@@ -115,7 +115,7 @@
                 </div>
                 <div>
                     <label class="block text-gray-400 font-medium mb-1">Mitra</label>
-                    <p class="text-gray-800">{{ $item->mitra ?: '-' }}</p>
+                    <p class="text-gray-800">{{ $item->mitra ?? '-' }}</p>
                 </div>
                 <div>
                     <label class="block text-gray-400 font-medium mb-1">Status Onboarding App (is_login)</label>
@@ -144,15 +144,15 @@
             <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                 <div>
                     <label class="block text-gray-400 font-medium mb-1">Kode Bandwidth</label>
-                    <p class="font-mono font-medium text-gray-800">{{ $item->kode_bandwith ?: '-' }}</p>
+                    <p class="font-mono font-medium text-gray-800">{{ $item->kode_bandwith ?? '-' }}</p>
                 </div>
                 <div>
                     <label class="block text-gray-400 font-medium mb-1">Kapasitas Bandwidth</label>
-                    <p class="font-bold text-blue-600 text-sm">{{ $item->nominal_bandwith ?: '-' }}</p>
+                    <p class="font-bold text-blue-600 text-sm">{{ $item->nominal_bandwith ?? $item->kode_bandwith ?? '-' }}</p>
                 </div>
                 <div>
                     <label class="block text-gray-400 font-medium mb-1">Kategori Bandwidth</label>
-                    <p class="text-gray-800 font-medium">{{ $item->nama_kategori_bandwith ?: '-' }}</p>
+                    <p class="text-gray-800 font-medium">{{ $item->nama_kategori_bandwith ?? '-' }}</p>
                 </div>
                 <div>
                     <label class="block text-gray-400 font-medium mb-1">Harga Bandwidth Master</label>
@@ -162,11 +162,11 @@
                 </div>
                 <div>
                     <label class="block text-gray-400 font-medium mb-1">Group Layanan</label>
-                    <p class="text-gray-800 font-medium">{{ $item->group_layanan ?: '-' }}</p>
+                    <p class="text-gray-800 font-medium">{{ $item->group_layanan ?? '-' }}</p>
                 </div>
                 <div>
                     <label class="block text-gray-400 font-medium mb-1">Media Akses</label>
-                    <p class="text-gray-800">{{ $item->media_akses ?: '-' }}</p>
+                    <p class="text-gray-800">{{ $item->media_akses ?? '-' }}</p>
                 </div>
             </div>
         </div>
@@ -184,25 +184,25 @@
                 <div>
                     <label class="block text-gray-400 font-medium mb-1">Alamat Lengkap</label>
                     <p class="text-gray-800 font-medium leading-relaxed bg-gray-50 p-3 rounded-xl border border-gray-100">
-                        {{ $item->alamat_pasang ?: '-' }}
+                        {{ $item->alamat_pasang ?? '-' }}
                     </p>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                     <div>
                         <label class="block text-gray-400 font-medium mb-1">RT / RW</label>
-                        <p class="text-gray-800 font-mono">RT {{ $item->rt_pasang ?: '-' }} / RW {{ $item->rw_pasang ?: '-' }}</p>
+                        <p class="text-gray-800 font-mono">RT {{ $item->rt_pasang ?? '-' }} / RW {{ $item->rw_pasang ?? '-' }}</p>
                     </div>
                     <div>
                         <label class="block text-gray-400 font-medium mb-1">No. Bangunan</label>
-                        <p class="text-gray-800 font-mono">{{ $item->nomor_bangunan ?: '-' }}</p>
+                        <p class="text-gray-800 font-mono">{{ $item->nomor_bangunan ?? '-' }}</p>
                     </div>
                     <div>
                         <label class="block text-gray-400 font-medium mb-1">Jenis Bangunan</label>
-                        <p class="text-gray-800">{{ $item->jenis_bangunan ?: '-' }}</p>
+                        <p class="text-gray-800">{{ $item->jenis_bangunan ?? '-' }}</p>
                     </div>
                     <div>
                         <label class="block text-gray-400 font-medium mb-1">Kode Kelurahan</label>
-                        <p class="font-mono text-gray-800">{{ $item->kode_wilayah_kelurahan_pasang ?: '-' }}</p>
+                        <p class="font-mono text-gray-800">{{ $item->kode_wilayah_kelurahan_pasang ?? '-' }}</p>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-gray-100">
@@ -254,23 +254,23 @@
                 </div>
                 <div>
                     <label class="block text-gray-400 font-medium mb-1">Nama Sales</label>
-                    <p class="text-gray-800 font-medium">{{ $item->nama_sales ?: '-' }}</p>
+                    <p class="text-gray-800 font-medium">{{ $item->nama_sales ?? '-' }}</p>
                 </div>
                 <div>
                     <label class="block text-gray-400 font-medium mb-1">ONT User (ont_us)</label>
-                    <p class="font-mono text-gray-800 bg-gray-50 px-2.5 py-1.5 rounded-lg border border-gray-100">{{ $item->ont_us ?: '-' }}</p>
+                    <p class="font-mono text-gray-800 bg-gray-50 px-2.5 py-1.5 rounded-lg border border-gray-100">{{ $item->ont_us ?? '-' }}</p>
                 </div>
                 <div>
                     <label class="block text-gray-400 font-medium mb-1">ONT Password (ont_ps)</label>
-                    <p class="font-mono text-gray-800 bg-gray-50 px-2.5 py-1.5 rounded-lg border border-gray-100">{{ $item->ont_ps ?: '-' }}</p>
+                    <p class="font-mono text-gray-800 bg-gray-50 px-2.5 py-1.5 rounded-lg border border-gray-100">{{ $item->ont_ps ?? '-' }}</p>
                 </div>
                 <div>
                     <label class="block text-gray-400 font-medium mb-1">Perangkat OLT</label>
-                    <p class="font-medium text-gray-800">{{ $item->olt ?: '-' }}</p>
+                    <p class="font-medium text-gray-800">{{ $item->olt ?? '-' }}</p>
                 </div>
                 <div>
                     <label class="block text-gray-400 font-medium mb-1">Index OLT</label>
-                    <p class="font-mono text-gray-800">{{ $item->index_olt ?: '-' }}</p>
+                    <p class="font-mono text-gray-800">{{ $item->index_olt ?? '-' }}</p>
                 </div>
                 @if(!empty($item->note_request))
                     <div class="sm:col-span-2 pt-2 border-t border-gray-100">
@@ -388,14 +388,14 @@
                     <p class="text-gray-800 font-medium">
                         {{ !empty($item->date_create) ? \Carbon\Carbon::parse($item->date_create)->format('d M Y - H:i:s') : '-' }}
                     </p>
-                    <span class="text-[11px] text-gray-400">Oleh: {{ $item->user_create ?: 'System' }}</span>
+                    <span class="text-[11px] text-gray-400">Oleh: {{ $item->user_create ?? 'System' }}</span>
                 </div>
                 <div class="pt-2 border-t border-gray-100">
                     <span class="text-gray-400 block mb-0.5">Terakhir Diperbarui</span>
                     <p class="text-gray-800 font-medium">
                         {{ !empty($item->date_update) ? \Carbon\Carbon::parse($item->date_update)->format('d M Y - H:i:s') : '-' }}
                     </p>
-                    <span class="text-[11px] text-gray-400">Oleh: {{ $item->user_update ?: 'System' }}</span>
+                    <span class="text-[11px] text-gray-400">Oleh: {{ $item->user_update ?? 'System' }}</span>
                 </div>
             </div>
         </div>
