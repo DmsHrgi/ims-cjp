@@ -82,13 +82,38 @@
             <p class="text-[9px] font-bold tracking-[0.15em] uppercase text-gray-500 select-none">Menu</p>
         </div>
 
+        @php
+            $fromSource = request('from');
+            if (!$fromSource && $currentRoute === 'pelanggan.detail') {
+                $prevUrl = url()->previous();
+                if (str_contains($prevUrl, '/pendaftaran')) {
+                    $fromSource = 'registrasi';
+                }
+            }
+        @endphp
+
         {{-- Regular items --}}
         @foreach ($navItems as $item)
             @php
-                $active = $currentRoute === $item['route'] 
-                    || ($item['route'] === 'olt.index' && str_starts_with($currentRoute, 'olt.'))
-                    || ($item['route'] === 'users.index' && str_starts_with($currentRoute, 'users.'))
-                    || ($item['route'] === 'broadband.index' && str_starts_with($currentRoute, 'broadband.'));
+                $active = false;
+                if ($item['route'] === 'pendaftaran') {
+                    $active = ($currentRoute === 'pendaftaran' || str_starts_with($currentRoute, 'pendaftaran.'))
+                        || ($currentRoute === 'pelanggan.detail' && in_array($fromSource, ['registrasi', 'pendaftaran'], true));
+                } elseif ($item['route'] === 'pelanggan') {
+                    $active = ($currentRoute === 'pelanggan')
+                        || ($currentRoute === 'pelanggan.detail' && !in_array($fromSource, ['registrasi', 'pendaftaran'], true))
+                        || (str_starts_with($currentRoute, 'pelanggan.') && !in_array($fromSource, ['registrasi', 'pendaftaran'], true));
+                } elseif ($item['route'] === 'broadband.index') {
+                    $active = ($currentRoute === 'broadband.index' || str_starts_with($currentRoute, 'broadband.'));
+                } elseif ($item['route'] === 'olt.index') {
+                    $active = ($currentRoute === 'olt.index' || str_starts_with($currentRoute, 'olt.'));
+                } elseif ($item['route'] === 'users.index') {
+                    $active = ($currentRoute === 'users.index' || str_starts_with($currentRoute, 'users.'));
+                } elseif ($item['route'] === 'tiket') {
+                    $active = ($currentRoute === 'tiket' || str_starts_with($currentRoute, 'tiket.'));
+                } else {
+                    $active = ($currentRoute === $item['route']);
+                }
             @endphp
             <div class="relative group w-full mb-1">
                 <a href="{{ route($item['route']) }}"

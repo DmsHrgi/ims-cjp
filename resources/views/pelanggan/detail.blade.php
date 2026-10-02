@@ -17,7 +17,11 @@
             <nav class="flex items-center gap-2 text-sm text-gray-500">
                 <a href="{{ route('dashboard') }}" class="hover:text-blue-600 transition-colors">IMS</a>
                 <span class="text-gray-300">/</span>
-                <a href="{{ route('pelanggan') }}" class="hover:text-blue-600 transition-colors">Pelanggan</a>
+                @if(request('from') === 'registrasi' || request('from') === 'pendaftaran' || str_contains(url()->previous(), '/pendaftaran'))
+                    <a href="{{ route('pendaftaran') }}" class="hover:text-blue-600 transition-colors">Registrasi</a>
+                @else
+                    <a href="{{ route('pelanggan') }}" class="hover:text-blue-600 transition-colors">Pelanggan</a>
+                @endif
                 <span class="text-gray-300">/</span>
                 <span class="text-gray-800 font-semibold">Profil Pelanggan</span>
             </nav>
