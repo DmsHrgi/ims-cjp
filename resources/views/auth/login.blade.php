@@ -135,7 +135,7 @@
         </aside>
 
         <!-- ============ DIVIDER OMBAK & GRADASI (Desktop) ============ -->
-        <div class="pointer-events-none absolute top-0 bottom-0 left-[46%] xl:left-1/2 -translate-x-1/2 w-48 xl:w-60 h-full z-20 hidden lg:block overflow-visible">
+        <div class="pointer-events-none absolute top-0 bottom-0 left-[46%] xl:left-1/2 -translate-x-1/2 w-44 xl:w-52 h-full z-20 hidden lg:block overflow-visible">
             <svg class="w-full h-full" viewBox="0 0 200 1000" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                     <!-- Gradasi Ombak Ambient & Vibrant -->
@@ -164,7 +164,7 @@
 
                     <!-- Filter Glow Garis Ombak -->
                     <filter id="waveGlowFilter" x="-40%" y="-15%" width="180%" height="130%">
-                        <feGaussianBlur stdDeviation="3.5" result="blur" />
+                        <feGaussianBlur stdDeviation="3" result="blur" />
                         <feMerge>
                             <feMergeNode in="blur" />
                             <feMergeNode in="blur" />
@@ -173,41 +173,102 @@
                     </filter>
                 </defs>
 
-                <!-- Lapisan Ombak 1: Glow Ambient Luar -->
-                <path d="M 120 0 C 150 80, 160 230, 100 330 C 50 410, 42 600, 100 690 C 148 760, 154 910, 115 1000"
-                      stroke="url(#waveGradAmbient)" stroke-width="48" stroke-linecap="round" fill="none" opacity="0.3" filter="url(#waveGlowFilter)" />
-
-                <!-- Lapisan Ombak 2: Gradasi Biru/Cyan Menengah -->
-                <path d="M 120 0 C 150 80, 160 230, 100 330 C 50 410, 42 600, 100 690 C 148 760, 154 910, 115 1000"
-                      stroke="url(#waveGradVibrant)" stroke-width="14" stroke-linecap="round" fill="none" opacity="0.5" filter="url(#waveGlowFilter)" />
-
-                <!-- Ombak Sekunder (Echo Wave / Garis Bergelombang Halus) -->
-                <path d="M 132 0 C 165 90, 172 215, 108 345 C 42 425, 34 585, 105 675 C 162 765, 168 895, 126 1000"
-                      stroke="url(#waveStrokeGrad)" stroke-width="1.8" stroke-dasharray="5 7" stroke-opacity="0.45" fill="none" />
-
-                <!-- Lapisan Ombak 3: Dark Swell (Menyambungkan panel gelap ke sisi kanan secara bergelombang) -->
-                <path d="M 96 0 L 120 0 C 150 80, 160 230, 100 330 L 96 330 Z"
-                      fill="#020617" />
-                <path d="M 96 690 L 100 690 C 148 760, 154 910, 115 1000 L 96 1000 Z"
+                <!-- Lapisan Dasar Panel Gelap Mengikuti Garis Ombak Berulang -->
+                <path d="M 0 0 
+                         L 100 0 
+                         C 122 35, 122 90, 100 125 
+                         C 78 160, 78 215, 100 250 
+                         C 122 285, 122 340, 100 375 
+                         C 78 410, 78 465, 100 500 
+                         C 122 535, 122 590, 100 625 
+                         C 78 660, 78 715, 100 750 
+                         C 122 785, 122 840, 100 875 
+                         C 78 910, 78 965, 100 1000 
+                         L 0 1000 
+                         Z" 
                       fill="#020617" />
 
-                <!-- Lapisan Ombak 4: Light Swell (Menyambungkan panel terang ke sisi kiri secara bergelombang) -->
-                <path d="M 104 330 L 100 330 C 50 410, 42 600, 100 690 L 104 690 Z"
+                <!-- Lapisan Dasar Panel Terang Mengikuti Garis Ombak Berulang -->
+                <path d="M 200 0 
+                         L 100 0 
+                         C 122 35, 122 90, 100 125 
+                         C 78 160, 78 215, 100 250 
+                         C 122 285, 122 340, 100 375 
+                         C 78 410, 78 465, 100 500 
+                         C 122 535, 122 590, 100 625 
+                         C 78 660, 78 715, 100 750 
+                         C 122 785, 122 840, 100 875 
+                         C 78 910, 78 965, 100 1000 
+                         L 200 1000 
+                         Z" 
                       fill="#f8fafc" />
 
-                <!-- Garis Puncak Ombak Utama (Luminous Wave Crest) -->
-                <path d="M 120 0 C 150 80, 160 230, 100 330 C 50 410, 42 600, 100 690 C 148 760, 154 910, 115 1000"
-                      stroke="url(#waveStrokeGrad)" stroke-width="2.8" fill="none" filter="url(#waveGlowFilter)" />
+                <!-- Lapisan Ombak 1: Glow Ambient Halus -->
+                <path d="M 100 0 
+                         C 122 35, 122 90, 100 125 
+                         C 78 160, 78 215, 100 250 
+                         C 122 285, 122 340, 100 375 
+                         C 78 410, 78 465, 100 500 
+                         C 122 535, 122 590, 100 625 
+                         C 78 660, 78 715, 100 750 
+                         C 122 785, 122 840, 100 875 
+                         C 78 910, 78 965, 100 1000"
+                      stroke="url(#waveGradAmbient)" stroke-width="26" stroke-linecap="round" fill="none" opacity="0.25" filter="url(#waveGlowFilter)" />
+
+                <!-- Lapisan Ombak 2: Pita Gradasi Vibrant Cyan-Blue -->
+                <path d="M 100 0 
+                         C 122 35, 122 90, 100 125 
+                         C 78 160, 78 215, 100 250 
+                         C 122 285, 122 340, 100 375 
+                         C 78 410, 78 465, 100 500 
+                         C 122 535, 122 590, 100 625 
+                         C 78 660, 78 715, 100 750 
+                         C 122 785, 122 840, 100 875 
+                         C 78 910, 78 965, 100 1000"
+                      stroke="url(#waveGradVibrant)" stroke-width="8" stroke-linecap="round" fill="none" opacity="0.55" filter="url(#waveGlowFilter)" />
+
+                <!-- Riak Ombak Sekunder (Echo Wave Berlapis) -->
+                <path d="M 104 0 
+                         C 120 40, 120 95, 104 130 
+                         C 88 165, 88 220, 104 255 
+                         C 120 290, 120 345, 104 380 
+                         C 88 415, 88 470, 104 505 
+                         C 120 540, 120 595, 104 630 
+                         C 88 665, 88 720, 104 755 
+                         C 120 790, 120 845, 104 880 
+                         C 88 915, 88 970, 104 1000"
+                      stroke="url(#waveStrokeGrad)" stroke-width="1.5" stroke-dasharray="4 6" stroke-opacity="0.4" fill="none" />
+
+                <!-- Garis Puncak Ombak Utama Bercahaya (Luminous Wave Crest) -->
+                <path d="M 100 0 
+                         C 122 35, 122 90, 100 125 
+                         C 78 160, 78 215, 100 250 
+                         C 122 285, 122 340, 100 375 
+                         C 78 410, 78 465, 100 500 
+                         C 122 535, 122 590, 100 625 
+                         C 78 660, 78 715, 100 750 
+                         C 122 785, 122 840, 100 875 
+                         C 78 910, 78 965, 100 1000"
+                      stroke="url(#waveStrokeGrad)" stroke-width="2.5" fill="none" filter="url(#waveGlowFilter)" />
 
                 <!-- Garis Shimmer Arus Data Ombak (Animasi Mengalir) -->
                 <path class="wave-shimmer"
-                      d="M 120 0 C 150 80, 160 230, 100 330 C 50 410, 42 600, 100 690 C 148 760, 154 910, 115 1000"
+                      d="M 100 0 
+                         C 122 35, 122 90, 100 125 
+                         C 78 160, 78 215, 100 250 
+                         C 122 285, 122 340, 100 375 
+                         C 78 410, 78 465, 100 500 
+                         C 122 535, 122 590, 100 625 
+                         C 78 660, 78 715, 100 750 
+                         C 122 785, 122 840, 100 875 
+                         C 78 910, 78 965, 100 1000"
                       stroke="#ffffff" stroke-width="1.2" stroke-opacity="0.8" fill="none" />
 
-                <!-- Titik Energi Ombak (Pulsing Wave Nodes) -->
-                <circle class="wave-dot" cx="155" cy="155" r="4.5" fill="#38bdf8" filter="url(#waveGlowFilter)" />
-                <circle class="wave-dot" cx="46" cy="505" r="4" fill="#22d3ee" filter="url(#waveGlowFilter)" style="animation-delay: 1.2s;" />
-                <circle class="wave-dot" cx="151" cy="835" r="4.5" fill="#60a5fa" filter="url(#waveGlowFilter)" style="animation-delay: 2.1s;" />
+                <!-- Titik Energi Ombak di Puncak Ombak (Pulsing Wave Nodes) -->
+                <circle class="wave-dot" cx="118" cy="62" r="3.5" fill="#38bdf8" filter="url(#waveGlowFilter)" />
+                <circle class="wave-dot" cx="118" cy="312" r="3.5" fill="#22d3ee" filter="url(#waveGlowFilter)" style="animation-delay: 0.8s;" />
+                <circle class="wave-dot" cx="118" cy="562" r="3.5" fill="#60a5fa" filter="url(#waveGlowFilter)" style="animation-delay: 1.6s;" />
+                <circle class="wave-dot" cx="118" cy="812" r="3.5" fill="#818cf8" filter="url(#waveGlowFilter)" style="animation-delay: 2.4s;" />
             </svg>
         </div>
 
