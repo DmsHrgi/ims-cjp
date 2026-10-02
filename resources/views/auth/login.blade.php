@@ -134,141 +134,58 @@
             </div>
         </aside>
 
-        <!-- ============ DIVIDER OMBAK & GRADASI (Desktop) ============ -->
-        <div class="pointer-events-none absolute top-0 bottom-0 left-[46%] xl:left-1/2 -translate-x-1/2 w-44 xl:w-52 h-full z-20 hidden lg:block overflow-visible">
-            <svg class="w-full h-full" viewBox="0 0 200 1000" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- ============ DIVIDER OMBAK BERLAPIS & GRADASI (Desktop) ============ -->
+        <div class="pointer-events-none absolute top-0 bottom-0 left-[46%] xl:left-1/2 -translate-x-[42%] w-56 xl:w-72 h-full z-20 hidden lg:block overflow-visible">
+            <svg class="w-full h-full" viewBox="0 0 240 1000" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
-                    <!-- Gradasi Ombak Ambient & Vibrant -->
-                    <linearGradient id="waveGradAmbient" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.3" />
-                        <stop offset="35%" stop-color="#0284c7" stop-opacity="0.25" />
-                        <stop offset="70%" stop-color="#3b82f6" stop-opacity="0.3" />
-                        <stop offset="100%" stop-color="#06b6d4" stop-opacity="0.3" />
+                    <!-- Pita 1: Biru Gelap / Royal Blue (Pita Terdekat ke Panel Gelap) -->
+                    <linearGradient id="waveRibbon1" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="#0284c7" />
+                        <stop offset="45%" stop-color="#1d4ed8" />
+                        <stop offset="100%" stop-color="#0369a1" />
                     </linearGradient>
 
-                    <linearGradient id="waveGradVibrant" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <!-- Pita 2: Biru Cyan / Sky Blue (Pita Tengah) -->
+                    <linearGradient id="waveRibbon2" x1="0%" y1="0%" x2="0%" y2="100%">
                         <stop offset="0%" stop-color="#38bdf8" />
-                        <stop offset="30%" stop-color="#06b6d4" />
-                        <stop offset="65%" stop-color="#2563eb" />
-                        <stop offset="100%" stop-color="#6366f1" />
+                        <stop offset="50%" stop-color="#0284c7" />
+                        <stop offset="100%" stop-color="#0ea5e9" />
                     </linearGradient>
 
-                    <!-- Gradasi Stroke Garis Ombak -->
-                    <linearGradient id="waveStrokeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="#38bdf8" />
-                        <stop offset="25%" stop-color="#22d3ee" />
-                        <stop offset="50%" stop-color="#60a5fa" />
-                        <stop offset="75%" stop-color="#818cf8" />
-                        <stop offset="100%" stop-color="#38bdf8" />
+                    <!-- Pita 3: Ice Blue / Aqua Muda (Pita Terluar Sesuai Gambar Referensi) -->
+                    <linearGradient id="waveRibbon3" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="#bae6fd" stop-opacity="0.9" />
+                        <stop offset="50%" stop-color="#7dd3fc" stop-opacity="0.85" />
+                        <stop offset="100%" stop-color="#a5f3fc" stop-opacity="0.9" />
                     </linearGradient>
 
-                    <!-- Filter Glow Garis Ombak -->
-                    <filter id="waveGlowFilter" x="-40%" y="-15%" width="180%" height="130%">
-                        <feGaussianBlur stdDeviation="3" result="blur" />
+                    <!-- Filter Glow Halus untuk Garis Pemisah Putih -->
+                    <filter id="waveGlowFilter" x="-20%" y="-10%" width="140%" height="120%">
+                        <feGaussianBlur stdDeviation="2" result="blur" />
                         <feMerge>
-                            <feMergeNode in="blur" />
                             <feMergeNode in="blur" />
                             <feMergeNode in="SourceGraphic" />
                         </feMerge>
                     </filter>
                 </defs>
 
-                <!-- Lapisan Dasar Panel Gelap Mengikuti Garis Ombak Berulang -->
-                <path d="M 0 0 
-                         L 100 0 
-                         C 122 35, 122 90, 100 125 
-                         C 78 160, 78 215, 100 250 
-                         C 122 285, 122 340, 100 375 
-                         C 78 410, 78 465, 100 500 
-                         C 122 535, 122 590, 100 625 
-                         C 78 660, 78 715, 100 750 
-                         C 122 785, 122 840, 100 875 
-                         C 78 910, 78 965, 100 1000 
-                         L 0 1000 
-                         Z" 
-                      fill="#020617" />
+                <!-- Lapisan 4: Dasar Panel Terang (Sisi Kanan dari Batas Pita Terluar ke Ujung Kanan) -->
+                <path d="M 126 0 C 154 60, 156 140, 134 220 C 112 270, 110 320, 128 360 C 156 420, 158 500, 136 580 C 112 630, 110 680, 128 720 C 154 770, 156 840, 136 910 C 114 950, 114 980, 126 1000 L 240 1000 L 240 0 Z" fill="#f8fafc" />
 
-                <!-- Lapisan Dasar Panel Terang Mengikuti Garis Ombak Berulang -->
-                <path d="M 200 0 
-                         L 100 0 
-                         C 122 35, 122 90, 100 125 
-                         C 78 160, 78 215, 100 250 
-                         C 122 285, 122 340, 100 375 
-                         C 78 410, 78 465, 100 500 
-                         C 122 535, 122 590, 100 625 
-                         C 78 660, 78 715, 100 750 
-                         C 122 785, 122 840, 100 875 
-                         C 78 910, 78 965, 100 1000 
-                         L 200 1000 
-                         Z" 
-                      fill="#f8fafc" />
+                <!-- Lapisan 3: Pita Ombak Terluar (Ice Blue / Aqua Muda) -->
+                <path d="M 0 0 L 126 0 C 154 60, 156 140, 134 220 C 112 270, 110 320, 128 360 C 156 420, 158 500, 136 580 C 112 630, 110 680, 128 720 C 154 770, 156 840, 136 910 C 114 950, 114 980, 126 1000 L 0 1000 Z" fill="url(#waveRibbon3)" />
 
-                <!-- Lapisan Ombak 1: Glow Ambient Halus -->
-                <path d="M 100 0 
-                         C 122 35, 122 90, 100 125 
-                         C 78 160, 78 215, 100 250 
-                         C 122 285, 122 340, 100 375 
-                         C 78 410, 78 465, 100 500 
-                         C 122 535, 122 590, 100 625 
-                         C 78 660, 78 715, 100 750 
-                         C 122 785, 122 840, 100 875 
-                         C 78 910, 78 965, 100 1000"
-                      stroke="url(#waveGradAmbient)" stroke-width="26" stroke-linecap="round" fill="none" opacity="0.25" filter="url(#waveGlowFilter)" />
+                <!-- Lapisan 2: Pita Ombak Tengah (Cyan / Sky Blue) -->
+                <path d="M 0 0 L 114 0 C 142 60, 144 140, 122 220 C 100 270, 98 320, 116 360 C 144 420, 146 500, 124 580 C 100 630, 98 680, 116 720 C 142 770, 144 840, 124 910 C 102 950, 102 980, 114 1000 L 0 1000 Z" fill="url(#waveRibbon2)" />
 
-                <!-- Lapisan Ombak 2: Pita Gradasi Vibrant Cyan-Blue -->
-                <path d="M 100 0 
-                         C 122 35, 122 90, 100 125 
-                         C 78 160, 78 215, 100 250 
-                         C 122 285, 122 340, 100 375 
-                         C 78 410, 78 465, 100 500 
-                         C 122 535, 122 590, 100 625 
-                         C 78 660, 78 715, 100 750 
-                         C 122 785, 122 840, 100 875 
-                         C 78 910, 78 965, 100 1000"
-                      stroke="url(#waveGradVibrant)" stroke-width="8" stroke-linecap="round" fill="none" opacity="0.55" filter="url(#waveGlowFilter)" />
+                <!-- Lapisan 1: Pita Ombak Terdalam (Deep Electric Blue) -->
+                <path d="M 0 0 L 102 0 C 130 60, 132 140, 110 220 C 88 270, 86 320, 104 360 C 132 420, 134 500, 112 580 C 88 630, 86 680, 104 720 C 130 770, 132 840, 112 910 C 90 950, 90 980, 102 1000 L 0 1000 Z" fill="url(#waveRibbon1)" />
 
-                <!-- Riak Ombak Sekunder (Echo Wave Berlapis) -->
-                <path d="M 104 0 
-                         C 120 40, 120 95, 104 130 
-                         C 88 165, 88 220, 104 255 
-                         C 120 290, 120 345, 104 380 
-                         C 88 415, 88 470, 104 505 
-                         C 120 540, 120 595, 104 630 
-                         C 88 665, 88 720, 104 755 
-                         C 120 790, 120 845, 104 880 
-                         C 88 915, 88 970, 104 1000"
-                      stroke="url(#waveStrokeGrad)" stroke-width="1.5" stroke-dasharray="4 6" stroke-opacity="0.4" fill="none" />
+                <!-- Lapisan 0: Panel Gelap Utama (Slate-950 Menutup Sisi Kiri) -->
+                <path d="M 0 0 L 90 0 C 118 60, 120 140, 98 220 C 76 270, 74 320, 92 360 C 120 420, 122 500, 100 580 C 76 630, 74 680, 92 720 C 118 770, 120 840, 100 910 C 78 950, 78 980, 90 1000 L 0 1000 Z" fill="#020617" />
 
-                <!-- Garis Puncak Ombak Utama Bercahaya (Luminous Wave Crest) -->
-                <path d="M 100 0 
-                         C 122 35, 122 90, 100 125 
-                         C 78 160, 78 215, 100 250 
-                         C 122 285, 122 340, 100 375 
-                         C 78 410, 78 465, 100 500 
-                         C 122 535, 122 590, 100 625 
-                         C 78 660, 78 715, 100 750 
-                         C 122 785, 122 840, 100 875 
-                         C 78 910, 78 965, 100 1000"
-                      stroke="url(#waveStrokeGrad)" stroke-width="2.5" fill="none" filter="url(#waveGlowFilter)" />
-
-                <!-- Garis Shimmer Arus Data Ombak (Animasi Mengalir) -->
-                <path class="wave-shimmer"
-                      d="M 100 0 
-                         C 122 35, 122 90, 100 125 
-                         C 78 160, 78 215, 100 250 
-                         C 122 285, 122 340, 100 375 
-                         C 78 410, 78 465, 100 500 
-                         C 122 535, 122 590, 100 625 
-                         C 78 660, 78 715, 100 750 
-                         C 122 785, 122 840, 100 875 
-                         C 78 910, 78 965, 100 1000"
-                      stroke="#ffffff" stroke-width="1.2" stroke-opacity="0.8" fill="none" />
-
-                <!-- Titik Energi Ombak di Puncak Ombak (Pulsing Wave Nodes) -->
-                <circle class="wave-dot" cx="118" cy="62" r="3.5" fill="#38bdf8" filter="url(#waveGlowFilter)" />
-                <circle class="wave-dot" cx="118" cy="312" r="3.5" fill="#22d3ee" filter="url(#waveGlowFilter)" style="animation-delay: 0.8s;" />
-                <circle class="wave-dot" cx="118" cy="562" r="3.5" fill="#60a5fa" filter="url(#waveGlowFilter)" style="animation-delay: 1.6s;" />
-                <circle class="wave-dot" cx="118" cy="812" r="3.5" fill="#818cf8" filter="url(#waveGlowFilter)" style="animation-delay: 2.4s;" />
+                <!-- Garis Aksen Putih di Tepi Luar Ombak (Persis seperti Gambar Referensi) -->
+                <path d="M 126 0 C 154 60, 156 140, 134 220 C 112 270, 110 320, 128 360 C 156 420, 158 500, 136 580 C 112 630, 110 680, 128 720 C 154 770, 156 840, 136 910 C 114 950, 114 980, 126 1000" stroke="#ffffff" stroke-width="1.5" stroke-opacity="0.75" fill="none" filter="url(#waveGlowFilter)" />
             </svg>
         </div>
 
