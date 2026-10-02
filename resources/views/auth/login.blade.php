@@ -9,656 +9,238 @@
     <link rel="apple-touch-icon" href="{{ asset('img/logo.png') }}?v={{ file_exists(public_path('img/logo.png')) ? filemtime(public_path('img/logo.png')) : time() }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+        .font-display { font-family: 'Space Grotesk', system-ui, sans-serif; }
 
-        body {
-            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-            letter-spacing: -0.01em;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-            overflow: hidden;
-            position: relative;
-            /* Latar belakang netral dengan sentuhan gradasi biru lembut */
-            background-color: #eef2f7;
-            background-image:
-                radial-gradient(circle at 10% 20%, rgba(6, 182, 212, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 90% 80%, rgba(37, 99, 235, 0.08) 0%, transparent 50%);
-        }
+        /* grid titik ambient (bukan blob) */
+        .dot-grid { background-image: radial-gradient(circle at 1px 1px, rgba(148,163,184,0.18) 1px, transparent 0); background-size: 26px 26px; }
 
-        .font-outfit { font-family: 'Outfit', system-ui, sans-serif; }
+        /* graf jaringan */
+        @keyframes nodePulse { 0%,100% { transform: scale(1); opacity: .55; } 50% { transform: scale(1.5); opacity: 1; } }
+        @keyframes dashFlow { to { stroke-dashoffset: -24; } }
+        @keyframes haloPulse { 0%,100% { opacity: .25; transform: scale(1); } 50% { opacity: .5; transform: scale(1.15); } }
+        .net-node { transform-box: fill-box; transform-origin: center; animation: nodePulse 3.4s ease-in-out infinite; }
+        .net-line { stroke-dasharray: 4 8; animation: dashFlow 1.6s linear infinite; }
+        .net-halo { transform-box: fill-box; transform-origin: center; animation: haloPulse 4s ease-in-out infinite; }
 
-        /* ============ BENTUK DEKORATIF LATAR BELAKANG ============ */
-        .bg-deco {
-            position: fixed;
-            pointer-events: none;
-            z-index: 0;
-        }
-        .bg-deco-1 {
-            top: -120px; left: -120px;
-            width: 420px; height: 420px;
-            background: linear-gradient(135deg, #0e4d92 0%, #0891b2 100%);
-            border-radius: 40% 60% 65% 35% / 40% 50% 50% 60%;
-            opacity: 0.18;
-            animation: floatDeco 14s ease-in-out infinite alternate;
-        }
-        .bg-deco-2 {
-            bottom: -100px; right: -100px;
-            width: 360px; height: 360px;
-            background: linear-gradient(135deg, #1e40af 0%, #06b6d4 100%);
-            border-radius: 55% 45% 40% 60% / 50% 60% 40% 50%;
-            opacity: 0.15;
-            animation: floatDeco 12s ease-in-out infinite alternate-reverse;
-        }
-        .bg-deco-3 {
-            bottom: -60px; left: 10%;
-            width: 280px; height: 280px;
-            background: linear-gradient(135deg, #0284c7 0%, #1e3a5f 100%);
-            border-radius: 60% 40% 50% 50% / 45% 55% 45% 55%;
-            opacity: 0.12;
-            animation: floatDeco 16s ease-in-out infinite alternate;
-        }
+        /* entrance */
+        @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .rise { opacity: 0; animation: rise .7s cubic-bezier(.16,1,.3,1) forwards; }
+        .d1 { animation-delay: .05s; } .d2 { animation-delay: .15s; } .d3 { animation-delay: .25s; }
+        .d4 { animation-delay: .35s; } .d5 { animation-delay: .45s; } .d6 { animation-delay: .55s; }
+        .fade { opacity: 0; animation: fadeIn 1s ease forwards; }
 
-        @keyframes floatDeco {
-            0%   { transform: translate(0, 0) rotate(0deg); }
-            50%  { transform: translate(15px, -10px) rotate(3deg); }
-            100% { transform: translate(-10px, 15px) rotate(-3deg); }
-        }
-
-        /* ============ KARTU LOGIN UTAMA ============ */
-        .login-card {
-            position: relative;
-            z-index: 10;
-            width: 100%;
-            max-width: 960px;
-            min-height: 560px;
-            background: #fff;
-            border-radius: 32px;
-            box-shadow: 0 30px 80px -20px rgba(10, 25, 47, 0.22), 0 0 0 1px rgba(148, 163, 184, 0.08);
-            display: flex;
-            overflow: hidden;
-            animation: cardEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        @keyframes cardEnter {
-            from { opacity: 0; transform: scale(0.96) translateY(16px); }
-            to   { opacity: 1; transform: scale(1) translateY(0); }
-        }
-
-        /* ============ PANEL KIRI: CURVED ARTWORK ============ */
-        .panel-left {
-            position: relative;
-            width: 52%;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Background gelap panel kiri */
-        .panel-left-bg {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(160deg, #0a192f 0%, #0f2b52 30%, #1e40af 65%, #0891b2 100%);
-            z-index: 1;
-        }
-
-        /* Kurva besar mengambang — inspirasi dari desain referensi (gambar 2) */
-        .curve-main {
-            position: absolute;
-            z-index: 2;
-            width: 650px;
-            height: 650px;
-            border-radius: 50%;
-            right: -200px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: linear-gradient(160deg, #06b6d4 0%, #1e40af 40%, #0a192f 100%);
-            animation: curvePulse 10s ease-in-out infinite alternate;
-        }
-        .curve-inner {
-            position: absolute;
-            z-index: 3;
-            width: 430px;
-            height: 430px;
-            border-radius: 50%;
-            right: -80px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: linear-gradient(160deg, #0891b2 0%, #1e3a5f 60%, #0f2b52 100%);
-            animation: curvePulse 8s ease-in-out infinite alternate-reverse;
-        }
-
-        @keyframes curvePulse {
-            0%   { transform: translateY(-50%) scale(1); }
-            100% { transform: translateY(-50%) scale(1.03); }
-        }
-
-        /* Lingkaran putih di tengah panel kiri — berisi logo & info */
-        .badge-circle {
-            position: relative;
-            z-index: 10;
-            width: 260px;
-            height: 260px;
-            border-radius: 50%;
-            background: #ffffff;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 28px;
-            transition: transform 0.3s ease;
-        }
-        .badge-circle:hover { transform: scale(1.03); }
-
-        .badge-logo-wrap {
-            display: inline-flex;
-            align-items: center;
-            padding: 8px 18px;
-            border-radius: 16px;
-            background: linear-gradient(135deg, #1e3a5f 0%, #0f2647 50%, #162d4a 100%);
-            box-shadow: 0 4px 18px rgba(15, 38, 71, 0.28);
-            margin-bottom: 14px;
-            transition: transform 0.25s ease;
-        }
-        .badge-logo-wrap:hover { transform: scale(1.05); }
-        .badge-logo-wrap img { height: 40px; width: auto; max-width: 180px; object-fit: contain; }
-
-        .badge-title {
-            font-family: 'Outfit', system-ui, sans-serif;
-            font-weight: 800;
-            font-size: 16px;
-            color: #0f172a;
-            line-height: 1.3;
-            letter-spacing: -0.01em;
-        }
-        .badge-subtitle {
-            font-family: 'Outfit', system-ui, sans-serif;
-            font-weight: 700;
-            font-size: 10.5px;
-            color: #0891b2;
-            text-transform: uppercase;
-            letter-spacing: 0.16em;
-            margin-top: 4px;
-        }
-        .badge-desc {
-            font-size: 11.5px;
-            color: #64748b;
-            line-height: 1.6;
-            margin-top: 10px;
-            max-width: 200px;
-        }
-
-        /* Elemen dekoratif: lingkaran outline tipis */
-        .deco-ring {
-            position: absolute;
-            border-radius: 50%;
-            border: 2px dashed rgba(6, 182, 212, 0.15);
-            pointer-events: none;
-            z-index: 4;
-        }
-        .deco-ring-1 {
-            width: 340px; height: 340px;
-            left: -60px; top: 50%;
-            transform: translateY(-50%);
-            animation: ringRotate 30s linear infinite;
-        }
-        .deco-ring-2 {
-            width: 500px; height: 500px;
-            left: -130px; top: 50%;
-            transform: translateY(-50%);
-            border-style: solid;
-            border-width: 1px;
-            border-color: rgba(6, 182, 212, 0.08);
-            animation: ringRotate 50s linear infinite reverse;
-        }
-
-        @keyframes ringRotate {
-            from { transform: translateY(-50%) rotate(0deg); }
-            to { transform: translateY(-50%) rotate(360deg); }
-        }
-
-        /* Partikel dot kecil floating */
-        .floating-dot {
-            position: absolute;
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: rgba(6, 182, 212, 0.4);
-            z-index: 5;
-            animation: dotFloat 6s ease-in-out infinite alternate;
-        }
-        .floating-dot:nth-child(1) { top: 15%; left: 20%; animation-delay: 0s; }
-        .floating-dot:nth-child(2) { top: 75%; left: 15%; animation-delay: 1.5s; width: 4px; height: 4px; background: rgba(30, 64, 175, 0.3); }
-        .floating-dot:nth-child(3) { top: 25%; left: 65%; animation-delay: 3s; width: 5px; height: 5px; background: rgba(6, 182, 212, 0.3); }
-        .floating-dot:nth-child(4) { top: 80%; left: 60%; animation-delay: 2s; width: 3px; height: 3px; }
-
-        @keyframes dotFloat {
-            0%   { transform: translate(0, 0); opacity: 0.4; }
-            50%  { transform: translate(8px, -12px); opacity: 0.8; }
-            100% { transform: translate(-5px, 6px); opacity: 0.3; }
-        }
-
-        /* ============ PANEL KANAN: FORM LOGIN ============ */
-        .panel-right {
-            width: 48%;
-            padding: 48px 44px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .form-section {
-            width: 100%;
-            max-width: 300px;
-            margin: auto;
-        }
-
-        /* Avatar lingkaran */
-        .avatar-ring {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            border: 2.5px solid #cbd5e1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 12px;
-            position: relative;
-            background: #f8fafc;
-            overflow: hidden;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-        .avatar-ring:hover {
-            border-color: #0891b2;
-            box-shadow: 0 0 0 4px rgba(8, 145, 178, 0.1);
-        }
-        .avatar-ring svg { width: 100%; height: 100%; color: #94a3b8; padding-top: 8px; }
-
-        .welcome-title {
-            font-family: 'Outfit', system-ui, sans-serif;
-            font-weight: 800;
-            font-size: 26px;
-            color: #0f172a;
-            letter-spacing: -0.02em;
-            margin-top: 4px;
-        }
-        .welcome-sub {
-            font-size: 12.5px;
-            font-weight: 500;
-            color: #94a3b8;
-            margin-top: 4px;
-        }
-
-        /* Error box */
-        .error-box {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            padding: 10px 16px;
-            border-radius: 16px;
-            border: 1px solid #fecaca;
-            background: #fef2f2;
-            color: #b91c1c;
-            font-size: 12px;
-            text-align: left;
-            margin-bottom: 16px;
-        }
-        .error-box i { margin-top: 2px; color: #ef4444; flex-shrink: 0; }
-
-        /* Input fields */
-        .input-group {
-            position: relative;
-            margin-bottom: 14px;
-        }
-        .input-group input {
-            width: 100%;
-            padding: 14px 44px 14px 20px;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 50px;
-            background: #f8fafc;
-            font-size: 13.5px;
-            font-weight: 500;
-            color: #1e293b;
-            outline: none;
-            transition: all 0.25s ease;
-            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-        }
-        .input-group input::placeholder { color: #94a3b8; font-weight: 400; }
-        .input-group input:focus {
-            background: #ffffff;
-            border-color: #0891b2;
-            box-shadow: 0 0 0 4px rgba(8, 145, 178, 0.1);
-        }
-        .input-icon {
-            position: absolute;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #94a3b8;
-            font-size: 14px;
-            pointer-events: none;
-            transition: color 0.2s ease;
-        }
-        .input-group input:focus ~ .input-icon { color: #0891b2; }
-        .input-icon-btn {
-            position: absolute;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: #94a3b8;
-            font-size: 14px;
-            cursor: pointer;
-            padding: 4px;
-            transition: color 0.2s ease;
-        }
-        .input-icon-btn:hover { color: #0891b2; }
-
-        /* Remember me */
-        .remember-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 0 4px;
-            margin-bottom: 18px;
-        }
-        .remember-row input[type="checkbox"] {
-            width: 14px;
-            height: 14px;
-            border-radius: 4px;
-            accent-color: #0891b2;
-            cursor: pointer;
-        }
-        .remember-row label {
-            font-size: 12px;
-            font-weight: 500;
-            color: #64748b;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        /* Tombol Login */
-        .btn-login {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 50px;
-            background: linear-gradient(135deg, #0e4d92 0%, #1e40af 40%, #0891b2 100%);
-            color: #ffffff;
-            font-family: 'Outfit', system-ui, sans-serif;
-            font-weight: 700;
-            font-size: 12px;
-            letter-spacing: 0.22em;
-            text-transform: uppercase;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 24px -4px rgba(14, 77, 146, 0.35);
-        }
-        .btn-login::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
-            transition: left 0.5s ease;
-        }
-        .btn-login:hover::before { left: 100%; }
-        .btn-login:hover {
-            box-shadow: 0 12px 32px -4px rgba(14, 77, 146, 0.45);
-            transform: translateY(-1px);
-        }
-        .btn-login:active { transform: translateY(0) scale(0.99); }
-        .btn-login:disabled {
-            opacity: 0.8;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Help links */
-        .help-text {
-            margin-top: 18px;
-            font-size: 12px;
-            color: #94a3b8;
-            text-align: center;
-        }
-        .help-text a {
-            color: #0891b2;
-            font-weight: 600;
-            text-decoration: none;
-            transition: color 0.2s ease;
-        }
-        .help-text a:hover { color: #0e4d92; text-decoration: underline; }
-
-        /* Footer */
-        .login-footer {
-            width: 100%;
-            padding-top: 20px;
-            border-top: 1px solid #f1f5f9;
-            text-align: center;
-            font-size: 11px;
-            font-weight: 500;
-            color: #94a3b8;
-        }
-
-        /* Spinner */
         @keyframes spin { to { transform: rotate(360deg); } }
-        .spin { animation: spin 0.7s linear infinite; }
-
-        /* ============ RESPONSIF ============ */
-        @media (max-width: 768px) {
-            body { padding: 12px; align-items: flex-start; padding-top: 40px; }
-
-            .login-card {
-                flex-direction: column;
-                max-width: 420px;
-                min-height: auto;
-                border-radius: 24px;
-            }
-            .panel-left {
-                width: 100%;
-                height: 280px;
-                min-height: 260px;
-            }
-            .curve-main {
-                width: 500px; height: 500px;
-                right: -160px;
-            }
-            .curve-inner {
-                width: 330px; height: 330px;
-                right: -60px;
-            }
-            .badge-circle {
-                width: 200px; height: 200px;
-                padding: 20px;
-            }
-            .badge-logo-wrap { padding: 6px 14px; margin-bottom: 10px; }
-            .badge-logo-wrap img { height: 28px; }
-            .badge-title { font-size: 13px; }
-            .badge-subtitle { font-size: 9px; }
-            .badge-desc { display: none; }
-            .deco-ring-1 { width: 250px; height: 250px; left: -40px; }
-            .deco-ring-2 { width: 380px; height: 380px; left: -90px; }
-
-            .panel-right {
-                width: 100%;
-                padding: 32px 28px;
-            }
-            .welcome-title { font-size: 22px; }
-        }
-
-        @media (max-width: 480px) {
-            .panel-left { height: 240px; min-height: 220px; }
-            .badge-circle { width: 170px; height: 170px; padding: 16px; }
-            .badge-logo-wrap img { height: 24px; }
-            .badge-title { font-size: 12px; }
-            .panel-right { padding: 24px 20px; }
+        .spin { animation: spin .7s linear infinite; }
+        @media (prefers-reduced-motion: reduce) {
+            .rise,.fade { opacity: 1 !important; animation: none !important; }
+            .net-node,.net-line,.net-halo { animation: none !important; }
         }
     </style>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-800 antialiased">
 
-    <!-- Bentuk dekoratif di background halaman -->
-    <div class="bg-deco bg-deco-1"></div>
-    <div class="bg-deco bg-deco-2"></div>
-    <div class="bg-deco bg-deco-3"></div>
+    <div class="min-h-screen flex">
 
-    <!-- ================= KARTU MODAL LOGIN ================= -->
-    <div class="login-card">
+        <!-- ============ PANEL KIRI: identitas + visual jaringan ============ -->
+        <aside class="relative hidden lg:flex lg:w-[46%] xl:w-[50%] flex-col justify-between overflow-hidden bg-slate-950 text-white p-12 xl:p-16">
+            <!-- glow terkontrol + grid -->
+            <div class="pointer-events-none absolute -top-24 -left-24 w-[28rem] h-[28rem] rounded-full bg-cyan-500/20 blur-3xl"></div>
+            <div class="pointer-events-none absolute bottom-0 right-0 w-[24rem] h-[24rem] rounded-full bg-blue-600/10 blur-3xl"></div>
+            <div class="pointer-events-none absolute inset-0 dot-grid opacity-60"></div>
 
-        <!-- ============ PANEL KIRI: ARTWORK KURVA BESAR ============ -->
-        <div class="panel-left">
-            <!-- Background gradasi biru -->
-            <div class="panel-left-bg"></div>
+            <!-- graf jaringan (SVG) -->
+            <svg class="pointer-events-none absolute inset-0 w-full h-full opacity-70 fade" viewBox="0 0 480 600" preserveAspectRatio="xMidYMid slice" fill="none">
+                <g stroke="rgba(56,189,248,0.35)" stroke-width="1.4">
+                    <line class="net-line" x1="90"  y1="140" x2="240" y2="90"/>
+                    <line class="net-line" x1="240" y1="90"  x2="390" y2="170" style="animation-delay:.3s"/>
+                    <line class="net-line" x1="90"  y1="140" x2="150" y2="300" style="animation-delay:.6s"/>
+                    <line class="net-line" x1="240" y1="90"  x2="300" y2="320" style="animation-delay:.2s"/>
+                    <line class="net-line" x1="390" y1="170" x2="300" y2="320" style="animation-delay:.5s"/>
+                    <line class="net-line" x1="150" y1="300" x2="300" y2="320" style="animation-delay:.8s"/>
+                    <line class="net-line" x1="150" y1="300" x2="110" y2="470" style="animation-delay:.4s"/>
+                    <line class="net-line" x1="300" y1="320" x2="360" y2="480" style="animation-delay:.7s"/>
+                    <line class="net-line" x1="110" y1="470" x2="360" y2="480" style="animation-delay:.9s"/>
+                </g>
+                <g>
+                    <circle class="net-halo" cx="240" cy="90"  r="22" fill="rgba(34,211,238,0.18)"/>
+                    <circle class="net-halo" cx="300" cy="320" r="26" fill="rgba(59,130,246,0.16)" style="animation-delay:1s"/>
+                </g>
+                <g fill="#22d3ee">
+                    <circle class="net-node" cx="90"  cy="140" r="4"/>
+                    <circle class="net-node" cx="240" cy="90"  r="6" style="animation-delay:.4s"/>
+                    <circle class="net-node" cx="390" cy="170" r="4" style="animation-delay:.8s"/>
+                    <circle class="net-node" cx="150" cy="300" r="5" style="animation-delay:1.2s"/>
+                    <circle class="net-node" cx="300" cy="320" r="7" fill="#3b82f6" style="animation-delay:.6s"/>
+                    <circle class="net-node" cx="110" cy="470" r="4" style="animation-delay:1s"/>
+                    <circle class="net-node" cx="360" cy="480" r="5" style="animation-delay:1.4s"/>
+                </g>
+            </svg>
 
-            <!-- Kurva besar (seperti di gambar 2) -->
-            <div class="curve-main"></div>
-            <div class="curve-inner"></div>
-
-            <!-- Lingkaran dekoratif -->
-            <div class="deco-ring deco-ring-1"></div>
-            <div class="deco-ring deco-ring-2"></div>
-
-            <!-- Partikel floating -->
-            <div class="floating-dot"></div>
-            <div class="floating-dot"></div>
-            <div class="floating-dot"></div>
-            <div class="floating-dot"></div>
-
-            <!-- BADGE LINGKARAN PUTIH: Logo & Info -->
-            <div class="badge-circle">
-                <div class="badge-logo-wrap">
-                    <img src="{{ asset('img/logo-white.png') }}" alt="Logo Fast Connect">
+            <!-- konten -->
+            <div class="relative z-10">
+                <div class="flex items-center rise d1">
+                    <img src="{{ asset('img/logo-white.png') }}"
+                         alt="Logo Connecti Jelajah Priangan"
+                         class="h-12 w-auto max-w-[280px] object-contain filter drop-shadow-md">
                 </div>
-                <h3 class="badge-title">Connecti Jelajah Priangan</h3>
-                <p class="badge-subtitle">Integrated Management System</p>
-                <p class="badge-desc">Kelola jaringan, pendaftaran, & pemantauan pelanggan dalam satu dasbor terpadu.</p>
             </div>
-        </div>
 
-        <!-- ============ PANEL KANAN: FORM MASUK ============ -->
-        <div class="panel-right">
-            <div class="form-section">
-                <!-- Avatar & Judul -->
-                <div style="text-align: center; margin-bottom: 24px;">
-                    <div class="avatar-ring">
-                        <svg fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
+            <div class="relative z-10 my-auto py-16">
+                <p class="rise d2 text-cyan-300/90 text-xs font-semibold uppercase tracking-[0.25em] mb-4">Integrated Management System</p>
+                <h1 class="rise d3 font-display font-bold text-4xl xl:text-5xl leading-[1.08] text-white">
+                    Kelola jaringan<br>
+                    <span class="text-slate-400">dalam satu dasbor.</span>
+                </h1>
+                <p class="rise d4 mt-5 text-slate-400 text-[15px] leading-relaxed max-w-md">
+                    Pendaftaran, tiket, perubahan layanan, hingga pemantauan pelanggan, terhimpun dan terhubung secara langsung.
+                </p>
+
+                <ul class="rise d5 mt-9 space-y-4 max-w-md">
+                    @foreach ([
+                        ['fa-tower-broadcast', 'Pemantauan realtime', 'Status layanan & antrian tiket terkini.'],
+                        ['fa-route',           'Alur kerja terpadu', 'Registrasi hingga terminasi dalam satu alur.'],
+                        ['fa-shield-halved',   'Akses bertingkat',   'Hanya pengguna terdaftar yang dapat masuk.'],
+                    ] as $f)
+                        <li class="flex items-start gap-3.5">
+                            <span class="mt-0.5 w-9 h-9 rounded-lg bg-white/5 ring-1 ring-white/10 flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid {{ $f[0] }} text-cyan-300 text-sm"></i>
+                            </span>
+                            <div>
+                                <p class="text-sm font-semibold text-slate-100">{{ $f[1] }}</p>
+                                <p class="text-[13px] text-slate-400 leading-snug">{{ $f[2] }}</p>
+                            </div>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+
+            <div class="relative z-10 rise d6 text-xs text-slate-500 flex items-center justify-between">
+                <span>&copy; 2021 Integrated Management System</span>
+                <span class="font-mono">v3.0.1</span>
+            </div>
+        </aside>
+
+        <!-- ============ PANEL KANAN: form masuk ============ -->
+        <main class="flex-1 flex items-center justify-center px-6 py-12 sm:px-10">
+            <div class="w-full max-w-sm">
+
+                <!-- logo mobile -->
+                <div class="lg:hidden mb-8 rise d1 flex justify-start">
+                    <div class="inline-flex items-center px-4 py-2.5 rounded-2xl"
+                         style="background: linear-gradient(135deg, #1e3a5f 0%, #0f2647 50%, #162d4a 100%); box-shadow: 0 4px 16px rgba(15,38,71,0.25);">
+                        <img src="{{ asset('img/logo-white.png') }}"
+                             alt="Connecti Jelajah Priangan"
+                             class="h-9 w-auto max-w-full object-contain">
                     </div>
-                    <h2 class="welcome-title">Selamat Datang</h2>
-                    <p class="welcome-sub">Masuk untuk mengakses dasbor IMS</p>
                 </div>
 
-                <!-- Pesan Error Validasi -->
+                <div class="rise d2">
+                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-600 mb-2">Selamat datang kembali</p>
+                    <h2 class="font-display font-bold text-3xl text-slate-900">Masuk ke akun Anda</h2>
+                    <p class="mt-2 text-sm text-slate-500">Gunakan kredensial yang diberikan administrator.</p>
+                </div>
+
+                <!-- pesan error -->
                 @if ($errors->any())
-                    <div class="error-box">
-                        <i class="fa-solid fa-circle-exclamation"></i>
+                    <div class="rise d3 mt-6 flex items-start gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                        <i class="fa-solid fa-circle-exclamation mt-0.5 text-rose-500"></i>
                         <span>{{ $errors->first() }}</span>
                     </div>
                 @endif
 
-                <!-- Form Login -->
-                <form method="POST" action="{{ route('login.submit') }}" id="loginForm">
+                <form method="POST" action="{{ route('login.submit') }}" id="loginForm" class="mt-8 space-y-5">
                     @csrf
 
-                    <!-- Input Username -->
-                    <div class="input-group">
-                        <input id="username" name="username" type="text" value="{{ old('username') }}" required autocomplete="username" autofocus
-                               placeholder="Username">
-                        <i class="fa-regular fa-user input-icon"></i>
+                    <!-- username -->
+                    <div class="rise d3">
+                        <label for="username" class="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5">Username</label>
+                        <div class="relative">
+                            <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 transition-colors peer-focus:text-blue-600">
+                                <i class="fa-regular fa-user"></i>
+                            </span>
+                            <input id="username" name="username" type="text" value="{{ old('username') }}" required autocomplete="username" autofocus
+                                class="peer w-full rounded-xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm text-slate-800 outline-none transition-all duration-200 placeholder-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
+                        </div>
                     </div>
 
-                    <!-- Input Password -->
-                    <div class="input-group">
-                        <input id="password" name="password" type="password" required autocomplete="current-password"
-                               placeholder="Password">
-                        <button type="button" onclick="togglePass()" aria-label="Lihat password" class="input-icon-btn">
-                            <i id="eyeIcon" class="fa-solid fa-lock"></i>
-                        </button>
+                    <!-- password -->
+                    <div class="rise d4">
+                        <label for="password" class="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5">Password</label>
+                        <div class="relative">
+                            <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 transition-colors peer-focus:text-blue-600">
+                                <i class="fa-solid fa-lock"></i>
+                            </span>
+                            <input id="password" name="password" type="password" required autocomplete="current-password"
+                                class="peer w-full rounded-xl border border-slate-200 bg-white py-3 pl-11 pr-11 text-sm text-slate-800 outline-none transition-all duration-200 placeholder-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
+                            <button type="button" onclick="togglePass()" aria-label="Lihat password"
+                                class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-600 transition-colors">
+                                <i id="eyeIcon" class="fa-regular fa-eye"></i>
+                            </button>
+                        </div>
                     </div>
 
-                    <!-- Ingat Saya -->
-                    <div class="remember-row">
-                        <input id="remember" type="checkbox">
-                        <label for="remember">Ingat saya</label>
+                    <!-- ingat saya -->
+                    <div class="rise d5 flex items-center">
+                        <label class="flex items-center gap-2 cursor-pointer select-none">
+                            <input id="remember" type="checkbox" class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                            <span class="text-sm text-slate-600">Ingat username saya</span>
+                        </label>
                     </div>
 
-                    <!-- Tombol Login -->
-                    <button type="submit" id="submitBtn" class="btn-login">
-                        <span id="btnLabel">LOGIN</span>
-                        <span id="btnSpinner" style="display:none; align-items:center; justify-content:center; gap:8px;">
+                    <!-- submit -->
+                    <button type="submit" id="submitBtn"
+                        class="rise d5 group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/25 transition-all duration-200 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-80 disabled:cursor-not-allowed disabled:hover:translate-y-0">
+                        <span class="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent skew-x-12 transition-transform duration-700 group-hover:translate-x-full"></span>
+                        <span id="btnLabel" class="relative flex items-center justify-center gap-2">
+                            Masuk <i class="fa-solid fa-arrow-right text-xs transition-transform duration-200 group-hover:translate-x-1"></i>
+                        </span>
+                        <span id="btnSpinner" class="relative hidden items-center justify-center gap-2">
                             <i class="fa-solid fa-circle-notch spin"></i> Memverifikasi…
                         </span>
                     </button>
                 </form>
 
-                <!-- Bantuan -->
-                <div class="help-text">
-                    <p>Kendala akses? <a href="#">Hubungi Administrator</a></p>
-                </div>
+                <p class="rise d6 mt-8 text-center text-xs text-slate-400">
+                    Belum punya akses? Hubungi administrator sistem.
+                </p>
             </div>
-
-            <!-- Footer Hak Cipta -->
-            <div class="login-footer">
-                <span>&copy; 2026 Integrated Management System</span>
-            </div>
-        </div>
-
+        </main>
     </div>
 
-    <!-- Script Fungsionalitas Login -->
     <script>
-        // Toggle lihat / sembunyikan password
+        // lihat / sembunyikan password
         function togglePass() {
             var p = document.getElementById('password');
             var i = document.getElementById('eyeIcon');
-            if (p.type === 'password') {
-                p.type = 'text';
-                i.className = 'fa-regular fa-eye';
-            } else {
-                p.type = 'password';
-                i.className = 'fa-solid fa-lock';
-            }
+            if (p.type === 'password') { p.type = 'text';  i.className = 'fa-regular fa-eye-slash'; }
+            else                       { p.type = 'password'; i.className = 'fa-regular fa-eye'; }
         }
 
-        // Simpan username di localStorage jika opsi "Ingat saya" aktif
+        // "ingat username" via localStorage (hanya username, bukan password)
         (function () {
             var u = document.getElementById('username');
             var r = document.getElementById('remember');
             try {
                 var saved = localStorage.getItem('ims_remember_user');
-                if (saved) {
-                    u.value = saved;
-                    r.checked = true;
-                    document.getElementById('password').focus();
-                }
+                if (saved) { u.value = saved; r.checked = true; document.getElementById('password').focus(); }
             } catch (e) {}
-
             document.getElementById('loginForm').addEventListener('submit', function () {
                 try {
                     if (r.checked) localStorage.setItem('ims_remember_user', u.value.trim());
                     else localStorage.removeItem('ims_remember_user');
                 } catch (e) {}
-
-                // Status Loading tombol submit
+                // keadaan loading
                 var btn = document.getElementById('submitBtn');
                 btn.disabled = true;
-                document.getElementById('btnLabel').style.display = 'none';
-                document.getElementById('btnSpinner').style.display = 'flex';
+                document.getElementById('btnLabel').classList.add('hidden');
+                document.getElementById('btnSpinner').classList.remove('hidden');
+                document.getElementById('btnSpinner').classList.add('flex');
             });
         })();
     </script>
