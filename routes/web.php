@@ -67,6 +67,13 @@ Route::get('/fix-database-schema', function () {
         $results[] = 'Artisan migrate: ' . $e->getMessage();
     }
 
+    try {
+        \App\Http\Controllers\PageController::ensureViewBatchjob();
+        $results[] = 'ensureViewBatchjob: Successfully verified and recreated view_batchjob!';
+    } catch (\Throwable $e) {
+        $results[] = 'ensureViewBatchjob info: ' . $e->getMessage();
+    }
+
     // 3. Eksekusi ALTER TABLE langsung untuk memastikan perubahan kolom berhasil
     $queries = [
         "ALTER TABLE `trx_batchjob_register` MODIFY `nomor_bangunan` VARCHAR(50) NULL DEFAULT NULL",
