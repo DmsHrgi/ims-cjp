@@ -37,15 +37,23 @@
 
         @keyframes spin { to { transform: rotate(360deg); } }
         .spin { animation: spin .7s linear infinite; }
+
+        /* animasi garis pembatas ombak & gradasi */
+        @keyframes waveDash { to { stroke-dashoffset: -44; } }
+        .wave-shimmer { stroke-dasharray: 6 12; animation: waveDash 2.5s linear infinite; }
+        @keyframes wavePulse { 0%, 100% { transform: scale(1); opacity: 0.65; } 50% { transform: scale(1.4); opacity: 1; } }
+        .wave-dot { transform-box: fill-box; transform-origin: center; animation: wavePulse 3.2s ease-in-out infinite; }
+
         @media (prefers-reduced-motion: reduce) {
             .rise,.fade { opacity: 1 !important; animation: none !important; }
             .net-node,.net-line,.net-halo { animation: none !important; }
+            .wave-shimmer,.wave-dot { animation: none !important; }
         }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased">
 
-    <div class="min-h-screen flex">
+    <div class="min-h-screen flex relative overflow-hidden bg-slate-50">
 
         <!-- ============ PANEL KIRI: identitas + visual jaringan ============ -->
         <aside class="relative hidden lg:flex lg:w-[46%] xl:w-[50%] flex-col justify-between overflow-hidden bg-slate-950 text-white p-12 xl:p-16">
@@ -126,8 +134,85 @@
             </div>
         </aside>
 
+        <!-- ============ DIVIDER OMBAK & GRADASI (Desktop) ============ -->
+        <div class="pointer-events-none absolute top-0 bottom-0 left-[46%] xl:left-1/2 -translate-x-1/2 w-48 xl:w-60 h-full z-20 hidden lg:block overflow-visible">
+            <svg class="w-full h-full" viewBox="0 0 200 1000" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <!-- Gradasi Ombak Ambient & Vibrant -->
+                    <linearGradient id="waveGradAmbient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.3" />
+                        <stop offset="35%" stop-color="#0284c7" stop-opacity="0.25" />
+                        <stop offset="70%" stop-color="#3b82f6" stop-opacity="0.3" />
+                        <stop offset="100%" stop-color="#06b6d4" stop-opacity="0.3" />
+                    </linearGradient>
+
+                    <linearGradient id="waveGradVibrant" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#38bdf8" />
+                        <stop offset="30%" stop-color="#06b6d4" />
+                        <stop offset="65%" stop-color="#2563eb" />
+                        <stop offset="100%" stop-color="#6366f1" />
+                    </linearGradient>
+
+                    <!-- Gradasi Stroke Garis Ombak -->
+                    <linearGradient id="waveStrokeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="#38bdf8" />
+                        <stop offset="25%" stop-color="#22d3ee" />
+                        <stop offset="50%" stop-color="#60a5fa" />
+                        <stop offset="75%" stop-color="#818cf8" />
+                        <stop offset="100%" stop-color="#38bdf8" />
+                    </linearGradient>
+
+                    <!-- Filter Glow Garis Ombak -->
+                    <filter id="waveGlowFilter" x="-40%" y="-15%" width="180%" height="130%">
+                        <feGaussianBlur stdDeviation="3.5" result="blur" />
+                        <feMerge>
+                            <feMergeNode in="blur" />
+                            <feMergeNode in="blur" />
+                            <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                    </filter>
+                </defs>
+
+                <!-- Lapisan Ombak 1: Glow Ambient Luar -->
+                <path d="M 120 0 C 150 80, 160 230, 100 330 C 50 410, 42 600, 100 690 C 148 760, 154 910, 115 1000"
+                      stroke="url(#waveGradAmbient)" stroke-width="48" stroke-linecap="round" fill="none" opacity="0.3" filter="url(#waveGlowFilter)" />
+
+                <!-- Lapisan Ombak 2: Gradasi Biru/Cyan Menengah -->
+                <path d="M 120 0 C 150 80, 160 230, 100 330 C 50 410, 42 600, 100 690 C 148 760, 154 910, 115 1000"
+                      stroke="url(#waveGradVibrant)" stroke-width="14" stroke-linecap="round" fill="none" opacity="0.5" filter="url(#waveGlowFilter)" />
+
+                <!-- Ombak Sekunder (Echo Wave / Garis Bergelombang Halus) -->
+                <path d="M 132 0 C 165 90, 172 215, 108 345 C 42 425, 34 585, 105 675 C 162 765, 168 895, 126 1000"
+                      stroke="url(#waveStrokeGrad)" stroke-width="1.8" stroke-dasharray="5 7" stroke-opacity="0.45" fill="none" />
+
+                <!-- Lapisan Ombak 3: Dark Swell (Menyambungkan panel gelap ke sisi kanan secara bergelombang) -->
+                <path d="M 96 0 L 120 0 C 150 80, 160 230, 100 330 L 96 330 Z"
+                      fill="#020617" />
+                <path d="M 96 690 L 100 690 C 148 760, 154 910, 115 1000 L 96 1000 Z"
+                      fill="#020617" />
+
+                <!-- Lapisan Ombak 4: Light Swell (Menyambungkan panel terang ke sisi kiri secara bergelombang) -->
+                <path d="M 104 330 L 100 330 C 50 410, 42 600, 100 690 L 104 690 Z"
+                      fill="#f8fafc" />
+
+                <!-- Garis Puncak Ombak Utama (Luminous Wave Crest) -->
+                <path d="M 120 0 C 150 80, 160 230, 100 330 C 50 410, 42 600, 100 690 C 148 760, 154 910, 115 1000"
+                      stroke="url(#waveStrokeGrad)" stroke-width="2.8" fill="none" filter="url(#waveGlowFilter)" />
+
+                <!-- Garis Shimmer Arus Data Ombak (Animasi Mengalir) -->
+                <path class="wave-shimmer"
+                      d="M 120 0 C 150 80, 160 230, 100 330 C 50 410, 42 600, 100 690 C 148 760, 154 910, 115 1000"
+                      stroke="#ffffff" stroke-width="1.2" stroke-opacity="0.8" fill="none" />
+
+                <!-- Titik Energi Ombak (Pulsing Wave Nodes) -->
+                <circle class="wave-dot" cx="155" cy="155" r="4.5" fill="#38bdf8" filter="url(#waveGlowFilter)" />
+                <circle class="wave-dot" cx="46" cy="505" r="4" fill="#22d3ee" filter="url(#waveGlowFilter)" style="animation-delay: 1.2s;" />
+                <circle class="wave-dot" cx="151" cy="835" r="4.5" fill="#60a5fa" filter="url(#waveGlowFilter)" style="animation-delay: 2.1s;" />
+            </svg>
+        </div>
+
         <!-- ============ PANEL KANAN: form masuk ============ -->
-        <main class="flex-1 flex items-center justify-center px-6 py-12 sm:px-10">
+        <main class="flex-1 flex items-center justify-center px-6 py-12 sm:px-10 relative z-10">
             <div class="w-full max-w-sm">
 
                 <!-- logo mobile -->
