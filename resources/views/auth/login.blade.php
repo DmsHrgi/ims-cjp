@@ -161,9 +161,9 @@
             </div>
         </aside>
 
-                        <!-- ============ DIVIDER FIBER-OPTIC & TELEMETRY BEACON (Desktop) ============ -->
-        <div class="pointer-events-none absolute top-0 bottom-0 left-[46%] xl:left-1/2 -translate-x-[45%] w-48 xl:w-56 h-full z-20 hidden lg:block overflow-visible">
-            <svg class="w-full h-full" viewBox="0 0 200 1000" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <!-- ============ DIVIDER FIBER-OPTIC & TELEMETRY BEACON (Desktop) ============ -->
+        <div class="pointer-events-none absolute top-0 bottom-0 left-[46%] xl:left-1/2 -translate-x-full w-28 xl:w-36 h-full z-20 hidden lg:block overflow-visible">
+            <svg class="w-full h-full" viewBox="0 0 100 1000" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                     <!-- Gradasi Fiber Optic Luminous Trunk -->
                     <linearGradient id="fiberLineGrad" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -176,64 +176,57 @@
 
                     <!-- Gradasi Cahaya Ambient Lembut -->
                     <linearGradient id="fiberGlowGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.3" />
-                        <stop offset="35%" stop-color="#06b6d4" stop-opacity="0.25" />
-                        <stop offset="70%" stop-color="#3b82f6" stop-opacity="0.2" />
-                        <stop offset="100%" stop-color="#6366f1" stop-opacity="0.25" />
+                        <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.35" />
+                        <stop offset="35%" stop-color="#06b6d4" stop-opacity="0.3" />
+                        <stop offset="70%" stop-color="#3b82f6" stop-opacity="0.25" />
+                        <stop offset="100%" stop-color="#6366f1" stop-opacity="0.3" />
                     </linearGradient>
 
-                    <!-- Filter Neon Glow Kuat untuk Garis Fiber -->
+                    <!-- Filter Neon Glow untuk Garis Fiber -->
                     <filter id="fiberNeonGlow" x="-30%" y="-10%" width="160%" height="120%">
-                        <feGaussianBlur stdDeviation="3" result="blur" />
+                        <feGaussianBlur stdDeviation="2.5" result="blur" />
                         <feMerge>
-                            <feMergeNode in="blur" />
                             <feMergeNode in="blur" />
                             <feMergeNode in="SourceGraphic" />
                         </feMerge>
                     </filter>
-
-                    <!-- Filter Bayangan Kedalaman Panel Gelap -->
-                    <filter id="panelDropShadow" x="-20%" y="-10%" width="150%" height="120%">
-                        <feDropShadow dx="6" dy="0" stdDeviation="10" flood-color="#020617" flood-opacity="0.22" />
-                    </filter>
                 </defs>
 
-                <!-- Lapisan Dasar Panel Gelap (Melengkung Elegan dengan Bayangan Elevasi) -->
-                <path d="M 0 0 
-                         L 112 0 
-                         C 120 100, 122 220, 110 350 
-                         C 98 480, 94 560, 106 700 
-                         C 114 800, 116 920, 106 1000 
-                         L 0 1000 
-                         Z" 
-                      fill="#020617" 
-                      filter="url(#panelDropShadow)" />
-
-                <!-- Lapisan Dasar Panel Terang (Sisi Kanan) -->
-                <path d="M 200 0 
-                         L 112 0 
-                         C 120 100, 122 220, 110 350 
-                         C 98 480, 94 560, 106 700 
-                         C 114 800, 116 920, 106 1000 
-                         L 200 1000 
+                <!-- Lapisan Transisi Panel Terang (Sisi Kanan Garis, Menutup Ujung Panel Menuju Form) -->
+                <!-- Sisi Kiri Garis adalah TRANSPARAN sehingga Constellation & Dot-Grid Panel Gelap Terlihat Sempurna -->
+                <path d="M 100 0 
+                         L 75 0 
+                         C 55 90, 50 180, 55 220 
+                         C 62 280, 75 350, 80 420 
+                         C 84 480, 72 540, 68 600 
+                         C 64 670, 78 740, 80 780 
+                         C 82 830, 62 880, 60 920 
+                         C 58 950, 68 980, 75 1000 
+                         L 100 1000 
                          Z" 
                       fill="#f8fafc" />
 
-                <!-- Pendaran Cahaya Ambient Cyan/Blue di Sepanjang Sambungan -->
-                <path d="M 112 0 
-                         C 120 100, 122 220, 110 350 
-                         C 98 480, 94 560, 106 700 
-                         C 114 800, 116 920, 106 1000" 
+                <!-- Pendaran Cahaya Ambient Cyan/Blue di Sepanjang Garis -->
+                <path d="M 75 0 
+                         C 55 90, 50 180, 55 220 
+                         C 62 280, 75 350, 80 420 
+                         C 84 480, 72 540, 68 600 
+                         C 64 670, 78 740, 80 780 
+                         C 82 830, 62 880, 60 920 
+                         C 58 950, 68 980, 75 1000" 
                       stroke="url(#fiberGlowGrad)" 
-                      stroke-width="18" 
+                      stroke-width="14" 
                       stroke-linecap="round" 
                       fill="none" />
 
                 <!-- Jalur Fiber Optic Laser Utama Bercahaya -->
-                <path d="M 112 0 
-                         C 120 100, 122 220, 110 350 
-                         C 98 480, 94 560, 106 700 
-                         C 114 800, 116 920, 106 1000" 
+                <path d="M 75 0 
+                         C 55 90, 50 180, 55 220 
+                         C 62 280, 75 350, 80 420 
+                         C 84 480, 72 540, 68 600 
+                         C 64 670, 78 740, 80 780 
+                         C 82 830, 62 880, 60 920 
+                         C 58 950, 68 980, 75 1000" 
                       stroke="url(#fiberLineGrad)" 
                       stroke-width="2.6" 
                       fill="none" 
@@ -241,28 +234,31 @@
 
                 <!-- Pulsa Cahaya Data Berkecepatan Tinggi (Animasi Arus Data Paket) -->
                 <path class="fiber-pulse" 
-                      d="M 112 0 
-                         C 120 100, 122 220, 110 350 
-                         C 98 480, 94 560, 106 700 
-                         C 114 800, 116 920, 106 1000" 
+                      d="M 75 0 
+                         C 55 90, 50 180, 55 220 
+                         C 62 280, 75 350, 80 420 
+                         C 84 480, 72 540, 68 600 
+                         C 64 670, 78 740, 80 780 
+                         C 82 830, 62 880, 60 920 
+                         C 58 950, 68 980, 75 1000" 
                       stroke="#ffffff" 
-                      stroke-width="2.2" 
+                      stroke-width="2" 
                       stroke-linecap="round" 
                       fill="none" />
 
                 <!-- Telemetry Beacon Node: Titik Indikator Sinyal Jaringan di Bagian Tengah -->
-                <g transform="translate(100, 520)">
+                <g transform="translate(68, 600)">
                     <!-- Radar Ring Pulsa Konsentris -->
-                    <circle class="radar-ring" cx="0" cy="0" r="10" stroke="#22d3ee" stroke-width="1.2" fill="none" />
+                    <circle class="radar-ring" cx="0" cy="0" r="9" stroke="#22d3ee" stroke-width="1.2" fill="none" />
                     <!-- Lingkaran Luar -->
-                    <circle cx="0" cy="0" r="6" stroke="#38bdf8" stroke-width="1.5" fill="#020617" filter="url(#fiberNeonGlow)" />
+                    <circle cx="0" cy="0" r="5" stroke="#38bdf8" stroke-width="1.5" fill="#0b172a" filter="url(#fiberNeonGlow)" />
                     <!-- Inti Beacon Bercahaya -->
-                    <circle class="beacon-core" cx="0" cy="0" r="3" fill="#ffffff" />
+                    <circle class="beacon-core" cx="0" cy="0" r="2.5" fill="#ffffff" />
                 </g>
 
                 <!-- Titik Sensor Optik Sekunder -->
-                <circle cx="118" cy="180" r="2.8" fill="#38bdf8" filter="url(#fiberNeonGlow)" />
-                <circle cx="114" cy="820" r="2.8" fill="#60a5fa" filter="url(#fiberNeonGlow)" />
+                <circle cx="55" cy="220" r="2.5" fill="#38bdf8" filter="url(#fiberNeonGlow)" />
+                <circle cx="60" cy="920" r="2.5" fill="#60a5fa" filter="url(#fiberNeonGlow)" />
             </svg>
         </div>
 
