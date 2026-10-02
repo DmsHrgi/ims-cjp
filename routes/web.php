@@ -8,7 +8,6 @@ use App\Http\Controllers\PermintaanController;
 use App\Http\Controllers\PendaftaranController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OltController;
-use App\Http\Controllers\BroadbandController;
 
 // --- AUTENTIKASI (terbuka) ---
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -65,13 +64,6 @@ Route::get('/fix-database-schema', function () {
         $results[] = 'Artisan migrate: ' . trim(\Illuminate\Support\Facades\Artisan::output());
     } catch (\Throwable $e) {
         $results[] = 'Artisan migrate: ' . $e->getMessage();
-    }
-
-    try {
-        \App\Http\Controllers\PageController::ensureViewBatchjob();
-        $results[] = 'ensureViewBatchjob: Successfully verified and recreated view_batchjob!';
-    } catch (\Throwable $e) {
-        $results[] = 'ensureViewBatchjob info: ' . $e->getMessage();
     }
 
     // 3. Eksekusi ALTER TABLE langsung untuk memastikan perubahan kolom berhasil
@@ -135,51 +127,6 @@ Route::get('/fix-database-schema', function () {
         "ALTER TABLE `m_olt` ADD `created_at` TIMESTAMP NULL DEFAULT NULL",
         "ALTER TABLE `m_olt` ADD `updated_at` TIMESTAMP NULL DEFAULT NULL",
         "ALTER TABLE `m_olt` MODIFY `kode_olt` VARCHAR(50) NULL DEFAULT NULL",
-        "CREATE TABLE IF NOT EXISTS `trx_broadband` (
-            `nomor_internet` VARCHAR(50) NOT NULL PRIMARY KEY,
-            `nik_penduduk` VARCHAR(50) NULL DEFAULT NULL,
-            `nama_pelanggan` VARCHAR(200) NULL DEFAULT NULL,
-            `rt_pasang` VARCHAR(10) NULL DEFAULT NULL,
-            `rw_pasang` VARCHAR(10) NULL DEFAULT NULL,
-            `nomor_bangunan` VARCHAR(50) NULL DEFAULT NULL,
-            `alamat_pasang` TEXT NULL,
-            `kode_wilayah_kelurahan_pasang` VARCHAR(50) NULL DEFAULT NULL,
-            `jenis_bangunan` VARCHAR(50) NULL DEFAULT NULL,
-            `lon_lat` TEXT NULL,
-            `loc_maps` TEXT NULL,
-            `note_request` TEXT NULL,
-            `kode_bandwith` VARCHAR(50) NULL DEFAULT NULL,
-            `kode_pop` VARCHAR(50) NULL DEFAULT NULL,
-            `ont_us` VARCHAR(50) NULL DEFAULT NULL,
-            `ont_ps` VARCHAR(50) NULL DEFAULT NULL,
-            `status_reg` VARCHAR(10) NULL DEFAULT NULL,
-            `media_akses` VARCHAR(100) NULL DEFAULT NULL,
-            `ppn` VARCHAR(10) NULL DEFAULT NULL,
-            `ppn_nom` VARCHAR(20) NULL DEFAULT NULL,
-            `potongan` VARCHAR(20) NULL DEFAULT NULL,
-            `potongan_note` VARCHAR(100) NULL DEFAULT NULL,
-            `last_month_billing` VARCHAR(5) NULL DEFAULT NULL,
-            `last_year_billing` VARCHAR(5) NULL DEFAULT NULL,
-            `periode_billing` INT NULL DEFAULT NULL,
-            `jns_notif` VARCHAR(10) NULL DEFAULT NULL,
-            `is_termin` VARCHAR(10) NULL DEFAULT NULL,
-            `is_suspend` VARCHAR(10) NULL DEFAULT NULL,
-            `count_suspend` VARCHAR(10) NULL DEFAULT NULL,
-            `is_denda` VARCHAR(10) NULL DEFAULT NULL,
-            `islock` VARCHAR(5) NULL DEFAULT NULL,
-            `prorate` VARCHAR(5) NULL DEFAULT NULL,
-            `date_create` DATETIME NULL DEFAULT NULL,
-            `user_create` VARCHAR(50) NULL DEFAULT NULL,
-            `date_update` DATETIME NULL DEFAULT NULL,
-            `user_update` VARCHAR(50) NULL DEFAULT NULL,
-            `hide` VARCHAR(5) NULL DEFAULT NULL,
-            `mitra` VARCHAR(50) NULL DEFAULT NULL,
-            `group_layanan` VARCHAR(50) NULL DEFAULT NULL,
-            `nama_sales` VARCHAR(50) NULL DEFAULT NULL,
-            `olt` VARCHAR(100) NULL DEFAULT NULL,
-            `index_olt` VARCHAR(100) NULL DEFAULT NULL,
-            `is_login` TINYINT(1) NOT NULL DEFAULT 0
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
     ];
 
     foreach ($queries as $q) {
@@ -322,11 +269,6 @@ Route::middleware(\App\Http\Middleware\EnsureAuthenticated::class)->group(functi
     Route::get('/pelanggan/{nomor_internet}/pdf-instalasi', [PageController::class, 'downloadInstalasiPdf'])->name('pelanggan.pdf-instalasi');
     Route::post('/pelanggan/{nomor_internet}/upload-scan', [PageController::class, 'uploadScanDokumen'])->name('pelanggan.upload-scan');
     Route::delete('/pelanggan/{nomor_internet}/delete-scan', [PageController::class, 'deleteScanDokumen'])->name('pelanggan.delete-scan');
-
-    // Broadband (Read-only untuk semua role)
-    Route::get('/broadband', [BroadbandController::class, 'index'])->name('broadband.index');
-    Route::get('/broadband/{nomor_internet}', [BroadbandController::class, 'detail'])->name('broadband.detail');
-    Route::get('/broadband/{nomor_internet}/modal', [BroadbandController::class, 'modalDetail'])->name('broadband.modal');
 
     // Billing
     Route::get('/billing/registrasi', [BillingController::class, 'registrasi'])->name('billing.registrasi');

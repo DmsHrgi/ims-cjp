@@ -12,11 +12,6 @@ class EnsureAuthenticated
         if (! $request->session()->has('user')) {
             return redirect()->route('login');
         }
-
-        try {
-            \App\Http\Controllers\PageController::ensureViewBatchjob();
-        } catch (\Throwable $e) {}
-
         return $next($request);
     }
 }
