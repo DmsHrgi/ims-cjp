@@ -38,30 +38,36 @@ class PageController extends Controller
         // =========================================================
         //  VISUALISASI PERUSAHAAN & ID PELANGGAN
         // =========================================================
-        $batchRows = DB::table('view_batchjob')
-            ->where(function ($q) {
-                $q->where('hide', '0')->orWhereNull('hide');
-            })
-            ->select(
-                'nomor_internet',
-                'id_perusahaan',
-                'nama_perusahaan',
-                'nama_pelanggan',
-                'nama_penduduk',
-                'nama_kategori_bandwith',
-                'nominal_bandwith',
-                'nama_kota_pasang',
-                'alamat_pasang',
-                'alamat_p',
-                'status_reg',
-                'desc_registrasi',
-                'is_suspend',
-                'is_termin',
-                'aktivasi_date_finish',
-                'date_create'
-            )
-            ->orderBy('date_create', 'desc')
-            ->get();
+        self::restoreMissingViews();
+
+        try {
+            $batchRows = DB::table('view_batchjob')
+                ->where(function ($q) {
+                    $q->where('hide', '0')->orWhereNull('hide');
+                })
+                ->select(
+                    'nomor_internet',
+                    'id_perusahaan',
+                    'nama_perusahaan',
+                    'nama_pelanggan',
+                    'nama_penduduk',
+                    'nama_kategori_bandwith',
+                    'nominal_bandwith',
+                    'nama_kota_pasang',
+                    'alamat_pasang',
+                    'alamat_p',
+                    'status_reg',
+                    'desc_registrasi',
+                    'is_suspend',
+                    'is_termin',
+                    'aktivasi_date_finish',
+                    'date_create'
+                )
+                ->orderBy('date_create', 'desc')
+                ->get();
+        } catch (\Throwable $e) {
+            $batchRows = collect();
+        }
 
         $companiesMap = [];
         $totalAktifServices = 0;
@@ -219,10 +225,76 @@ class PageController extends Controller
         return view('tiket.coverage-area', compact('rows'));
     }
 
+    public static function restoreMissingViews()
+    {
+        try {
+            \Illuminate\Support\Facades\DB::select("SELECT 1 FROM `view_batchjob` LIMIT 1");
+            return;
+        } catch (\Throwable $e) {}
+
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('trx_batchjob_register') && !\Illuminate\Support\Facades\Schema::hasColumn('trx_batchjob_register', 'tipe_pelanggan')) {
+                \Illuminate\Support\Facades\DB::statement("ALTER TABLE `trx_batchjob_register` ADD `tipe_pelanggan` VARCHAR(50) NULL DEFAULT NULL");
+            }
+        } catch (\Throwable $e) {}
+
+        try {
+            \Illuminate\Support\Facades\DB::statement("CREATE TABLE IF NOT EXISTS `trx_instalasi` (
+                `kode_instalasi` VARCHAR(50) NOT NULL PRIMARY KEY,
+                `nomor_internet` VARCHAR(50) NULL DEFAULT NULL,
+                `verifikasi_date` DATE NULL DEFAULT NULL,
+                `verifikasi_note` TEXT NULL DEFAULT NULL,
+                `survey_date_start` DATE NULL DEFAULT NULL,
+                `survey_time` VARCHAR(50) NULL DEFAULT NULL,
+                `survey_team` TEXT NULL DEFAULT NULL,
+                `survey_note` TEXT NULL DEFAULT NULL,
+                `survey_date_finish` DATE NULL DEFAULT NULL,
+                `survey_note_finish` TEXT NULL DEFAULT NULL,
+                `doc_survey` TEXT NULL DEFAULT NULL,
+                `instalasi_date_start` DATE NULL DEFAULT NULL,
+                `instalasi_time` VARCHAR(50) NULL DEFAULT NULL,
+                `instalasi_team` TEXT NULL DEFAULT NULL,
+                `instalasi_note` TEXT NULL DEFAULT NULL,
+                `instalasi_date_finish` DATE NULL DEFAULT NULL,
+                `instalasi_note_finish` TEXT NULL DEFAULT NULL,
+                `doc_instalasi` TEXT NULL DEFAULT NULL,
+                `aktivasi_date_start` DATE NULL DEFAULT NULL,
+                `aktivasi_time` VARCHAR(50) NULL DEFAULT NULL,
+                `aktivasi_team` TEXT NULL DEFAULT NULL,
+                `aktivasi_note` TEXT NULL DEFAULT NULL,
+                `aktivasi_date_finish` DATE NULL DEFAULT NULL,
+                `aktivasi_note_finish` TEXT NULL DEFAULT NULL,
+                `doc_aktivasi` TEXT NULL DEFAULT NULL,
+                `doc_terminasi` TEXT NULL DEFAULT NULL,
+                `doc_berlangganan` TEXT NULL DEFAULT NULL,
+                `foto_rumah` TEXT NULL DEFAULT NULL,
+                `foto_ktp` TEXT NULL DEFAULT NULL,
+                `foto_peta` TEXT NULL DEFAULT NULL,
+                `date_create` DATETIME NULL DEFAULT NULL,
+                `user_create` VARCHAR(50) NULL DEFAULT NULL,
+                `date_update` DATETIME NULL DEFAULT NULL,
+                `user_update` VARCHAR(50) NULL DEFAULT NULL,
+                `hide` VARCHAR(5) NULL DEFAULT NULL,
+                INDEX `idx_nomor_internet` (`nomor_internet`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+        } catch (\Throwable $e) {}
+
+        try {
+            if (file_exists(base_path('create_views.sql'))) {
+                \Illuminate\Support\Facades\DB::unprepared(file_get_contents(base_path('create_views.sql')));
+            }
+        } catch (\Throwable $e) {}
+    }
+
     public function pendaftaran()
     {
-        $rows = DB::table('view_batchjob')->orderByDesc('date_create')->paginate(10);
-        $rows->getCollection()->transform(fn($r) => $this->decorate($r));
+        self::restoreMissingViews();
+        try {
+            $rows = DB::table('view_batchjob')->orderByDesc('date_create')->paginate(10);
+            $rows->getCollection()->transform(fn($r) => $this->decorate($r));
+        } catch (\Throwable $e) {
+            $rows = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10);
+        }
         return view('pendaftaran.pemasangan-baru', compact('rows'));
     }
 

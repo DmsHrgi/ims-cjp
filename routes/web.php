@@ -66,6 +66,14 @@ Route::get('/fix-database-schema', function () {
         $results[] = 'Artisan migrate: ' . $e->getMessage();
     }
 
+    // 2b. Restore seluruh views jika hilang
+    try {
+        \App\Http\Controllers\PageController::restoreMissingViews();
+        $results[] = 'restoreMissingViews: Berhasil memverifikasi dan memulihkan seluruh view database!';
+    } catch (\Throwable $e) {
+        $results[] = 'restoreMissingViews info: ' . $e->getMessage();
+    }
+
     // 3. Eksekusi ALTER TABLE langsung untuk memastikan perubahan kolom berhasil
     $queries = [
         "ALTER TABLE `trx_batchjob_register` MODIFY `nomor_bangunan` VARCHAR(50) NULL DEFAULT NULL",
