@@ -64,6 +64,26 @@ return [
             ]) : [],
         ],
 
+        'ims_v3' => [
+            'driver' => 'mysql',
+            'url' => env('DB_V3_URL'),
+            'host' => env('DB_V3_HOST', env('DB_HOST', '127.0.0.1')),
+            'port' => env('DB_V3_PORT', env('DB_PORT', '3306')),
+            'database' => env('DB_V3_DATABASE', 'ims_v3'),
+            'username' => env('DB_V3_USERNAME', env('DB_USERNAME', 'root')),
+            'password' => env('DB_V3_PASSWORD', env('DB_PASSWORD', '')),
+            'unix_socket' => env('DB_V3_SOCKET', ''),
+            'charset' => env('DB_V3_CHARSET', 'utf8mb4'),
+            'collation' => env('DB_V3_COLLATION', 'utf8mb4_unicode_ci'),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => false,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                Mysql::ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
         'mariadb' => [
             'driver' => 'mariadb',
             'url' => env('DB_URL'),
