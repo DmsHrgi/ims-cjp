@@ -206,9 +206,9 @@
     <div>
     <div>
         <!-- Filter Bar Top (Matching Exact Layout) -->
-        <form method="GET" action="{{ route('pelanggan') }}" class="bg-white rounded-2xl border border-gray-100 p-5 shadow-xs mb-8 space-y-4">
+        <form id="filterPelangganForm" method="GET" action="{{ route('pelanggan') }}" class="bg-white rounded-2xl border border-gray-100 p-5 shadow-xs mb-8 space-y-4">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-center">
-                <!-- Row 1: Status Pelanggan, Search Nama, Wilayah, Alamat, Reset & Export -->
+                <!-- Row 1: Status Pelanggan, Search Nama, Wilayah, Alamat, Cari, Reset & Export -->
                 <div class="lg:col-span-3">
                     <select name="section" onchange="this.form.submit()" class="w-full bg-white border border-gray-200 focus:border-blue-500 text-gray-700 py-2 px-3 text-xs font-semibold uppercase rounded-lg outline-none cursor-pointer">
                         <option value="" {{ empty(request('section')) || request('section') === 'semua' ? 'selected' : '' }}>SEMUA STATUS PELANGGAN</option>
@@ -220,7 +220,12 @@
                 </div>
 
                 <div class="lg:col-span-3">
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="SEMUA NAMA / NOMOR LAYANAN" class="w-full bg-white border border-gray-200 focus:border-blue-500 text-gray-700 py-2 px-3 text-xs font-semibold uppercase rounded-lg outline-none placeholder-gray-400">
+                    <div class="relative">
+                        <input type="text" name="search" id="inputSearchPelanggan" value="{{ request('search') }}" placeholder="SEMUA NAMA / NOMOR LAYANAN" class="w-full bg-white border border-gray-200 focus:border-blue-500 text-gray-700 py-2 pl-3 pr-8 text-xs font-semibold uppercase rounded-lg outline-none placeholder-gray-400">
+                        <button type="submit" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-600 cursor-pointer" title="Cari Nama/Nomor">
+                            <i class="fa-solid fa-magnifying-glass text-[11px]"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="lg:col-span-2">
@@ -233,15 +238,23 @@
                 </div>
 
                 <div class="lg:col-span-2">
-                    <input type="text" name="alamat" value="{{ request('alamat') }}" placeholder="SEMUA ALAMAT" class="w-full bg-white border border-gray-200 focus:border-blue-500 text-gray-700 py-2 px-3 text-xs font-semibold uppercase rounded-lg outline-none placeholder-gray-400">
+                    <div class="relative">
+                        <input type="text" name="alamat" id="inputAlamatPelanggan" value="{{ request('alamat') }}" placeholder="SEMUA ALAMAT" class="w-full bg-white border border-gray-200 focus:border-blue-500 text-gray-700 py-2 pl-3 pr-8 text-xs font-semibold uppercase rounded-lg outline-none placeholder-gray-400">
+                        <button type="submit" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-600 cursor-pointer" title="Cari Alamat">
+                            <i class="fa-solid fa-magnifying-glass text-[11px]"></i>
+                        </button>
+                    </div>
                 </div>
 
-                <div class="lg:col-span-2 flex items-center justify-end gap-2">
-                    <a href="{{ route('pelanggan') }}" class="bg-rose-400 hover:bg-rose-500 text-white px-3 py-2 rounded-lg text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 flex-1 justify-center">
-                        <i class="fa-solid fa-rotate-left text-[11px]"></i> Reset
+                <div class="lg:col-span-2 flex items-center justify-end gap-1.5">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-2 rounded-lg text-xs font-bold transition-all shadow-xs flex items-center gap-1 flex-1 justify-center cursor-pointer">
+                        <i class="fa-solid fa-magnifying-glass text-[10px]"></i> Cari
+                    </button>
+                    <a href="{{ route('pelanggan') }}" class="bg-rose-400 hover:bg-rose-500 text-white px-2.5 py-2 rounded-lg text-xs font-bold transition-all shadow-xs flex items-center gap-1 flex-1 justify-center">
+                        <i class="fa-solid fa-rotate-left text-[10px]"></i> Reset
                     </a>
-                    <a href="{{ route('pendaftaran.export', request()->query()) }}" class="bg-amber-400 hover:bg-amber-500 text-white px-3 py-2 rounded-lg text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 flex-1 justify-center">
-                        <i class="fa-solid fa-file-excel text-[11px]"></i> Export
+                    <a href="{{ route('pendaftaran.export', request()->query()) }}" class="bg-amber-400 hover:bg-amber-500 text-white px-2.5 py-2 rounded-lg text-xs font-bold transition-all shadow-xs flex items-center gap-1 flex-1 justify-center">
+                        <i class="fa-solid fa-file-excel text-[10px]"></i> Export
                     </a>
                 </div>
             </div>
@@ -1495,6 +1508,35 @@
                 if (hrgInput.value) {
                     hrgInput.value = formatRibuanPelanggan(hrgInput.value);
                 }
+            }
+
+            // Live filter instant saat mengetik di input Alamat dan Search
+            const inputAlamat = document.getElementById('inputAlamatPelanggan');
+            const inputSearch = document.getElementById('inputSearchPelanggan');
+            const tableRows = document.querySelectorAll('#tabel-pelanggan tbody tr');
+
+            function filterTableRowsLocally() {
+                const alamatVal = (inputAlamat ? inputAlamat.value : '').toLowerCase().trim();
+                const searchVal = (inputSearch ? inputSearch.value : '').toLowerCase().trim();
+
+                tableRows.forEach(row => {
+                    const text = row.innerText.toLowerCase();
+                    const matchAlamat = !alamatVal || text.includes(alamatVal);
+                    const matchSearch = !searchVal || text.includes(searchVal);
+
+                    if (matchAlamat && matchSearch) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            }
+
+            if (inputAlamat) {
+                inputAlamat.addEventListener('input', filterTableRowsLocally);
+            }
+            if (inputSearch) {
+                inputSearch.addEventListener('input', filterTableRowsLocally);
             }
 
             var els = document.querySelectorAll('.reveal');
