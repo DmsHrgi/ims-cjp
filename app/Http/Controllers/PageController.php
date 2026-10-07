@@ -356,6 +356,30 @@ class PageController extends Controller
             $cardsQuery->where('nama_kota_pasang', $request->wilayah);
         }
 
+        if ($request->filled('alamat')) {
+            $alamatStr = trim($request->alamat);
+            $cardsQuery->where(function ($q) use ($alamatStr) {
+                $q->where('alamat_pasang', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('alamat_p', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('alamat_ktp', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('alamat_k', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('jenis_bangunan', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('nomor_bangunan', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('rt_pasang', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('rw_pasang', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('nama_kelurahan_pasang', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('nama_kecamatan_pasang', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('nama_kota_pasang', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('nama_provinsi_pasang', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('rt_ktp', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('rw_ktp', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('nama_kelurahan', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('nama_kecamatan', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('nama_kota', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('nama_provinsi', 'like', '%' . $alamatStr . '%');
+            });
+        }
+
         $cardRows = $cardsQuery
             ->select('nama_kategori_bandwith', 'is_termin', 'is_suspend', 'status_reg', 'desc_registrasi', 'aktivasi_date_finish')
             ->get();
@@ -406,8 +430,62 @@ class PageController extends Controller
             $tableQuery->where('nama_kota_pasang', $request->wilayah);
         }
 
+        if ($request->filled('alamat')) {
+            $alamatStr = trim($request->alamat);
+            $tableQuery->where(function ($q) use ($alamatStr) {
+                $q->where('alamat_pasang', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('alamat_p', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('alamat_ktp', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('alamat_k', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('jenis_bangunan', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('nomor_bangunan', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('rt_pasang', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('rw_pasang', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('nama_kelurahan_pasang', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('nama_kecamatan_pasang', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('nama_kota_pasang', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('nama_provinsi_pasang', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('rt_ktp', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('rw_ktp', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('nama_kelurahan', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('nama_kecamatan', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('nama_kota', 'like', '%' . $alamatStr . '%')
+                  ->orWhere('nama_provinsi', 'like', '%' . $alamatStr . '%');
+            });
+        }
+
         if ($request->filled('kategori') && $request->kategori !== 'ALL') {
             $tableQuery->where('nama_kategori_bandwith', $request->kategori);
+        }
+
+        if ($request->filled('bulan')) {
+            $b = $request->bulan;
+            $tableQuery->where(function ($q) use ($b) {
+                $q->whereMonth('aktivasi_date_finish', $b)
+                  ->orWhere(function ($sub) use ($b) {
+                      $sub->whereNull('aktivasi_date_finish')
+                          ->whereMonth('date_create', $b);
+                  });
+            });
+        }
+
+        if ($request->filled('tahun')) {
+            $t = $request->tahun;
+            $tableQuery->where(function ($q) use ($t) {
+                $q->whereYear('aktivasi_date_finish', $t)
+                  ->orWhere(function ($sub) use ($t) {
+                      $sub->whereNull('aktivasi_date_finish')
+                          ->whereYear('date_create', $t);
+                  });
+            });
+        }
+
+        if ($request->filled('media_akses')) {
+            $tableQuery->where('media_akses', $request->media_akses);
+        }
+
+        if ($request->filled('group_layanan')) {
+            $tableQuery->where('group_layanan', $request->group_layanan);
         }
 
         if ($request->filled('search')) {

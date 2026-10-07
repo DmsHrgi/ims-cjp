@@ -400,7 +400,7 @@
                                         Updated {{ \Carbon\Carbon::parse($c->date_update ?: $c->date_create)->format('d M Y') }}
                                     </div>
                                     <div class="font-semibold text-gray-800 text-xs">
-                                        Rp {{ number_format((float) ($c->harga_bandwith ?? $c->harga_paket ?? 0), 2, ',', '.') }}
+                                        Rp {{ number_format((float) ($c->harga_bandwith ?? $c->harga_paket ?? 0), 0, ',', '.') }}
                                     </div>
                                 </td>
 
