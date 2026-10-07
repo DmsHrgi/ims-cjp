@@ -1386,6 +1386,22 @@ class PendaftaranController extends Controller
                     'user_update' => substr($currentUser, 0, 15),
                 ]);
 
+            // Update trx_billing_layanan jika ada (untuk tagihan belum lunas / baru)
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('trx_billing_layanan')) {
+                    DB::table('trx_billing_layanan')
+                        ->where('nomor_internet', $nomorInternet)
+                        ->whereIn('status_bill_lay', ['11', '12', '13'])
+                        ->update([
+                            'kode_bandwith' => $kodeBandwith,
+                            'nominal_bandwith' => $bwData->nominal_bandwith ?? preg_replace('/[^0-9]/', '', $validated['kode_bandwith']),
+                            'total_layanan' => $totalReg,
+                            'date_update' => now(),
+                            'user_update' => substr($currentUser, 0, 15),
+                        ]);
+                }
+            } catch (\Throwable $e) {}
+
             // Catat log update / edit data pelanggan
             $regNow = DB::table('trx_batchjob_register')->where('nomor_internet', $nomorInternet)->first();
             DB::table('trx_batchjob_register_log')->insert([
@@ -3287,7 +3303,7 @@ class PendaftaranController extends Controller
     }
 
     /**
-     * Resolve or create appropriate m_bandwith record matching category and nominal bandwidth
+     * Resolve or create appropriate m_bandwith record matching category, nominal bandwidth, and price
      */
     public static function resolveOrCreateBandwith($inputBandwith, $inputKategori, $harga = null, $user = 'SYSTEM')
     {
@@ -3295,7 +3311,8 @@ class PendaftaranController extends Controller
         $inputBandwith = trim($inputBandwith ?? '');
         $nominalDigits = preg_replace('/[^0-9]/', '', $inputBandwith);
         $nominalStr = !empty($nominalDigits) ? substr($nominalDigits, 0, 5) : '10';
-        $hargaVal = (!empty($harga) && is_numeric($harga)) ? substr((string)$harga, 0, 15) : '300000';
+        $hargaVal = (!empty($harga) && is_numeric($harga)) ? substr((string)$harga, 0, 15) : null;
+        $defaultHarga = $hargaVal ?: '300000';
 
         // 1. Resolve or create category in m_bandwith_kategori
         $kategoriRow = null;
@@ -3331,7 +3348,7 @@ class PendaftaranController extends Controller
                     'disable'                => 0,
                     'hide'                   => '0',
                     'date_create'            => now(),
-                    'user_create' => substr($user, 0, 15),
+                    'user_create'            => substr($user, 0, 15),
                 ]);
 
                 $kategoriKode = $kodeKat;
@@ -3343,46 +3360,85 @@ class PendaftaranController extends Controller
             $kategoriKode = $kategoriRow->kode_kategori_bandwith;
         }
 
-        // 2. Find existing m_bandwith that matches this exact category AND exact code / nominal
-        $existingBw = DB::table('m_bandwith')
-            ->where('kode_kategori_bandwith', $kategoriKode)
-            ->where(function ($q) use ($inputBandwith, $nominalStr) {
-                $q->where('kode_bandwith', $inputBandwith)
-                  ->orWhere('nominal_bandwith', $inputBandwith)
-                  ->orWhere('nominal_bandwith', $nominalStr);
-            })
-            ->first();
+        // 2. Check if an exact bandwidth exists matching category, nominal/code, AND exact price
+        if ($hargaVal !== null) {
+            $exactBwWithPrice = DB::table('m_bandwith')
+                ->where('kode_kategori_bandwith', $kategoriKode)
+                ->where(function ($q) use ($inputBandwith, $nominalStr) {
+                    $q->where('kode_bandwith', $inputBandwith)
+                      ->orWhere('nominal_bandwith', $inputBandwith)
+                      ->orWhere('nominal_bandwith', $nominalStr);
+                })
+                ->where('harga_bandwith', $hargaVal)
+                ->where('hide', '0')
+                ->first();
 
-        if ($existingBw) {
-            return $existingBw->kode_bandwith;
+            if ($exactBwWithPrice) {
+                return $exactBwWithPrice->kode_bandwith;
+            }
         }
 
-        // Check if direct exact match on kode_bandwith exists and belongs to this category
+        // 3. Check if direct exact match on kode_bandwith exists
         $directMatch = DB::table('m_bandwith')->where('kode_bandwith', $inputBandwith)->first();
         if ($directMatch && $directMatch->kode_kategori_bandwith === $kategoriKode) {
-            return $directMatch->kode_bandwith;
+            if ($hargaVal !== null && (string)$directMatch->harga_bandwith !== (string)$hargaVal) {
+                if (str_starts_with($directMatch->kode_bandwith, 'CUST-')) {
+                    DB::table('m_bandwith')->where('kode_bandwith', $directMatch->kode_bandwith)->update([
+                        'harga_bandwith' => $hargaVal,
+                        'user_update'    => substr($user, 0, 15),
+                        'date_update'    => now(),
+                    ]);
+                    return $directMatch->kode_bandwith;
+                }
+            } else {
+                return $directMatch->kode_bandwith;
+            }
         }
 
-        // 3. Create new custom bandwidth for this category
+        // 4. If no price is specified or it matches standard existing bandwidth price
+        if ($hargaVal === null) {
+            $existingBw = DB::table('m_bandwith')
+                ->where('kode_kategori_bandwith', $kategoriKode)
+                ->where(function ($q) use ($inputBandwith, $nominalStr) {
+                    $q->where('kode_bandwith', $inputBandwith)
+                      ->orWhere('nominal_bandwith', $inputBandwith)
+                      ->orWhere('nominal_bandwith', $nominalStr);
+                })
+                ->first();
+
+            if ($existingBw) {
+                return $existingBw->kode_bandwith;
+            }
+        }
+
+        // 5. Create new custom bandwidth for this category + nominal + specific price
         $slugKat = Str::slug($inputKategori ?: 'BW', '');
         $slugNom = Str::slug($nominalStr . 'M', '');
-        $newKodeBw = 'CUST-' . strtoupper(substr($slugKat . '-' . $slugNom, 0, 40));
+        $slugHarga = $hargaVal ? '-' . Str::slug($hargaVal, '') : '';
+        $newKodeBw = 'CUST-' . strtoupper(substr($slugKat . '-' . $slugNom . $slugHarga, 0, 40));
         if (strlen($newKodeBw) > 50) $newKodeBw = substr($newKodeBw, 0, 50);
 
         $checkBw = DB::table('m_bandwith')->where('kode_bandwith', $newKodeBw)->first();
         if ($checkBw) {
             if ($checkBw->kode_kategori_bandwith === $kategoriKode) {
+                if ($hargaVal !== null && (string)$checkBw->harga_bandwith !== (string)$hargaVal) {
+                    DB::table('m_bandwith')->where('kode_bandwith', $newKodeBw)->update([
+                        'harga_bandwith' => $hargaVal,
+                        'user_update'    => substr($user, 0, 15),
+                        'date_update'    => now(),
+                    ]);
+                }
                 return $newKodeBw;
             }
-            $newKodeBw = substr($newKodeBw, 0, 44) . '-' . rand(10, 99);
+            $newKodeBw = substr($newKodeBw, 0, 40) . '-' . rand(100, 999);
         }
 
         DB::table('m_bandwith')->insert([
             'kode_bandwith'          => $newKodeBw,
             'nominal_bandwith'       => $nominalStr,
-            'harga_bandwith'         => $hargaVal,
+            'harga_bandwith'         => $defaultHarga,
             'kode_kategori_bandwith' => $kategoriKode,
-            'user_create' => substr($user, 0, 15),
+            'user_create'            => substr($user, 0, 15),
             'date_create'            => now(),
             'hide'                   => '0',
             'disable'                => '0'

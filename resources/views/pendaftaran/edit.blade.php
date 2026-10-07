@@ -84,7 +84,8 @@
             $valKategoriLayanan = 'LOCALLOOP';
         }
         $valPaketLayanan = $data->nominal_bandwith ? ($data->nominal_bandwith . ' Mbps') : ($reg->kode_bandwith ?? $data->kode_bandwith ?? '');
-        $valHargaPaket = $data->harga_bandwith ?? $reg->total_registrasi ?? '';
+        $billReg = \Illuminate\Support\Facades\DB::table('trx_billing_registrasi')->where('nomor_internet', $data->nomor_internet)->first();
+        $valHargaPaket = $data->harga_bandwith ?? ($billReg->total_reg ?? ($reg->total_registrasi ?? ''));
 
         // Seksi 5: Informasi Penugasan Sales & Sistem
         $valNamaSales = $reg->nama_sales ?? $data->nama_sales ?? '';
